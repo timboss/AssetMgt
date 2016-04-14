@@ -1,0 +1,7 @@
+*.pyc
+__pycache__
+myvenv
+/static
+/media
+.DS_Store
+settings.py
