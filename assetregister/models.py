@@ -4,8 +4,20 @@ import os
 from uuid import uuid4
 
 
-def path_and_rename(instance, filename):
+def img_path_and_rename(instance, filename):
     upload_to = 'images'
+    ext = filename.split('.')[-1]
+    # get filename
+    if instance.pk:
+        filename = '{}.{}'.format(instance.pk, ext)
+    else:
+        # set filename as random string
+        filename = '{}.{}'.format(uuid4().hex, ext)
+    # return the whole path to the file
+    return os.path.join(upload_to, filename)
+
+def calibration_instructions_path_and_rename(instance, filename):
+    upload_to = 'files/calibration_instructions'
     ext = filename.split('.')[-1]
     # get filename
     if instance.pk:
@@ -38,8 +50,10 @@ ASSET_STATUS = (
 class Asset(models.Model):
   asset_id = models.AutoField(primary_key=True)
   asset_description = models.CharField(max_length=200)
-  asset_image = models.ImageField(upload_to = path_and_rename, max_length=255, null=True, blank=True)
+  asset_image = models.ImageField(upload_to = img_path_and_rename, max_length=255, null=True, blank=True)
   asset_details = models.TextField(blank=True)
+  asset_model = models.CharField(max_length=255, blank=True)
+  asset_serial_number = models.CharField(max_length=200, blank=True)
   asset_status = models.IntegerField(choices=ASSET_STATUS, default=1)
   person_responsible = models.CharField(max_length=100)
   person_responsible_email = models.EmailField()
@@ -47,8 +61,8 @@ class Asset(models.Model):
   requires_safetychecks = models.BooleanField()
   requires_environmentalchecks = models.BooleanField()
   requires_plannedmaintenance = models.BooleanField()
-  significant_value = models.BooleanField()
-  value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+  calibration_instructions = models.FileField(upload_to = calibration_instructions_path_and_rename, max_length=255, null=True, blank=True)
+  asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
   purchase_order_ref = models.CharField(max_length=15, blank = True)
   funded_by = models.CharField(max_length=200, blank=True)
   acquired_on = models.DateTimeField(null=True, blank=True)

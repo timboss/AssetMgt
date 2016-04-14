@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>AMRC Asset Management System</title>
+    </head>
+    <body>
+        
+        <div>
+            <h1><a href="">AMRC Asset Management System</a></h1>
+        </div>
+
+        <div>
+
+            {% for asset in assets %}
+                <p><b>{{ asset.asset_description }}</b></p>
+                <p>Asset I.D. {{ asset.asset_id }}</p>
+                <p>{{ asset.asset_details }}</p>
+                
+                    {% if asset.asset_image %}
+                        <a href="/media/{{ asset.asset_image }}"><img src="/media/{{ asset.asset_image }}" width="200px" height="100px"></a><br />
+                    {% endif %}
+                    
+                    {% if asset.calibration_instructions %}
+                        <p>Download calibration instructions: <a href="/media/{{ asset.calibration_instructions }}">{{ asset.calibration_instructions }}</a></p>
+                    {% endif %}    
+                    
+                <br /> <br />
+            {% endfor %}
+        </div>
+
+        <div>
+        </div>
+        
+    </body>
+</html>

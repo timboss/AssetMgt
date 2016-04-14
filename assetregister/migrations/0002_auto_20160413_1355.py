@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='asset',
             name='asset_image',
-            field=models.ImageField(blank=True, max_length=255, null=True, upload_to=assetregister.models.path_and_rename),
+            field=models.ImageField(blank=True, max_length=255, null=True, upload_to=assetregister.models.img_path_and_rename),
         ),
     ]

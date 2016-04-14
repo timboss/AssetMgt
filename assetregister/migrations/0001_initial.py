@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('asset_id', models.AutoField(primary_key=True, serialize=False)),
                 ('asset_description', models.CharField(max_length=200)),
-                ('asset_image', models.ImageField(blank=True, null=True, upload_to=assetregister.models.path_and_rename)),
+                ('asset_image', models.ImageField(blank=True, null=True, upload_to=assetregister.models.img_path_and_rename)),
                 ('asset_details', models.TextField()),
                 ('asset_status', models.IntegerField(choices=[('1', 'Active / In-Use'), ('2', 'Inactive (Being Comissioned / Repaired)'), ('3', 'Quarantined'), ('4', 'Decomissioned / Withdrawn')])),
                 ('requires_calibration', models.BooleanField()),
