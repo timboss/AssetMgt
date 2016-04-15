@@ -1,34 +1,26 @@
-<html>
-    <head>
-        <title>AMRC Asset Management System</title>
-    </head>
-    <body>
+{% extends 'assetregister/base.html' %}
+
+{% block content %}
+
+    <div class="count">
+        We currently have a total of <b>{{ asset_count }}</b> asset records.
+    </div>
+
+    {% for asset in assets %}
+        <div class="asset">
+            
+            <a href="{% url 'asset_detail' pk=asset.pk %}"><h3>{{ asset.asset_description }}</h3></a>
+            <p>Asset I.D. {{ asset.asset_id }}</p>
         
-        <div>
-            <h1><a href="">AMRC Asset Management System</a></h1>
+            {% if asset.asset_image %}
+                <p><a href="{% url 'asset_detail' pk=asset.pk %}"><img src="/media/{{ asset.asset_image }}" width="200px" height="100px"></a></p>
+            {% endif %}
+            
+            {% if asset.calibration_instructions %}
+                <p><a href="/media/{{ asset.calibration_instructions }}">Download Calibration Instructions</a></p>
+            {% endif %}    
+            
         </div>
-
-        <div>
-
-            {% for asset in assets %}
-                <p><b>{{ asset.asset_description }}</b></p>
-                <p>Asset I.D. {{ asset.asset_id }}</p>
-                <p>{{ asset.asset_details }}</p>
-                
-                    {% if asset.asset_image %}
-                        <a href="/media/{{ asset.asset_image }}"><img src="/media/{{ asset.asset_image }}" width="200px" height="100px"></a><br />
-                    {% endif %}
-                    
-                    {% if asset.calibration_instructions %}
-                        <p>Download calibration instructions: <a href="/media/{{ asset.calibration_instructions }}">{{ asset.calibration_instructions }}</a></p>
-                    {% endif %}    
-                    
-                <br /> <br />
-            {% endfor %}
-        </div>
-
-        <div>
-        </div>
-        
-    </body>
-</html>
+    {% endfor %}
+    
+{% endblock %}

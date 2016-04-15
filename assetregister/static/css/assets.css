@@ -1,5 +1,5 @@
 .page-header {
-    background-color: #ff9400;
+    background-color: #4272C9;
     margin-top: 0;
     padding: 20px 20px 20px 40px;
 }
@@ -20,8 +20,14 @@
     margin-left: 40px;
 }
 
+.count {
+    margin-bottom: 40px;
+    font-size: 14;
+}
+
 h1, h2, h3, h4 {
-    font-family: 'Lobster', cursive;
+    font-family: 'Open Sans', cursive;
+    color: Blue;
 }
 
 .date {
@@ -49,11 +55,11 @@ h1, h2, h3, h4 {
     font-size: 26px;
 }
 
-.post {
+.asset {
     margin-bottom: 70px;
 }
 
-.post h1 a, .post h1 a:visited {
+.asset h1 a, .post h1 a:visited {
     color: #000000;
 }
 

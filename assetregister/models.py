@@ -66,6 +66,7 @@ class Asset(models.Model):
   purchase_order_ref = models.CharField(max_length=15, blank = True)
   funded_by = models.CharField(max_length=200, blank=True)
   acquired_on = models.DateTimeField(null=True, blank=True)
+  related_to_other_asset = models.ForeignKey('self', blank=True, null=True)
   asset_location_building = models.CharField(max_length=5, choices=BUILDINGS, blank=True)
   asset_location_room = models.CharField(max_length=200, blank=True)
   added_by = models.ForeignKey("auth.User")

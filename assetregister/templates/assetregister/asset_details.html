@@ -1,0 +1,95 @@
+{% extends 'assetregister/base.html' %}
+
+    {% block content %}
+    
+        <div class="asset">
+            
+            <h3>{{ asset.asset_description }}</h3>
+            
+            <p>Asset I.D. {{ asset.asset_id }}</p>
+
+            {% if asset.asset_image %}
+                <p><a href="/media/{{ asset.asset_image }}"><img src="/media/{{ asset.asset_image }}" width="50%" height="25%"></a></p>
+            {% endif %}
+            
+            {% if asset.asset_details %}
+                <p>Details: {{ asset.asset_details|linebreaks }}</p> <br />
+            {% endif %}
+            
+            {% if asset.asset_model %}
+                <p>Model: {{ asset.asset_model }}</p>
+            {% endif %}
+            
+            {% if asset.asset_serial_number %}
+                <p>Serial Number: {{ asset.asset_serial_number }}</p>
+            {% endif %}
+            
+            {% if asset.asset_status %}
+                <p>Current Staus: {{ asset.asset_status}}</p>
+            {% endif %}
+            
+            {% if asset.person_responsible %}
+                <p>Person Responsible: {{ asset.person_responsible }}</p>
+            {% endif %}
+            
+            {% if asset.person_responsible_email %}
+                <p>Person Responsible Email: {{ asset.person_responsible_email }}</p>
+            {% endif %}
+            
+            {% if asset.requires_calibration %}
+                <p>Requires Calibration: {{ asset.requires_calibration }}</p>
+            {% endif %}
+            
+            {% if asset.requires_safetychecks %}
+                <p>Requires Safety Checks: {{ asset.requires_safetychecks }}</p>
+            {% endif %}
+            
+            {% if asset.requires_environmentalchecks %}
+                <p>Requires Environmental Checks: {{ asset.requires_environmentalchecks }}</p>
+            {% endif %}
+            
+            {% if asset.requires_plannedmaintenance %}
+                <p>Requires Planned Preventative Maintenance: {{ asset.requires_plannedmaintenance }}</p>
+            {% endif %}
+            
+            {% if asset.asset_value %}
+                <p>Value: £{{ asset.asset_value }}</p>
+            {% endif %}
+            
+            {% if asset.purchase_order_ref %}
+                <p>PO Ref: {{ asset.purchase_order_ref }}</p>
+            {% endif %}
+            
+            {% if asset.funded_by %}
+                <p>Funded By: {{ asset.funded_by }}</p>
+            {% endif %}
+            
+            {% if asset.acquired_on %}
+                <p>Acquired On: {{ asset.acquired_on }}</p>
+            {% endif %}
+            
+            {% if asset.related_to_other_asset %}
+                <p>'Child' of: {{ asset.related_to_other_asset }}</p>
+            {% endif %}
+            
+            {% if asset.location_building %}
+                <p>Location (Building): {{ asset.location_building }}</p>
+            {% endif %}
+            
+            {% if asset.location_room %}
+                <p>Location (Room): {{ asset.location_room }}</p>
+            {% endif %}
+            
+            <p>Asset Record Created On: {{ asset.added_on }}</p>
+            
+            <p>Asset Record Created By: {{ asset.added_by }}</p>
+            
+            <br /><br />
+            
+            {% if asset.calibration_instructions %}
+                <p><a href="/media/{{ asset.calibration_instructions }}">Download Calibration Instructions</a></p>
+            {% endif %}    
+            
+        </div>
+
+    {% endblock %}
