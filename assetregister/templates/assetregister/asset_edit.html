@@ -1,0 +1,9 @@
+{% extends "assetregister/base.html" %}
+
+{% block content %}
+    <h1>New Asset</h1>
+    <form enctype="multipart/form-data" method="POST" class="asset-form">{% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+{% endblock %}

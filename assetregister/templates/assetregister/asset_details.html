@@ -6,6 +6,8 @@
             
             <h3>{{ asset.asset_description }}</h3>
             
+            <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            
             <p>Asset I.D. {{ asset.asset_id }}</p>
 
             {% if asset.asset_image %}
@@ -84,7 +86,9 @@
                 <p>Location (Room): {{ asset.location_room }}</p>
             {% endif %}
             
+            
             <p>Asset Record Created On: {{ asset.added_on }}</p>
+            
             
             <p>Asset Record Created By: {{ asset.added_by }}</p>
             
