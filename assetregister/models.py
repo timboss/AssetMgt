@@ -52,6 +52,7 @@ class Asset(models.Model):
   asset_description = models.CharField(max_length=200)
   asset_image = models.ImageField(upload_to = img_path_and_rename, max_length=255, null=True, blank=True)
   asset_details = models.TextField(blank=True)
+  asset_manufacturer = models.CharField(max_length=255, blank=True)
   asset_model = models.CharField(max_length=255, blank=True)
   asset_serial_number = models.CharField(max_length=200, blank=True)
   asset_status = models.IntegerField(choices=ASSET_STATUS, default=1)

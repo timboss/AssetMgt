@@ -16,6 +16,10 @@
                 <p>Details: {{ asset.asset_details|linebreaks }}</p> <br />
             {% endif %}
             
+            {% if asset.asset_manufacturer %}
+                <p>Manufacturer: {{ asset.asset_manufacturer }}</p>
+            {% endif %}
+            
             {% if asset.asset_model %}
                 <p>Model: {{ asset.asset_model }}</p>
             {% endif %}

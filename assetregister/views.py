@@ -13,4 +13,6 @@ def asset_list(request):
     
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
+    #ToDo - "ParentOf" field
+    #     - Status number -> words translation
     return render(request, "assetregister/asset_details.html", {"asset": asset})
