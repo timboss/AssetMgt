@@ -70,8 +70,8 @@ class Asset(models.Model):
   related_to_other_asset = models.ForeignKey('self', blank=True, null=True)
   asset_location_building = models.CharField(max_length=5, choices=BUILDINGS, blank=True)
   asset_location_room = models.CharField(max_length=200, blank=True)
-  added_by = models.ForeignKey("auth.User")
-  added_on = models.DateTimeField(default=timezone.now)
+  edited_by = models.ForeignKey("auth.User")
+  edited_on = models.DateTimeField(default=timezone.now)
   
   def __str__(self):
       return self.asset_description
