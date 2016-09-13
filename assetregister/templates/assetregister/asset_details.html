@@ -15,7 +15,7 @@
             {% endif %}
             
             {% if asset.asset_details %}
-                <p>Details: {{ asset.asset_details|linebreaks }}</p> <br />
+                <p>Asset Details / Notes: {{ asset.asset_details|linebreaks }}</p> <br />
             {% endif %}
             
             {% if asset.asset_manufacturer %}
@@ -43,7 +43,9 @@
             {% endif %}
             
             {% if asset.requires_calibration %}
-                <p>Requires Calibration: {{ asset.requires_calibration }}</p>
+                <p>Requires Calibration: {{ asset.requires_calibration }}
+                <br />Last Calibrated: {{ asset.calibration_date_prev }}
+                <br />Next Calibration Due: {{ asset.calibration_date_prev }}</p>
             {% endif %}
             
             {% if asset.requires_safetychecks %}
@@ -87,10 +89,9 @@
             {% endif %}
             
             
-            <p>Asset Record Created On: {{ asset.added_on }}</p>
+            <p>Asset Record Created On: {{ asset.edited_on }}</p>
             
-            
-            <p>Asset Record Created By: {{ asset.added_by }}</p>
+            <p>Asset Record Created By: {{ asset.edited_by }}</p>
             
             <br /><br />
             

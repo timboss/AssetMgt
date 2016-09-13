@@ -16,6 +16,7 @@ def img_path_and_rename(instance, filename):
     # return the whole path to the file
     return os.path.join(upload_to, filename)
 
+
 def calibration_instructions_path_and_rename(instance, filename):
     upload_to = 'files/calibration_instructions'
     ext = filename.split('.')[-1]
@@ -58,10 +59,12 @@ class Asset(models.Model):
   asset_status = models.IntegerField(choices=ASSET_STATUS, default=1)
   person_responsible = models.CharField(max_length=100)
   person_responsible_email = models.EmailField()
+  requires_safety_checks = models.BooleanField()
+  requires_environmental_checks = models.BooleanField()
+  requires_planned_maintenance = models.BooleanField()
   requires_calibration = models.BooleanField()
-  requires_safetychecks = models.BooleanField()
-  requires_environmentalchecks = models.BooleanField()
-  requires_plannedmaintenance = models.BooleanField()
+  calibration_date_prev = models.DateField(null=True, blank=True)
+  calibration_date_next = models.DateField(null=True, blank=True)
   calibration_instructions = models.FileField(upload_to = calibration_instructions_path_and_rename, max_length=255, null=True, blank=True)
   asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
   purchase_order_ref = models.CharField(max_length=15, blank = True)

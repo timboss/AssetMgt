@@ -27,7 +27,6 @@ def asset_detail(request, pk):
     #     - Status number -> words translation
     return render(request, "assetregister/asset_details.html", {"asset": asset})
 
-
 def asset_new(request):
     if request.method == "POST":
         form = EditAsset(request.POST, request.FILES)
@@ -40,7 +39,6 @@ def asset_new(request):
     else:
         form = EditAsset()
     return render(request, "assetregister/asset_edit.html", {"form": form})
-
 
 def asset_edit(request, pk):
     asset = get_object_or_404(Asset, pk=pk)

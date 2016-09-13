@@ -10,21 +10,26 @@
         <div class="asset">
             
             <a href="{% url 'asset_detail' pk=asset.pk %}"><h3>{{ asset.asset_description }}</h3></a>
-            <p>Asset I.D. {{ asset.asset_id }} 
-            
-            {% if asset.asset_manufacturer %}
-                <br />Manufacturer: {{ asset.asset_manufacturer }}
-            {% endif %}
-            
-            </p>
-        
+                    
             {% if asset.asset_image %}
                 <p><a href="{% url 'asset_detail' pk=asset.pk %}"><img src="/media/{{ asset.asset_image }}" width="200px" height="100px"></a></p>
             {% endif %}
             
-            {% if asset.calibration_instructions %}
-                <p><a href="/media/{{ asset.calibration_instructions }}">Download Calibration Instructions</a></p>
-            {% endif %}    
+            <p>Asset ID: {{ asset.asset_id }} </p>
+            
+            {% if asset.asset_manufacturer %}
+                <p>Manufacturer: {{ asset.asset_manufacturer }} </p>
+            {% endif %}
+            
+            {% if asset.requires_calibration %}
+                <p>Last Calibrated: {{ asset.calibration_date_prev }}
+                <br />Next Calibration Due: {{ asset.calibration_date_next }} </p>           
+                
+                {% if asset.calibration_instructions %}
+                    <p><a href="/media/{{ asset.calibration_instructions }}">Download Calibration Instructions</a></p>
+                {% endif %}    
+                      
+            {% endif %}
             
         </div>
     {% endfor %}
