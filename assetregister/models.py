@@ -100,8 +100,8 @@ class Asset(models.Model):
         if calibration_instructions:
             # If  have an image then create new filename using primary key / asset_ID and file extension
             oldfile = self.calibration_instructions.name
-            slash = oldfile.rfind( '/' )
-            newfile = 'files/calibration_instructions/' + str( self.pk ) + '/' + oldfile[slash:]
+            lastslash = oldfile.rfind( '/' )
+            newfile = 'files/calibration_instructions/' + str( self.pk ) + oldfile[lastslash:]
     
             # Create new file and remove old one
             if newfile != oldfile:
