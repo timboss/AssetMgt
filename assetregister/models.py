@@ -5,29 +5,13 @@ from uuid import uuid4
 
 
 def img_path_and_rename(instance, filename):
-    upload_to = 'images'
-    ext = filename.split('.')[-1]
-    # get filename
-    if instance.pk:
-        filename = '{}.{}'.format(instance.pk, ext)
-    else:
-        # set filename as random string
-        filename = '{}.{}'.format(uuid4().hex, ext)
-    # return the whole path to the file
-    return os.path.join(upload_to, filename)
+    # This is no longer needed (replaced by custom save function on model), but migrations will break if it's not defined.
+    pass
 
 
 def calibration_instructions_path_and_rename(instance, filename):
-    upload_to = 'files/calibration_instructions'
-    ext = filename.split('.')[-1]
-    # get filename
-    if instance.pk:
-        filename = '{}.{}'.format(instance.pk, ext)
-    else:
-        # set filename as random string
-        filename = '{}.{}'.format(uuid4().hex, ext)
-    # return the whole path to the file
-    return os.path.join(upload_to, filename)
+    # This is no longer needed (replaced by custom save function on model), but migrations will break if it's not defined.
+    pass
 
 
 BUILDINGS = (
@@ -109,7 +93,7 @@ class Asset(models.Model):
                 self.calibration_instructions.storage.save( newfile, calibration_instructions )
                 self.calibration_instructions.name = newfile 
                 self.calibration_instructions.close()
-                self.calibration_instructions.delete( oldfile )
+                self.calibration_instructions.storage.delete( oldfile )
     
         # Save again to keep changes
         super( Asset, self ).save( *args, **kwargs )

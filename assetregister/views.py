@@ -20,6 +20,16 @@ def active_asset_list(request):
     return render(request, "assetregister/asset_list.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
         }) 
+
+def calibrated_asset_list(request):
+    asset_count = Asset.objects.count()
+    active_asset_count = Asset.objects.filter(asset_status=1).count()
+    calibrated_asset_count = Asset.objects.filter(requires_calibration=True).count()
+    active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True, asset_status=1).count()
+    assets = Asset.objects.filter(requires_calibration=True).order_by("-calibration_date_next")
+    return render(request, "assetregister/calibrated_asset_list.html", {
+        "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count, "calibrated_asset_count": calibrated_asset_count, "active_calibrated_asset_count": active_calibrated_asset_count
+        })
     
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)

@@ -1,0 +1,39 @@
+{% extends 'assetregister/base.html' %}
+
+{% block content %}
+
+    <div class="count">
+        We currently have a total of <b>{{ asset_count }}</b> assets, of which <b>{{ active_asset_count }}</b> are marked active.<br /> 
+        Of the total number of assets <b>{{ calibrated_asset_count }}</b> require calibration, of which <b>{{ active_calibrated_asset_count }}</b> are marked active.
+    </div>
+
+    {% for asset in assets %}
+        <div class="asset">
+            
+            <a href="{% url 'asset_detail' pk=asset.pk %}"><h3>{{ asset.asset_description }}</h3></a>
+                    
+            {% if asset.asset_image %}
+                <p><a href="{% url 'asset_detail' pk=asset.pk %}"><img src="/media/{{ asset.asset_image }}" width="200px" height="100px"></a></p>
+            {% endif %}
+            
+            <p>Asset ID: {{ asset.asset_id }}
+            {% if asset.asset_manufacturer %}
+                Manufacturer: {{ asset.asset_manufacturer }}</p>
+            {% endif %}
+            
+            <p>Asset Status: {{ asset.asset_status }}</p>
+            
+            {% if asset.requires_calibration %}
+                <p>Last Calibrated: {{ asset.calibration_date_prev }}
+                <br />Next Calibration Due: {{ asset.calibration_date_next }} </p>           
+                
+                {% if asset.calibration_instructions %}
+                    <p><a href="/media/{{ asset.calibration_instructions }}">Download Calibration Instructions</a></p>
+                {% endif %}    
+                      
+            {% endif %}
+            
+        </div>
+    {% endfor %}
+    
+{% endblock %}
