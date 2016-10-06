@@ -55,7 +55,7 @@ class Asset(models.Model):
     asset_details = models.TextField(blank=True)
     asset_manufacturer = models.CharField(max_length=255, blank=True)
     asset_model = models.CharField(max_length=255, blank=True)
-    asset_serial_number = models.CharField(max_length=200, blank=True)
+    asset_serial_number = models.CharField(max_length=255, blank=True)
     asset_status = models.IntegerField(choices=ASSET_STATUS, default=1)
     person_responsible = models.CharField(max_length=100)
     person_responsible_email = models.EmailField()
@@ -68,11 +68,11 @@ class Asset(models.Model):
     calibration_instructions = models.FileField(upload_to = 'files/calibration_instructions/temp', max_length=255, null=True, blank=True)
     asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     purchase_order_ref = models.CharField(max_length=15, blank = True)
-    funded_by = models.CharField(max_length=200, blank=True)
+    funded_by = models.CharField(max_length=255, blank=True)
     acquired_on = models.DateTimeField(null=True, blank=True)
     related_to_other_asset = models.ForeignKey('self', blank=True, null=True)
     asset_location_building = models.CharField(max_length=5, choices=BUILDINGS, blank=True)
-    asset_location_room = models.CharField(max_length=200, blank=True)
+    asset_location_room = models.CharField(max_length=255, blank=True)
     edited_by = models.ForeignKey("auth.User")
     edited_on = models.DateTimeField(default=timezone.now)
 
@@ -85,8 +85,8 @@ class Asset(models.Model):
         if asset_image:
             # If  have an image then create new filename using primary key / asset_ID and file extension
             oldfile = self.asset_image.name
-            dot = oldfile.rfind( '.' )
-            newfile = 'images/' + str( self.pk ) + oldfile[dot:]
+            lastdot = oldfile.rfind( '.' )
+            newfile = 'images/' + str( self.pk ) + oldfile[lastdot:]
     
             # Create new file and remove old one
             if newfile != oldfile:
@@ -109,7 +109,7 @@ class Asset(models.Model):
                 self.calibration_instructions.storage.save( newfile, calibration_instructions )
                 self.calibration_instructions.name = newfile 
                 self.calibration_instructions.close()
-                self.asset_image.storage.delete( oldfile )
+                self.calibration_instructions.delete( oldfile )
     
         # Save again to keep changes
         super( Asset, self ).save( *args, **kwargs )
