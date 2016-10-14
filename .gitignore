@@ -5,3 +5,4 @@ myvenv
 /media
 .DS_Store
 settings.py
+/mysite/whoosh_index
