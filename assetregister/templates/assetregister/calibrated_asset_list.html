@@ -2,9 +2,12 @@
 
 {% block content %}
 
+    <div class="SubHeading">
+        <p><b>Assets Requiring Calibration</b></p>
+    </div>
+
     <div class="count">
-        We currently have a total of <b>{{ asset_count }}</b> assets, of which <b>{{ active_asset_count }}</b> are marked active.<br /> 
-        Of the total number of assets <b>{{ calibrated_asset_count }}</b> require calibration, of which <b>{{ active_calibrated_asset_count }}</b> are marked active.
+        Out of the <b>{{ asset_count }}</b> total assets <b>{{ calibrated_asset_count }}</b> require calibration, of which <b>{{ active_calibrated_asset_count }}</b> are currently active.
     </div>
 
     {% for asset in assets %}

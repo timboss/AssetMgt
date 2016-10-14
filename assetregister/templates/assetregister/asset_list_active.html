@@ -1,0 +1,27 @@
+{% extends 'assetregister/base.html' %}
+
+{% block content %}
+
+    <div class="count">
+        We currently have a total of <b>{{ active_asset_count }}</b> "active" asset records.
+    </div>
+
+    {% for asset in assets %}
+        <div class="asset">
+            
+            <a href="{% url 'asset_detail' pk=asset.pk %}"><h3>{{ asset.asset_description }}</h3></a>
+                    
+            {% if asset.asset_image %}
+                <p><a href="{% url 'asset_detail' pk=asset.pk %}"><img src="/media/{{ asset.asset_image }}" width="200px" height="100px"></a></p>
+            {% endif %}
+            
+            <p>Asset ID: {{ asset.asset_id }} </p>
+            
+            {% if asset.asset_manufacturer %}
+                <p>Manufacturer: {{ asset.asset_manufacturer }} </p>
+            {% endif %}
+            
+        </div>
+    {% endfor %}
+    
+{% endblock %}

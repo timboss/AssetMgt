@@ -3,3 +3,7 @@ encoding//assetregister/migrations/0001_initial.py=utf-8
 encoding//assetregister/migrations/0002_auto_20160413_1355.py=utf-8
 encoding//assetregister/migrations/0003_auto_20160414_1015.py=utf-8
 encoding//assetregister/migrations/0004_auto_20160414_1016.py=utf-8
+encoding//myvenv/Lib/site-packages/haystack/generic_views.py=utf-8
+encoding//myvenv/Lib/site-packages/haystack/management/commands/rebuild_index.py=utf-8
+encoding//myvenv/Lib/site-packages/haystack/management/commands/update_index.py=utf-8
+encoding//myvenv/Lib/site-packages/haystack/views.py=utf-8

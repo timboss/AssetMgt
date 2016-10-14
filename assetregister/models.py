@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 import os
 from uuid import uuid4
+from haystack.management.commands import update_index, rebuild_index
 
 
 def img_path_and_rename(instance, filename):
@@ -71,7 +72,6 @@ class Asset(models.Model):
             oldfile = self.asset_image.name
             lastdot = oldfile.rfind( '.' )
             newfile = 'images/' + str( self.pk ) + oldfile[lastdot:]
-    
             # Create new file and remove old one
             if newfile != oldfile:
                 self.asset_image.storage.delete( newfile )
@@ -82,11 +82,10 @@ class Asset(models.Model):
     
         calibration_instructions = self.calibration_instructions
         if calibration_instructions:
-            # If  have an image then create new filename using primary key / asset_ID and file extension
+            # If  have a file then create new filepath (keep original filename) using primary key / asset_ID
             oldfile = self.calibration_instructions.name
             lastslash = oldfile.rfind( '/' )
             newfile = 'files/calibration_instructions/' + str( self.pk ) + oldfile[lastslash:]
-    
             # Create new file and remove old one
             if newfile != oldfile:
                 self.calibration_instructions.storage.delete( newfile )
@@ -95,8 +94,15 @@ class Asset(models.Model):
                 self.calibration_instructions.close()
                 self.calibration_instructions.storage.delete( oldfile )
     
+        # Attempt to update Whoosh index when new asset added. Still need to find somewhere to remove archived assets using:
+        # update_index.Command().handle(remove=True)
+        update_index.Command().handle(interactive=False)
+    
         # Save again to keep changes
         super( Asset, self ).save( *args, **kwargs )
+        
+    def get_absolute_url(self):
+        return "/asset/%i/" % self.asset_id
   
     def __str__(self):
         return self.asset_description
