@@ -15,15 +15,26 @@ def calibration_instructions_path_and_rename(instance, filename):
     pass
 
 
+#BUILDINGS = (
+#    ("FOF", "Rolls-Royce Factory of the Future (8306)"),
+#    ("2050", "Factory 2050 (8324)"),
+#    ("DPTC", "Design, Prototyping & Testing Centre (8304)"),
+#    ("NAMRC", "Nuclear AMRC (8307)"),
+#    ("KTC", "Knowledge Transfer Centre (8313)"),
+#    ("TC", "AMRC Training Centre (8320)"),
+#    ("CTI", "Castings Technology International 1 (Waverly 1) (8322)"),
+#    ("WAV2", "Castings Foundry of the Future (Waverly 2) (8323)"),
+#)
+
 BUILDINGS = (
-    ("FOF", "Rolls-Royce Factory of the Future (8306)"),
-    ("2050", "Factory 2050 (8324)"),
-    ("DPTC", "Design, Prototyping & Testing Centre (8304)"),
-    ("NAMRC", "Nuclear AMRC (8307)"),
-    ("KTC", "Knowledge Transfer Centre (8313)"),
-    ("TC", "AMRC Training Centre (8320)"),
-    ("CTI", "Castings Technology International 1 (Waverly 1) (8322)"),
-    ("WAV2", "Castings Foundry of the Future (Waverly 2) (8323)"),
+    ("Rolls-Royce Factory of the Future (8306)", "Rolls-Royce Factory of the Future (8306)"),
+    ("Factory 2050 (8324)", "Factory 2050 (8324)"),
+    ("Design, Prototyping & Testing Centre (8304)", "Design, Prototyping & Testing Centre (8304)"),
+    ("Nuclear AMRC (8307)", "Nuclear AMRC (8307)"),
+    ("Knowledge Transfer Centre (8313)", "Knowledge Transfer Centre (8313)"),
+    ("AMRC Training Centre (8320)", "AMRC Training Centre (8320)"),
+    ("Castings Technology International 1 (Waverly 1) (8322)", "Castings Technology International 1 (Waverly 1) (8322)"),
+    ("Castings Foundry of the Future (Waverly 2) (8323)", "Castings Foundry of the Future (Waverly 2) (8323)"),
 )
 
 ASSET_STATUS = (
@@ -56,7 +67,7 @@ class Asset(models.Model):
     funded_by = models.CharField(max_length=255, blank=True)
     acquired_on = models.DateTimeField(null=True, blank=True)
     related_to_other_asset = models.ForeignKey('self', blank=True, null=True)
-    asset_location_building = models.CharField(max_length=5, choices=BUILDINGS, blank=True)
+    asset_location_building = models.CharField(max_length=128, choices=BUILDINGS, blank=True)
     asset_location_room = models.CharField(max_length=255, blank=True)
     edited_by = models.ForeignKey("auth.User")
     edited_on = models.DateTimeField(default=timezone.now)
@@ -94,9 +105,8 @@ class Asset(models.Model):
                 self.calibration_instructions.close()
                 self.calibration_instructions.storage.delete( oldfile )
     
-        # Attempt to update Whoosh index when new asset added. Still need to find somewhere to remove archived assets using:
-        # update_index.Command().handle(remove=True)
-        update_index.Command().handle(interactive=False)
+        # Attempt to update Whoosh index when new asset added. 
+        update_index.Command().handle(interactive=False, remove=True)
     
         # Save again to keep changes
         super( Asset, self ).save( *args, **kwargs )

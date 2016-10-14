@@ -48,16 +48,16 @@
                 <br />Next Calibration Due: {{ asset.calibration_date_prev }}</p>
             {% endif %}
             
-            {% if asset.requires_safetychecks %}
-                <p>Requires Safety Checks: {{ asset.requires_safetychecks }}</p>
+            {% if asset.requires_safety_checks %}
+                <p>Requires Safety Checks: {{ asset.requires_safety_checks }}</p>
             {% endif %}
             
-            {% if asset.requires_environmentalchecks %}
-                <p>Requires Environmental Checks: {{ asset.requires_environmentalchecks }}</p>
+            {% if asset.requires_environmental_checks %}
+                <p>Requires Environmental Checks: {{ asset.requires_environmental_checks }}</p>
             {% endif %}
             
-            {% if asset.requires_plannedmaintenance %}
-                <p>Requires Planned Preventative Maintenance: {{ asset.requires_plannedmaintenance }}</p>
+            {% if asset.requires_planned_maintenance %}
+                <p>Requires Planned Preventative Maintenance: {{ asset.requires_planned_maintenance }}</p>
             {% endif %}
             
             {% if asset.asset_value %}
@@ -80,18 +80,18 @@
                 <p>'Child' of: {{ asset.related_to_other_asset }}</p>
             {% endif %}
             
-            {% if asset.location_building %}
-                <p>Location (Building): {{ asset.location_building }}</p>
+            {% if asset.asset_location_building %}
+                <p>Location (Building): {{ asset.asset_location_building }}</p>
             {% endif %}
             
-            {% if asset.location_room %}
-                <p>Location (Room): {{ asset.location_room }}</p>
+            {% if asset.asset_location_room %}
+                <p>Location (Room): {{ asset.asset_location_room }}</p>
             {% endif %}
             
             
-            <p>Asset Record Created On: {{ asset.edited_on }}</p>
+            <p>Asset Record Last Edited On: {{ asset.edited_on }}</p>
             
-            <p>Asset Record Created By: {{ asset.edited_by }}</p>
+            <p>Asset Last Edited By: {{ asset.edited_by }}</p>
             
             <br /><br />
             

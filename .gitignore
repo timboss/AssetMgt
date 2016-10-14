@@ -6,3 +6,6 @@ myvenv
 .DS_Store
 settings.py
 /mysite/whoosh_index
+org.eclipse.core.resources.prefs
+.project
+.pydevproject
