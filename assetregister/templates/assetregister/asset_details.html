@@ -39,7 +39,7 @@
             {% endif %}
             
             {% if asset.person_responsible_email %}
-                <p>Person Responsible Email: {{ asset.person_responsible_email }}</p>
+                <p>Person Responsible Email: <a href="mailto:{{ asset.person_responsible_email }}">{{ asset.person_responsible_email }}</a></p>
             {% endif %}
             
             {% if asset.requires_calibration %}

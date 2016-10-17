@@ -20,9 +20,15 @@
 
             {% for result in page.object_list %}
                 <p>
-                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a>
+                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a><br />
                     {% if result.object.asset_image %}
-                        <br /><a href="{{ result.object.get_absolute_url }}"><img src="/media/{{ result.object.asset_image }}" width="200px" height="100px"></a>
+                        <a href="{{ result.object.get_absolute_url }}"><img src="/media/{{ result.object.asset_image }}" width="200px" height="100px"></a><br />
+                    {% endif %}
+                    {% if result.object.asset_manufacturer %}
+                        Manufacturer: {{ result.object.asset_manufacturer }} <br />
+                    {% endif %}
+                    {%if result.object.asset_location_building %}
+                        Location: {{ result.object.asset_location_building }} <br />
                     {% endif %}
                 </p> </br >
             {% empty %}

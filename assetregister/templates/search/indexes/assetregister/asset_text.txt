@@ -1,11 +1,6 @@
 {{ object.asset_description }}
 {{ object.asset_details }}
-{{ object.asset_manufacturer }}
-{{ object.asset_model }}
 {{ object.asset_serial_number }}
-{{ object.person_responsible }}
-{{ object.person_responsible_email }}
-{{ object.asset_location_building}}
 {{ object.asset_location_room }}
 {{ object.funded_by }}
 {{ object.purchase_order_ref }}
