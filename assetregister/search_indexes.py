@@ -3,7 +3,7 @@ from .models import Asset
 
 
 class AssetIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.EdgeNgramField(document=True, use_template=True)
+    text = indexes.NgramField(document=True, use_template=True)
     #'text' "doc & template = true" uses asset_text.txt data template
     #asset_description = indexes.CharField(model_attr='asset_description')
     manufacturer = indexes.CharField(model_attr='asset_manufacturer')
