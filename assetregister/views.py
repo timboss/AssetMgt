@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Asset
-from .forms import EditAsset
+from .forms import EditAsset, CalibrationSearch
+from haystack.generic_views import SearchView
+from haystack.query import SearchQuerySet
 
 # Create your views here.
 
@@ -63,3 +65,13 @@ def asset_edit(request, pk):
     else:
         form = EditAsset(instance=asset)
     return render(request, "assetregister/asset_edit.html", {"form": form})
+
+class calibration_search(SearchView):
+    template_name = 'search/search.html'
+    form_class = CalibrationSearch
+    queryset = SearchQuerySet().all().filter(requires_calibration=True)
+#    return render(request, template, {'form' : form_class})
+    
+    def get_queryset(self):
+        queryset = super(calibration_search, self).get_queryset()
+        return queryset

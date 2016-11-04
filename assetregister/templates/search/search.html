@@ -17,7 +17,12 @@
 
         {% if query %}
             <h3>Results</h3>
-
+            
+            {% if page.paginator.count %}
+                Showing {{ page.object_list|length }} of {{ page.paginator.count }} Results on Page {{ page.number }} of {{ page.paginator.num_pages }}
+                <br /><br />
+            {% endif %}
+            
             {% for result in page.object_list %}
                 <p>
                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a><br />

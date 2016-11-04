@@ -12,6 +12,12 @@
         <div class="page-header">
             <a href="{% url 'asset_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
             <h1><a href="/">AMRC Asset Management System</a></h1>
+            <div align="right">
+                <form action="/search/?q=">
+                <input type="text" name="q" id="id_q" size="33">
+                <button type="submit">Search</button>
+                </form>
+            </div>
         </div>
 
 

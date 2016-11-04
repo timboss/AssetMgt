@@ -15,17 +15,6 @@ def calibration_instructions_path_and_rename(instance, filename):
     pass
 
 
-#BUILDINGS = (
-#    ("FOF", "Rolls-Royce Factory of the Future (8306)"),
-#    ("2050", "Factory 2050 (8324)"),
-#    ("DPTC", "Design, Prototyping & Testing Centre (8304)"),
-#    ("NAMRC", "Nuclear AMRC (8307)"),
-#    ("KTC", "Knowledge Transfer Centre (8313)"),
-#    ("TC", "AMRC Training Centre (8320)"),
-#    ("CTI", "Castings Technology International 1 (Waverly 1) (8322)"),
-#    ("WAV2", "Castings Foundry of the Future (Waverly 2) (8323)"),
-#)
-
 BUILDINGS = (
     ("Rolls-Royce Factory of the Future (8306)", "Rolls-Royce Factory of the Future (8306)"),
     ("Factory 2050 (8324)", "Factory 2050 (8324)"),
