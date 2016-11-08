@@ -1,6 +1,7 @@
 from django import forms
 from .models import Asset
 from haystack.forms import SearchForm
+from haystack.query import SearchQuerySet
 
 
 class EditAsset(forms.ModelForm):  
@@ -20,16 +21,21 @@ class CalibrationSearch(SearchForm):
     
     def search(self):
         #First we need to store SearchQuerySet recieved after / from any other processing that's going on
-        sqs = super(CalibrationSearch, self).search()
+        #sqs = super(CalibrationSearch, self).search() <- This looks for a field called 'content'
+        
+        sqs = SearchQuerySet().all()
+        searchqueryset = sqs
         
         if not self.is_valid():
-            return self.no_query_found()
+        #    return self.no_query_found()
+            return self.SearchQuerySet().all()
         
-        #check to see if any date filters used, if so apply filter
-        if self.cleaned_data['calibration_due_before']:
-            sqs = sqs.filter(calibration_date_next__lte=self.cleaned_data['calibration_due_before'])
+        if self.is_valid():
+            #check to see if any date filters used, if so apply filter
+            if self.cleaned_data['calibration_due_before']:
+                sqs = sqs.filter(calibration_date_next__lte=self.cleaned_data['calibration_due_before'])
             
-        if self.cleaned_data['calibration_due_after']:
-            sqs = sqs.filter(calibration_date_next__gte=self.cleaned_data['calibration_due_after'])
+            if self.cleaned_data['calibration_due_after']:
+                sqs = sqs.filter(calibration_date_next__gte=self.cleaned_data['calibration_due_after'])
         
-        return sqs
+            return sqs

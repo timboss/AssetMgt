@@ -8,9 +8,10 @@ urlpatterns = [
     url(r'^calibration/$', views.calibrated_asset_list, name="calibrated_asset_list"),
     url(r'^asset/(?P<pk>\d+)/$', views.asset_detail, name="asset_detail"),
     url(r'^asset/new/$', views.asset_new, name="asset_new"),
-    url(r'^asset/(?P<pk>\d+)/edit/$', views.asset_edit, name='asset_edit'),
-    url(r'^search/calibration/', views.calibration_search.as_view(), name='calibration_search'),
-    url(r'^search/', include('haystack.urls')),
+    url(r'^asset/(?P<pk>\d+)/edit/$', views.asset_edit, name="asset_edit"),
+    url(r'^asset/(?P<pk>\d+)/remove/$', views.asset_remove, name="asset_remove"),
+    url(r'^search/calibration/', views.calibration_search.as_view(), name="calibration_search"),
+    url(r'^search/', include("haystack.urls")),
 ]
 
 if settings.DEBUG:

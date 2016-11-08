@@ -6,9 +6,11 @@ class AssetIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.NgramField(document=True, use_template=True)
     #'text' "doc & template = true" uses asset_text.txt data template
     #asset_description = indexes.CharField(model_attr='asset_description')
-    manufacturer = indexes.CharField(model_attr='asset_manufacturer')
+    manufacturer = indexes.CharField(model_attr='asset_manufacturer', null=True)
+    requires_calibration = indexes.BooleanField(model_attr='requires_calibration')
+    calibration_date_next = indexes.DateField(model_attr='calibration_date_next', null=True)
     #model = indexes.CharField(model_attr='asset_model')
-    #serial_no = indexes.CharField(model_attr='asset_serial_number')
+    #serial_no = indexes.CharField(model_attr='asset_serial_number'
     #person_responsible = indexes.CharField(model_attr='person_responsible')
     #person_responsible_email = indexes.CharField(model_attr='person_responsible_email')
     #purchase_order_ref = indexes.CharField(model_attr='purchase_order_ref')

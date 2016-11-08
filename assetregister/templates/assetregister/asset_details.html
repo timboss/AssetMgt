@@ -8,6 +8,8 @@
             
             {% if user.is_authenticated %}
                 <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a class="btn btn-default" href="{% url 'asset_remove' pk=asset.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+                <br /><br />
             {% endif %}
             
             <p>Asset I.D. {{ asset.asset_id }}</p>
@@ -90,14 +92,12 @@
                 <p>Location (Room): {{ asset.asset_location_room }}</p>
             {% endif %}
             
-            
             <p>Asset Record Last Edited On: {{ asset.edited_on }}</p>
             
             <p>Asset Last Edited By: {{ asset.edited_by }}</p>
             
-            <br /><br />
-            
             {% if asset.calibration_instructions %}
+                <br /><br />
                 <p><a href="/media/{{ asset.calibration_instructions }}">Download Calibration Instructions</a></p>
             {% endif %}    
             
