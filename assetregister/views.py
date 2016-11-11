@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.generic.edit import DeleteView
+from django.core.urlresolvers import reverse_lazy
 from .models import Asset
 from .forms import EditAsset, CalibrationSearch
 from haystack.generic_views import SearchView
@@ -69,11 +72,18 @@ def asset_edit(request, pk):
         form = EditAsset(instance=asset)
     return render(request, "assetregister/asset_edit.html", {"form": form})
 
-@login_required
-def asset_remove(request, pk):
-    asset = get_object_or_404(Asset, pk=pk)
-    asset.delete()
-    return redirect("asset_list")
+#Depreciated this "quick delete" in favour of using Django's built in generic DeleteView class view 
+#to require manually confirming deletion
+#@login_required
+#def asset_remove(request, pk):
+#    asset = get_object_or_404(Asset, pk=pk)
+#    asset.delete()
+#    return redirect("asset_list")
+
+@method_decorator(login_required, name="dispatch")
+class asset_confirm_delete(DeleteView):
+    model = Asset
+    success_url = reverse_lazy("asset_list")
 
 class calibration_search(SearchView):
     template_name = 'search/search.html'
