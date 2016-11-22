@@ -98,8 +98,12 @@
             
             {% if asset.calibration_instructions %}
                 <br /><br />
-                <p><a href="/media/{{ asset.calibration_instructions }}">Download Calibration Instructions</a></p>
+                <p><a href="{{ asset.calibration_instructions }}" target="_blank">Download Calibration Instructions</a></p>
             {% endif %}    
+            
+            {% if asset.maintenance_instructions %}
+                <p><a href="{{ asset.maintenance_instructions }}" target="_blank">Download Maintenance Instructions</a></p>
+            {% endif %}
             
         </div>
 

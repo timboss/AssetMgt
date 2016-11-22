@@ -72,8 +72,7 @@ def asset_edit(request, pk):
         form = EditAsset(instance=asset)
     return render(request, "assetregister/asset_edit.html", {"form": form})
 
-#Depreciated this "quick delete" in favour of using Django's built in generic DeleteView class view 
-#to require manually confirming deletion
+#Depreciated this "quick delete" in favour of using Django's built in generic DeleteView class view to require manually confirming deletion
 #@login_required
 #def asset_remove(request, pk):
 #    asset = get_object_or_404(Asset, pk=pk)

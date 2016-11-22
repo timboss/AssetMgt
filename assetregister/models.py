@@ -44,13 +44,15 @@ class Asset(models.Model):
     asset_status = models.IntegerField(choices=ASSET_STATUS, default=1)
     person_responsible = models.CharField(max_length=100)
     person_responsible_email = models.EmailField()
+    requires_insurance = models.BooleanField()
     requires_safety_checks = models.BooleanField()
     requires_environmental_checks = models.BooleanField()
     requires_planned_maintenance = models.BooleanField()
+    maintenance_instructions = models.URLField(max_length=255, null=True, blank=True)
     requires_calibration = models.BooleanField()
     calibration_date_prev = models.DateField(null=True, blank=True)
     calibration_date_next = models.DateField(null=True, blank=True)
-    calibration_instructions = models.FileField(upload_to = 'files/calibration_instructions/temp', max_length=255, null=True, blank=True)
+    calibration_instructions = models.URLField(max_length=255, null=True, blank=True)
     asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     purchase_order_ref = models.CharField(max_length=15, blank = True)
     funded_by = models.CharField(max_length=255, blank=True)
@@ -79,20 +81,22 @@ class Asset(models.Model):
                 self.asset_image.name = newfile 
                 self.asset_image.close()
                 self.asset_image.storage.delete( oldfile )
-    
-        calibration_instructions = self.calibration_instructions
-        if calibration_instructions:
-            # If  have a file then create new filepath (keep original filename) using primary key / asset_ID
-            oldfile = self.calibration_instructions.name
-            lastslash = oldfile.rfind( '/' )
-            newfile = 'files/calibration_instructions/' + str( self.pk ) + oldfile[lastslash:]
-            # Create new file and remove old one
-            if newfile != oldfile:
-                self.calibration_instructions.storage.delete( newfile )
-                self.calibration_instructions.storage.save( newfile, calibration_instructions )
-                self.calibration_instructions.name = newfile 
-                self.calibration_instructions.close()
-                self.calibration_instructions.storage.delete( oldfile )
+        
+        # - CALIBRATION INSTRUCTIONS WILL NOW BE HOSTED ON WINDCHILL -
+        # - NO LONGER NEED TO STORE AND HOST THE FILES FROM WITHIN THIS SYSTEM, BUT KEEPING CODE FOR POTENTIAL FUTURE REUSE -
+        #calibration_instructions = self.calibration_instructions
+        #if calibration_instructions:
+        #    # If  have a file then create new filepath (keep original filename) using primary key / asset_ID
+        #    oldfile = self.calibration_instructions.name
+        #    lastslash = oldfile.rfind( '/' )
+        #    newfile = 'files/calibration_instructions/' + str( self.pk ) + oldfile[lastslash:]
+        #    # Create new file and remove old one
+        #    if newfile != oldfile:
+        #        self.calibration_instructions.storage.delete( newfile )
+        #        self.calibration_instructions.storage.save( newfile, calibration_instructions )
+        #        self.calibration_instructions.name = newfile 
+        #        self.calibration_instructions.close()
+        #        self.calibration_instructions.storage.delete( oldfile )
     
         # Attempt to update Whoosh index when new asset added. 
         update_index.Command().handle(interactive=False, remove=True)
