@@ -65,7 +65,7 @@ class Asset(models.Model):
     edited_on = models.DateTimeField(default=timezone.now)
 
     def save( self, *args, **kwargs ):
-        # Custom save function to generate an asset ID / PK before the files are renamed
+        # Custom save function to generate an asset ID / PK needed to rename files, move and rename image upload and create thumbnail
         
         # Call save first, to create a primary key
         super( Asset, self ).save( *args, **kwargs )
@@ -73,40 +73,38 @@ class Asset(models.Model):
         asset_image = self.asset_image
         if asset_image:
             
-            #import things needed to make thumbnail
+            # If have uploaded image then import things needed to make a thumbnail
             from django.core.files.base import ContentFile
             from django.core.files.storage import default_storage as storage
             from io import BytesIO
             from PIL import Image
             
-            # If  have an image then create new filename using primary key / asset_ID and file extension
+            # Create image filename using pk / asset_ID and original file extension
             oldfile = self.asset_image.name
             lastdot = oldfile.rfind(".")
             newfile = "images/" + str( self.pk ) + oldfile[lastdot:]
             
-            oldthumbnail = self.asset_image_thumbnail
-            if oldthumbnail:
-                # Delte old thumb
-                oldthumbname = self.asset_image_thumbnail.name
-                oldthumbextension = oldthumbname.rfind(".")
-                oldthumb = "images/" + str( self.pk ) + "_thumb" + oldfile[oldthumbextension:]
-                self.asset_image_thumbnail.storage.delete( oldthumbname )
-            
-            # Create new file and remove old one if path (file extension!) is now different
+            # Create image with new filename and remove old one if path (file extension!) is now different
             if newfile != oldfile:
                 self.asset_image.storage.delete( newfile )
                 self.asset_image.storage.save( newfile, asset_image )
                 self.asset_image.name = newfile 
                 self.asset_image.close()
                 self.asset_image.storage.delete( oldfile )
+                
+            oldthumbnail = self.asset_image_thumbnail
+            if oldthumbnail:
+                # Delte old thumb
+                oldthumbname = self.asset_image_thumbnail.name
+                self.asset_image_thumbnail.storage.delete( oldthumbname )
                             
-            #Save changes    
+            # Save changes    
             super( Asset, self ).save( *args, **kwargs )
             
-            #BEGIN CREATE THUMBNAIL 
+            # BEGIN CREATE THUMBNAIL 
             THUMB_SIZE = (300, 200)
             
-            #Open image to thumbnail
+            # Open image to thumbnail
             fh = storage.open(self.asset_image.name)
             image = Image.open(fh)
         
@@ -124,15 +122,16 @@ class Asset(models.Model):
             elif thumb_extension == '.png':
                 FTYPE = 'PNG'
             else:
-                raise Exception("Error creating thumnail. Is image JPG/JPEG/GIF/PNG?")
+                raise Exception("Error creating thumnail. Image must be a .jpg, .jpeg, .gif or .png!")
 
             temp_thumb = BytesIO()
-            image.save(temp_thumb, FTYPE)
+            image.save(temp_thumb, FTYPE, quality=100)
             temp_thumb.seek(0)
             self.asset_image_thumbnail.save(thumb_filename, ContentFile(temp_thumb.read()), save=False)
             temp_thumb.close()
     
         # Attempt to update Whoosh index when new asset added. 
+        # Need to move this to an async message queue ASAP, currently takes 10-15 seconds to reindex ~15 assets!
         update_index.Command().handle(interactive=False, remove=True)
     
         # Save again to keep changes

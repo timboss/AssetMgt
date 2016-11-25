@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <h2>Search</h2>
+    <h2>Search All Assets</h2>
 
     <form method="get" action=".">
         <table>
@@ -14,7 +14,8 @@
                 </td>
             </tr>
         </table>
-
+        <br /><br />
+        
         {% if query %}
             <h3>Results</h3>
             
@@ -39,6 +40,12 @@
             {% empty %}
                 <p>No results found.</p>
             {% endfor %}
+
+            {% if page.paginator.count %}
+                <br /><br />
+                Showing {{ page.object_list|length }} of {{ page.paginator.count }} Results on Page {{ page.number }} of {{ page.paginator.num_pages }}
+                <br /><br />
+            {% endif %}
 
             {% if page.has_previous or page.has_next %}
                 <div>
