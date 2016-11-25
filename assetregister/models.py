@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 import os
-from uuid import uuid4
 from haystack.management.commands import update_index, rebuild_index
 
 
@@ -31,12 +30,14 @@ ASSET_STATUS = (
     (2, "Inactive (Being Comissioned / Repaired)"),
     (3, "Quarantined"),
     (4, "Decomissioned / Withdrawn"),
+    (5, "Archived"),
 )
 
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
     asset_description = models.CharField(max_length=200)
-    asset_image = models.ImageField(upload_to = 'images/temp', max_length=255, null=True, blank=True)
+    asset_image = models.ImageField(upload_to = "images/temp", max_length=255, null=True, blank=True)
+    asset_image_thumbnail = models.ImageField(upload_to = "images", editable=False, null=True)
     asset_details = models.TextField(blank=True)
     asset_manufacturer = models.CharField(max_length=255, blank=True)
     asset_model = models.CharField(max_length=255, blank=True)
@@ -57,52 +58,86 @@ class Asset(models.Model):
     purchase_order_ref = models.CharField(max_length=15, blank = True)
     funded_by = models.CharField(max_length=255, blank=True)
     acquired_on = models.DateTimeField(null=True, blank=True)
-    related_to_other_asset = models.ForeignKey('self', blank=True, null=True)
+    related_to_other_asset = models.ForeignKey("self", blank=True, null=True)
     asset_location_building = models.CharField(max_length=128, choices=BUILDINGS, blank=True)
     asset_location_room = models.CharField(max_length=255, blank=True)
     edited_by = models.ForeignKey("auth.User")
     edited_on = models.DateTimeField(default=timezone.now)
 
     def save( self, *args, **kwargs ):
-        # Need custom save function to generate an asset ID / PK before the files are renamed
+        # Custom save function to generate an asset ID / PK before the files are renamed
+        
         # Call save first, to create a primary key
         super( Asset, self ).save( *args, **kwargs )
     
         asset_image = self.asset_image
         if asset_image:
+            
+            #import things needed to make thumbnail
+            from django.core.files.base import ContentFile
+            from django.core.files.storage import default_storage as storage
+            from io import BytesIO
+            from PIL import Image
+            
             # If  have an image then create new filename using primary key / asset_ID and file extension
             oldfile = self.asset_image.name
-            lastdot = oldfile.rfind( '.' )
-            newfile = 'images/' + str( self.pk ) + oldfile[lastdot:]
-            # Create new file and remove old one
+            lastdot = oldfile.rfind(".")
+            newfile = "images/" + str( self.pk ) + oldfile[lastdot:]
+            
+            oldthumbnail = self.asset_image_thumbnail
+            if oldthumbnail:
+                # Delte old thumb
+                oldthumbname = self.asset_image_thumbnail.name
+                oldthumbextension = oldthumbname.rfind(".")
+                oldthumb = "images/" + str( self.pk ) + "_thumb" + oldfile[oldthumbextension:]
+                self.asset_image_thumbnail.storage.delete( oldthumbname )
+            
+            # Create new file and remove old one if path (file extension!) is now different
             if newfile != oldfile:
                 self.asset_image.storage.delete( newfile )
                 self.asset_image.storage.save( newfile, asset_image )
                 self.asset_image.name = newfile 
                 self.asset_image.close()
                 self.asset_image.storage.delete( oldfile )
+                            
+            #Save changes    
+            super( Asset, self ).save( *args, **kwargs )
+            
+            #BEGIN CREATE THUMBNAIL 
+            THUMB_SIZE = (300, 200)
+            
+            #Open image to thumbnail
+            fh = storage.open(self.asset_image.name)
+            image = Image.open(fh)
         
-        # - CALIBRATION INSTRUCTIONS WILL NOW BE HOSTED ON WINDCHILL -
-        # - NO LONGER NEED TO STORE AND HOST THE FILES FROM WITHIN THIS SYSTEM, BUT KEEPING CODE FOR POTENTIAL FUTURE REUSE -
-        #calibration_instructions = self.calibration_instructions
-        #if calibration_instructions:
-        #    # If  have a file then create new filepath (keep original filename) using primary key / asset_ID
-        #    oldfile = self.calibration_instructions.name
-        #    lastslash = oldfile.rfind( '/' )
-        #    newfile = 'files/calibration_instructions/' + str( self.pk ) + oldfile[lastslash:]
-        #    # Create new file and remove old one
-        #    if newfile != oldfile:
-        #        self.calibration_instructions.storage.delete( newfile )
-        #        self.calibration_instructions.storage.save( newfile, calibration_instructions )
-        #        self.calibration_instructions.name = newfile 
-        #        self.calibration_instructions.close()
-        #        self.calibration_instructions.storage.delete( oldfile )
+            image.thumbnail(THUMB_SIZE, Image.ANTIALIAS)
+            fh.close()
+        
+            thumb_name, thumb_extension = os.path.splitext(self.asset_image.name)
+            thumb_extension = thumb_extension.lower()
+            thumb_filename = thumb_name + '_thumb' + thumb_extension
+
+            if thumb_extension in ['.jpg', '.jpeg']:
+                FTYPE = 'JPEG'
+            elif thumb_extension == '.gif':
+                FTYPE = 'GIF'
+            elif thumb_extension == '.png':
+                FTYPE = 'PNG'
+            else:
+                raise Exception("Error creating thumnail. Is image JPG/JPEG/GIF/PNG?")
+
+            temp_thumb = BytesIO()
+            image.save(temp_thumb, FTYPE)
+            temp_thumb.seek(0)
+            self.asset_image_thumbnail.save(thumb_filename, ContentFile(temp_thumb.read()), save=False)
+            temp_thumb.close()
     
         # Attempt to update Whoosh index when new asset added. 
         update_index.Command().handle(interactive=False, remove=True)
     
         # Save again to keep changes
         super( Asset, self ).save( *args, **kwargs )
+               
         
     def get_absolute_url(self):
         return "/asset/%i/" % self.asset_id

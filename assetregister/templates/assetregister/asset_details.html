@@ -14,8 +14,8 @@
             
             <p>Asset I.D. {{ asset.asset_id }}</p>
 
-            {% if asset.asset_image %}
-                <p><a href="/media/{{ asset.asset_image }}"><img src="/media/{{ asset.asset_image }}" width="50%" height="25%"></a></p>
+            {% if asset.asset_image_thumbnail%}
+                <p><a href="/media/{{ asset.asset_image }}" target="_blank"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
             {% endif %}
             
             {% if asset.asset_details %}

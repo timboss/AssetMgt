@@ -26,8 +26,8 @@
             {% for result in page.object_list %}
                 <p>
                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a><br />
-                    {% if result.object.asset_image %}
-                        <a href="{{ result.object.get_absolute_url }}"><img src="/media/{{ result.object.asset_image }}" width="200px" height="100px"></a><br />
+                    {% if result.object.asset_image_thumbnail %}
+                        <a href="{{ result.object.get_absolute_url }}"><img src="/media/{{ result.object.asset_image_thumbnail }}"></a><br />
                     {% endif %}
                     {% if result.object.asset_manufacturer %}
                         Manufacturer: {{ result.object.asset_manufacturer }} <br />
