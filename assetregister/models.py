@@ -70,21 +70,22 @@ class Asset(models.Model):
         # Call save first, to create a primary key
         super( Asset, self ).save( *args, **kwargs )
     
+        # Check if have any asset image (newly uploaded, or kept from previous upload)
         asset_image = self.asset_image
         if asset_image:
             
-            # If have uploaded image then import things needed to make a thumbnail
+            # If have an uploaded image then import the things needed to make watermark & thumbnail
             from django.core.files.base import ContentFile
             from django.core.files.storage import default_storage as storage
             from io import BytesIO
-            from PIL import Image
+            from PIL import Image, ImageEnhance
             
             # Create image filename using pk / asset_ID and original file extension
             oldfile = self.asset_image.name
             lastdot = oldfile.rfind(".")
             newfile = "images/" + str( self.pk ) + oldfile[lastdot:]
             
-            # Create image with new filename and remove old one if path (file extension!) is now different
+            # Create image with new filename, remove old image if "filepath" (really only file extension!) is now different
             if newfile != oldfile:
                 self.asset_image.storage.delete( newfile )
                 self.asset_image.storage.save( newfile, asset_image )
@@ -101,7 +102,50 @@ class Asset(models.Model):
             # Save changes    
             super( Asset, self ).save( *args, **kwargs )
             
-            # BEGIN CREATE THUMBNAIL 
+            
+            # -- WATERMARK --
+            assetimage = storage.open(self.asset_image.name)
+            logoimage = storage.open("images/watermarklogo.png")
+            img = Image.open(assetimage).convert("RGBA")
+            logo = Image.open(logoimage).convert("RGBA")
+            
+            img_w = img.size[0]
+            img_h = img.size[1]
+
+            # resize logo to be quarter of asset_image width, but same aspect ratio!        
+            logo_aspect_ratio = float(logo.size[0] / logo.size[1])
+            
+            # Resize logo to be half (if image width <= 300) else 5th of image's shortest side
+            if img_w > img_h:
+                if img_w <= 300: 
+                    logo_w = int(img_w / 2) 
+                else:  
+                    logo_w = int(img_w / 5)
+                logo_h = int(logo_w / logo_aspect_ratio)
+            else:
+                if img_h <= 300: 
+                    logo_h = int(img_h / 2) 
+                else:  
+                    logo_h = int(img_h / 5)
+                logo_w = int(logo_h * logo_aspect_ratio)
+        
+            logo = logo.resize((logo_w, logo_h), Image.ANTIALIAS)
+        
+            # position the watermark centrally
+            offset_x = ((img.size[0]) / 2) - ((logo.size[0]) / 2)
+            offset_y = ((img.size[1]) / 2) - ((logo.size[1]) / 2)
+        
+            watermark = Image.new("RGBA", img.size, (255, 255, 255, 1))
+            watermark.paste(logo, (int(offset_x), int(offset_y)), mask=logo.split()[3])
+        
+            alpha = watermark.split()[3]
+            #alpha = ImageEnhance.Brightness(alpha) #.enhance(opacity) # NameError "opacity" not defined
+        
+            watermark.putalpha(alpha)
+            Image.composite(watermark, img, watermark).save("media/" + self.asset_image.name, "JPEG")
+            
+            
+            # -- THUMBNAIL --
             THUMB_SIZE = (300, 200)
             
             # Open image to thumbnail
@@ -113,14 +157,14 @@ class Asset(models.Model):
         
             thumb_name, thumb_extension = os.path.splitext(self.asset_image.name)
             thumb_extension = thumb_extension.lower()
-            thumb_filename = thumb_name + '_thumb' + thumb_extension
+            thumb_filename = thumb_name + "_thumb" + thumb_extension
 
-            if thumb_extension in ['.jpg', '.jpeg']:
-                FTYPE = 'JPEG'
-            elif thumb_extension == '.gif':
-                FTYPE = 'GIF'
-            elif thumb_extension == '.png':
-                FTYPE = 'PNG'
+            if thumb_extension in [".jpg", ".jpeg"]:
+                FTYPE = "JPEG"
+            elif thumb_extension == ".gif":
+                FTYPE = "GIF"
+            elif thumb_extension == ".png":
+                FTYPE = "PNG"
             else:
                 raise Exception("Error creating thumnail. Image must be a .jpg, .jpeg, .gif or .png!")
 
@@ -129,6 +173,13 @@ class Asset(models.Model):
             temp_thumb.seek(0)
             self.asset_image_thumbnail.save(thumb_filename, ContentFile(temp_thumb.read()), save=False)
             temp_thumb.close()
+        
+        else:
+            # Have no image now, so delete any old thumbnail & update DB
+            oldthumbname = self.asset_image_thumbnail.name
+            if oldthumbname:
+                self.asset_image_thumbnail.storage.delete( oldthumbname )
+                self.asset_image_thumbnail = None
     
         # Attempt to update Whoosh index when new asset added. 
         # Need to move this to an async message queue ASAP, currently takes 10-15 seconds to reindex ~15 assets!
