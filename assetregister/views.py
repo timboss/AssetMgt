@@ -43,6 +43,10 @@ def asset_detail(request, pk):
     #     - Status number -> words translation
     return render(request, "assetregister/asset_details.html", {"asset": asset})
 
+def asset_qr(request, pk):
+    asset = get_object_or_404(Asset, pk=pk)
+    return render(request, "assetregister/asset_qr.html", {"asset": asset})
+
 @login_required
 def asset_new(request):
     if request.method == "POST":

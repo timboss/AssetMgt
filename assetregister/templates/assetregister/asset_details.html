@@ -102,8 +102,12 @@
             {% endif %}    
             
             {% if asset.maintenance_instructions %}
+                <br /><br />
                 <p><a href="{{ asset.maintenance_instructions }}" target="_blank">Download Maintenance Instructions</a></p>
             {% endif %}
+            
+            <br /><br />
+            <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank">Generate Asset QR Code (requires external internet connection)</a>
             
         </div>
 

@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^asset/new/$', views.asset_new, name="asset_new"),
     url(r'^asset/(?P<pk>\d+)/edit/$', views.asset_edit, name="asset_edit"),
     url(r'^asset/(?P<pk>\d+)/remove/$', views.asset_confirm_delete.as_view(), name="asset_confirm_delete"),
+    url(r'^asset/(?P<pk>\d+)/qr/$', views.asset_qr, name="asset_qr"),
     url(r'^search/calibration/', views.calibration_search.as_view(), name="calibration_search"),
     url(r'^search/', include("haystack.urls")),
 ]
