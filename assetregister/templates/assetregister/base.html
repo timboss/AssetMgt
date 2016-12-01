@@ -11,32 +11,39 @@
         
         <div class="page-header">
             
-            {% if user.is_authenticated %}
-                <a href="{% url 'asset_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
-                <p class="top-menu" id="logged_in_as">Hello {{ user.username }}! <small>(<a href="{% url 'logout' %}">Log out</a>)</small></p>
-            {% else %}
-                <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock"></span></a>
-            {% endif %}
-            
-            <h1><a href="/">AMRC Asset Management System</a></h1>
-            
-            <div align="right">
-                <form action="/search/?q=">
-                    <input type="text" name="q" id="id_q" size="33">
-                    <button type="submit">Search</button>
-                </form>
-            </div>
+            <table width="100%">
+                <tr>
+                    <td rowspan="2">
+                        <div align="left"><a href="/"><img src="{% static 'logo/logo.png' %}" width="50%"></a></div>
+                    </td>
+                    <td>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'asset_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
+                        <p class="top-menu" id="logged_in_as">Hello {{ user.username }}! <small>(<a href="{% url 'logout' %}">Log out</a>)</small></p>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock"></span></a>
+                    {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                       <div align="right">
+                           <form action="/search/?q=">
+                               <input type="text" name="q" id="id_q" size="33">
+                               <button type="submit">Search</button>
+                           </form>
+                       </div>
+                   </td>
+                </tr>
+            </table>
             
         </div>
-
 
         <div class="content container">
             <div class="row">
                 <div class="col-md-8">
-                
-                {% block content %}
-                {% endblock %}
-                    
+                    {% block content %}
+                    {% endblock %}
                 </div>
             </div>   
         </div>
