@@ -4,16 +4,6 @@ import os
 from haystack.management.commands import update_index, rebuild_index
 
 
-def img_path_and_rename(instance, filename):
-    # This is no longer needed (replaced by custom save function on model), but migrations will break if it's not defined.
-    pass
-
-
-def calibration_instructions_path_and_rename(instance, filename):
-    # This is no longer needed (replaced by custom save function on model), but migrations will break if it's not defined.
-    pass
-
-
 BUILDINGS = (
     ("Rolls-Royce Factory of the Future (8306)", "Rolls-Royce Factory of the Future (8306)"),
     ("Factory 2050 (8324)", "Factory 2050 (8324)"),
@@ -26,11 +16,11 @@ BUILDINGS = (
 )
 
 ASSET_STATUS = (
-    (1, "Active / In-Use"),
-    (2, "Inactive (Being Comissioned / Repaired)"),
-    (3, "Quarantined"),
-    (4, "Decomissioned / Withdrawn"),
-    (5, "Archived"),
+    ("Active / In-Use", "Active / In-Use"),
+    ("Inactive (Being Comissioned / Repaired)", "Inactive (Being Comissioned / Repaired)"),
+    ("Quarantined", "Quarantined"),
+    ("Decomissioned / Withdrawn", "Decomissioned / Withdrawn"),
+    ("Archived", "Archived"),
 )
 
 class Asset(models.Model):
@@ -42,7 +32,7 @@ class Asset(models.Model):
     asset_manufacturer = models.CharField(max_length=255, blank=True)
     asset_model = models.CharField(max_length=255, blank=True)
     asset_serial_number = models.CharField(max_length=255, blank=True)
-    asset_status = models.IntegerField(choices=ASSET_STATUS, default=1)
+    asset_status = models.CharField(max_length=100, choices=ASSET_STATUS, default="Active / In-Use")
     person_responsible = models.CharField(max_length=100)
     person_responsible_email = models.EmailField()
     requires_insurance = models.BooleanField()
