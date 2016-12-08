@@ -67,6 +67,14 @@ h1, h2, h3, h4 {
     font-family: 'Open Sans';
 }
 
+#small_qr {
+	font-size: 10px;
+}
+
+#qr_description {
+	font-size: 20px;
+}
+
 a {
     color: #000000;
     text-decoration: underline;

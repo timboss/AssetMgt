@@ -3,11 +3,9 @@
 {% block content %}
     <h1>Confirm Asset Deletion</h1>
     <form action="" method="post">{% csrf_token %}
-        <p>Are you really sure you want to permanently delete this "{{ object }}" asset?</p>
-        <p>
-            (It is usually better to keep a record of all assets that have ever been on site, consider changing this asset's status to
-            archived instead!)
-        </p>
+        <p>Are you really sure you want to permanently delete "{{ object }}"?</p>
+        <p>It is usually better to keep a record of all assets that have ever been on site... <br />
+        Consider changing this asset's status to "archived" instead!</p>
         <p><b>If you are absolutely sure you want to permanently delete this asset, click "Confirm".</b></p>
         <input class="btn btn-link" type="button" value="Cancel" onclick="window.history.go(-1);"/>
         <input type="submit" value="Confirm" />

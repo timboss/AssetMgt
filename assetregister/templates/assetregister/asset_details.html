@@ -107,8 +107,9 @@
             {% endif %}
             
             <br />
-            <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank">Generate Asset QR Code</a>
-            
+            <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank" onclick="window.open('{% url 'asset_qr' pk=asset.pk %}', 'newwindow', 'width=665, height=310'); return false;">Generate Large Asset QR Code</a>
+            <br />
+            <a href="{% url 'asset_qr_small' pk=asset.pk %}" target="_blank" onclick="window.open('{% url 'asset_qr_small' pk=asset.pk %}', 'newwindow2', 'width=130, height=190'); return false;">Generate Small Asset QR Code</a>
         </div>
 
     {% endblock %}

@@ -47,6 +47,10 @@ def asset_qr(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     return render(request, "assetregister/asset_qr.html", {"asset": asset})
 
+def asset_qr_small(request, pk):
+    asset = get_object_or_404(Asset, pk=pk)
+    return render(request, "assetregister/asset_qr_small.html", {"asset": asset})
+
 @login_required
 def asset_new(request):
     if request.method == "POST":

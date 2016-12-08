@@ -11,24 +11,16 @@
         <table>
             <tr>
                 <td>
-                    <img src="{% static 'logo/logo.png' %}">
-                </td>
-                <td>
-                    <img src="http://chart.googleapis.com/chart?cht=qr&amp;chs=154x154&amp;chl=http://localhost:8000{% url 'asset_detail' pk=asset.pk %}&amp;chld=Q|0" />
-                    <div align="center"><small>AMRC Asset ID: {{ asset.asset_id }}</small></div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div align="center" id="qr_description">
-                        {{ asset.asset_description }}
+                	<div align="center">
+                    	<img src="http://chart.googleapis.com/chart?cht=qr&amp;chs=90x90&amp;chl=http://localhost:8000{% url 'asset_detail' pk=asset.pk %}&amp;chld=Q|0" />
+                    	<br /><div id="small_qr">AMRC Asset ID: {{ asset.asset_id }}</div>
                     </div>
                 </td>
             </tr>
             <tr>
-            	<td colspan="2">
-            		<div align="center" class="dontPrint" id="small_qr">
-            			<br /><br /><br />
+            	<td>
+            		<div align="center" class="dontPrint">
+            			<br />
             			<script language="JavaScript"> 
 							if (window.print) {document.write('<form><input type=button name=print value="Print this page" onClick="window.print()"></form>');}
 						</script>
