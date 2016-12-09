@@ -1,5 +1,5 @@
 .page-header {
-    background-color: #4272C9;
+    background-color: #80ccff;
     margin-top: 0;
     padding: 20px 20px 20px 40px;
 }
@@ -27,7 +27,7 @@
 
 h1, h2, h3, h4 {
     font-family: 'Open Sans', cursive;
-    color: Blue;
+    color: #007acc;
 }
 
 .date {
@@ -45,10 +45,9 @@ h1, h2, h3, h4 {
 }
 
 .top-menu, .top-menu:hover, .top-menu:visited {
-    color: #ffffff;
+    color: #007acc;
     float: right;
     margin-right: 20px;
-    font-size: 36px;
 }
 
 #logged_in_as {
@@ -72,16 +71,12 @@ h1, h2, h3, h4 {
 }
 
 #qr_description {
-	font-size: 20px;
+	font-size: 18px;
 }
 
 a {
     color: #000000;
     text-decoration: underline;
-}
-
-a: hover {
-    color: #CF8D1D
 }
 
 .comment {
@@ -92,3 +87,8 @@ a: hover {
     color: red;
     margin-bottom: 0px;
 }
+
+.gi-2x{font-size: 2em;}
+.gi-3x{font-size: 3em;}
+.gi-4x{font-size: 4em;}
+.gi-5x{font-size: 5em;}
