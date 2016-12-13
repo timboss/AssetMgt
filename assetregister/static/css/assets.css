@@ -47,7 +47,6 @@ h1, h2, h3, h4 {
 .top-menu, .top-menu:hover, .top-menu:visited {
     color: #007acc;
     float: right;
-    margin-right: 20px;
 }
 
 #logged_in_as {
@@ -74,10 +73,7 @@ h1, h2, h3, h4 {
 	font-size: 18px;
 }
 
-a {
-    color: #000000;
-    text-decoration: underline;
-}
+
 
 .comment {
     margin: 20px 0px 20px 20px;
@@ -92,3 +88,21 @@ a {
 .gi-3x{font-size: 3em;}
 .gi-4x{font-size: 4em;}
 .gi-5x{font-size: 5em;}
+
+.navbar-nav li a {
+	line-height: 70px;
+	font-size: 1.2em;
+}
+
+.navbar-toggle {
+	line-height: 70px;
+}	
+	
+.navbar-left img {
+	padding: 10px;
+	margin: 0;
+}
+
+.dropdown-menu > li > a { 
+	line-height: 40px; 
+}

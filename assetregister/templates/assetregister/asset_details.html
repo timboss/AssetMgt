@@ -8,9 +8,12 @@
             
             {% if user.is_authenticated %}
                 <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit asset"><span class="glyphicon glyphicon-edit gi-2x"></span></a>
-                <a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-2x"></span></a>
-                <br /><br />
             {% endif %}
+            {% if request.user.is_superuser %}
+                <a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-2x"></span></a>
+            {% endif %}
+            
+            <br /><br />
             
             <p>Asset I.D. {{ asset.asset_id }}</p>
 

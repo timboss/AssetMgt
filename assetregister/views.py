@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
@@ -8,8 +9,8 @@ from .models import Asset
 from .forms import EditAsset, CalibrationSearch
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
+from djqscsv import render_to_csv_response
 
-# Create your views here.
 
 def asset_list(request):
     asset_count = Asset.objects.count()
@@ -101,3 +102,17 @@ class calibration_search(SearchView):
 #    def get_queryset(self):
 #        queryset = super(calibration_search, self).get_queryset()
 #        return queryset
+
+ 
+def calibrated_asset_export_active(request):
+    calibration_export = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").order_by("-calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+    return render_to_csv_response(calibration_export, filename="Active_Assets_Needing_Calibration.csv")
+
+def calibrated_asset_export_all(request):
+    calibration_export = Asset.objects.filter(requires_calibration=True).order_by("-calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+    return render_to_csv_response(calibration_export, filename="All_Assets_Needing_Calibration.csv")
+
+def calibration_asset_export_nextmonth(request):
+    plusonemonth = timezone.now() + timedelta(days=30)
+    calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=plusonemonth).order_by("-calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+    return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_In_Next_Month.csv")

@@ -1,57 +1,119 @@
 {% load staticfiles %}
-<html>
-    <head>
-        <title>AMRC Asset Management System</title>
-        <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"> -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css">
-        <link rel="stylesheet" href="{% static 'css/assets.css' %}">
-        <link href='https://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'>
-    </head>
-    <body>
-        
-        <div class="page-header">
-            
-            <table width="100%">
-                <tr>
-                    <td rowspan="2">
-                        <div align="left"><a href="/"><img src="{% static 'logo/logo2.png' %}" width="420px"></a></div>
-                    </td>
-                    <td>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'asset_new' %}" class="top-menu" title="Add new asset"><span class="glyphicon glyphicon-plus gi-2x"></span></a>
-                        <p class="top-menu" id="logged_in_as">Hello {{ user.username }}! <small>(<a href="{% url 'logout' %}">Log out</a>)</small></p>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock gi-2x"></span></a>
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                       <div align="right" class="top-menu">
-                       	   <form action="/search/?q=">
-                               <div class="input-group">
-      					           <input type="text" size="35" name="q" id="id_q" class="form-control" placeholder="Search all assets...">
-      						       <span class="input-group-btn">
-        					           <button class="btn btn-default" type="submit">Go!</button>
-      						       </span>
-    						    </div>
-                           </form>
-                       </div>
-                   </td>
-                </tr>
-            </table>
-            
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- things needed for Bootstrap -->
+		<meta charset="utf-8">
+  		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="{% static 'css/bootstrap.min.css' %}">
+		<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet" integrity="sha384-zF4BRsG/fLiTGfR9QL82DrilZxrwgY/+du4p/c7J72zZj+FLYq4zY00RylP9ZjiT" crossorigin="anonymous">
+		
+		<!-- our local 'AssetMgt' styling -->
+		<link rel="stylesheet" href="{% static 'css/assets.css' %}">
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'>
+	</head>
 
-        <div class="content container">
-            <div class="row">
-                <div class="col-md-8">
-                    {% block content %}
-                    {% endblock %}
-                </div>
-            </div>   
-        </div>
-        
-    </body>
+	<body>
+		
+		<!-- ...more things needed for Bootstrap -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+		<!-- Begin bootstrap "navbar" header menu -->
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a href="/" class="navbar-left"><img src="{% static 'logo/Logo5.png' %}" alt="AMRC Asset Management"></a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="#">Link 1<span class="sr-only">(current)</span></a>
+						</li>
+						<li>
+							<a href="#">Link 2</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li>
+									<a href="{% url 'calibrated_asset_list' %}">Calibration List</a>
+								</li>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export Assets With Calibration Due in Next 30 Days</a>
+								</li>
+								<li>
+									<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Calibration</a>
+								</li>
+								<li>
+									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
+								</li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Maintenance <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li>
+									<a href="{% url 'calibrated_asset_list' %}">Maintenance List</a>
+								</li>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export Assets With Maintenance Due in Next 30 Days</a>
+								</li>
+								<li>
+									<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Maintenance</a>
+								</li>
+								<li>
+									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Maintenance</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							{% if user.is_authenticated %} 
+								<a href="{% url 'asset_new' %}" class="top-menu" title="Add new asset"><span class="glyphicon glyphicon-plus gi-2x"></span></a>
+								<p class="top-menu" id="logged_in_as">
+									&nbsp;&nbsp;Hello {{ user.username }}! <small>(<a href="{% url 'logout' %}">Log out</a>)</small>
+								</p> 
+							{% else %} 
+								<a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock gi-2x"></span></a> 
+							{% endif %}
+						</li>
+					</ul>
+					<ul>
+						<form role="search" class="navbar-form navbar-right " action="/search/?q=">
+							<div class="form-group">
+								<input type="text" size="35" name="q" id="id_q" class="form-control" placeholder="Search all assets...">
+							</div>
+							<button class="btn btn-default" type="submit">
+								Search
+							</button>
+						</form>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- page content block -->
+		<div class="content container">
+			<div class="row">
+				<div class="col-md-8">
+					{% block content %}
+					{% endblock %}
+				</div>
+			</div>
+		</div>
+
+	</body>
 </html>
