@@ -52,7 +52,7 @@
             {% if asset.requires_calibration %}
                 <p>Requires Calibration: {{ asset.requires_calibration }}
                 <br />Last Calibrated: {{ asset.calibration_date_prev }}
-                <br />Next Calibration Due: {{ asset.calibration_date_prev }}</p>
+                <br />Next Calibration Due: {{ asset.calibration_date_next }}</p>
             {% endif %}
             
             {% if asset.requires_safety_checks %}

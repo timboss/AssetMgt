@@ -8,7 +8,7 @@
 		<link href="{% static 'css/bootstrap.min.css' %}">
 		<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet" integrity="sha384-zF4BRsG/fLiTGfR9QL82DrilZxrwgY/+du4p/c7J72zZj+FLYq4zY00RylP9ZjiT" crossorigin="anonymous">
 		
-		<!-- our local 'AssetMgt' styling -->
+		<!-- our styling -->
 		<link rel="stylesheet" href="{% static 'css/assets.css' %}">
 		<link href='https://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'>
 	</head>
@@ -34,8 +34,16 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-						<li>
-							<a href="#">Link 1<span class="sr-only">(current)</span></a>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Assets <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li>
+									<a href="{% url 'asset_list' %}">All Assets</a>
+								</li>
+								<li>
+									<a href="{% url 'active_asset_list' %}">"Active" Assets</a>
+								</li>
+							</ul>
 						</li>
 						<li>
 							<a href="#">Link 2</a>
@@ -46,16 +54,18 @@
 								<li>
 									<a href="{% url 'calibrated_asset_list' %}">Calibration List</a>
 								</li>
-								</li>
 								<li class="divider"></li>
 								<li>
-									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export Assets With Calibration Due in Next 30 Days</a>
+									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
 								</li>
 								<li>
 									<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Calibration</a>
 								</li>
 								<li>
-									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
+									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export All Assets With Calibration Due in Next 30 Days</a>
+								</li>
+								<li>
+									<a href="{% url 'calibration_asset_export_custom' %}">Create Custom Export...</a>
 								</li>
 							</ul>
 						</li>
@@ -68,13 +78,13 @@
 								</li>
 								<li class="divider"></li>
 								<li>
-									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export Assets With Maintenance Due in Next 30 Days</a>
+									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Maintenance</a>
 								</li>
 								<li>
 									<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Maintenance</a>
 								</li>
 								<li>
-									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Maintenance</a>
+									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export Assets With Maintenance Due in Next 30 Days</a>
 								</li>
 							</ul>
 						</li>

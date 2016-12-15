@@ -1,0 +1,21 @@
+{% extends 'assetregister/base.html' %}
+
+    {% block content %}
+ 
+		<form role="search" action="/calibration/export/custom/?date=">
+			<h3>To export a CSV file (will open in MS Excel) of all assets with calibration due before a specific date, enter a valid date in yyyy-mm-dd format:</h3>
+			<input type="text" name="date" id="datepicker" size="35" class="form-control" placeholder="Enter date like yyyy-mm-dd...">
+			<button class="btn btn-default" type="submit">
+				Go
+			</button>
+		</form>
+		
+		<form role="search" action="/calibration/export/custom/?days=">
+			<h3>Or to export a CSV file of all assets with calibration due in the next X number of days, enter the number of whole days:</h3>
+			<input type="text" name="days" id="datepicker" size="35" class="form-control" placeholder="Enter whole number of days...">
+			<button class="btn btn-default" type="submit">
+				Go
+			</button>
+		</form>
+		 
+	{% endblock %}
