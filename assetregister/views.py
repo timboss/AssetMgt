@@ -34,7 +34,7 @@ def calibrated_asset_list(request):
     active_asset_count = Asset.objects.filter(asset_status="Active / In-Use").count()
     calibrated_asset_count = Asset.objects.filter(requires_calibration=True).count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").count()
-    assets = Asset.objects.filter(requires_calibration=True).order_by("calibration_date_next")
+    assets = Asset.objects.filter(requires_calibration=True).order_by("asset_status", "calibration_date_next")
     return render(request, "assetregister/calibration_asset_list.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count, "calibrated_asset_count": calibrated_asset_count, "active_calibrated_asset_count": active_calibrated_asset_count
         })
@@ -104,7 +104,7 @@ class calibration_search(SearchView):
 #        queryset = super(calibration_search, self).get_queryset()
 #        return queryset
 
- 
+
 def calibrated_asset_export_active(request):
     calibration_export = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Active_Assets_Needing_Calibration.csv")

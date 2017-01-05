@@ -97,7 +97,7 @@ class Asset(models.Model):
                 
                 
                 # -- THUMBNAIL --
-                THUMB_SIZE = (300, 200)
+                THUMB_SIZE = (250, 150)
                 
                 # Open image to thumbnail
                 fh = storage.open(self.asset_image.name)
@@ -128,7 +128,7 @@ class Asset(models.Model):
                 
                 # -- WATERMARK --
                 assetimage = storage.open(self.asset_image.name)
-                logoimage = storage.open("images/watermarklogo.png")
+                logoimage = storage.open("images/watermarklogo2.png")
                 img = Image.open(assetimage).convert("RGBA")
                 logo = Image.open(logoimage).convert("RGBA")
                 
@@ -138,15 +138,15 @@ class Asset(models.Model):
                 # resize logo to be quarter of asset_image width, but same aspect ratio!        
                 logo_aspect_ratio = float(logo.size[0] / logo.size[1])
                 
-                # Resize logo to be half (if image width <= 300) else 5th of image's shortest side
+                # If image width or height <= 400 resize logo to be half, else 1/5th of image's shortest side
                 if img_w > img_h:
-                    if img_w <= 300: 
+                    if img_w <= 400: 
                         logo_w = int(img_w / 2) 
                     else:  
                         logo_w = int(img_w / 5)
                     logo_h = int(logo_w / logo_aspect_ratio)
                 else:
-                    if img_h <= 300: 
+                    if img_h <= 400: 
                         logo_h = int(img_h / 2) 
                     else:  
                         logo_h = int(img_h / 5)
@@ -162,7 +162,7 @@ class Asset(models.Model):
                 watermark.paste(logo, (int(offset_x), int(offset_y)), mask=logo.split()[3])
             
                 alpha = watermark.split()[3]
-                #alpha = ImageEnhance.Brightness(alpha) #.enhance(opacity) # NameError "opacity" not defined
+                #alpha = ImageEnhance.Brightness(alpha).enhance(opacity) # NameError on "opacity"
             
                 watermark.putalpha(alpha)
                 Image.composite(watermark, img, watermark).save("media/" + self.asset_image.name, "JPEG")    

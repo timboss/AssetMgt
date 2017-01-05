@@ -21,7 +21,13 @@
             <p>Asset ID: {{ asset.asset_id }} </p>
             
             {% if asset.asset_manufacturer %}
-                <p>Manufacturer: {{ asset.asset_manufacturer }} </p>
+                <p>Manufacturer: {{ asset.asset_manufacturer }}</p> 
+            {% endif %}
+            {% if asset.asset_location_building %}
+                Location (Building): {{ asset.asset_location_building }} 
+            {% endif %}
+            {% if asset.asset_location_room %}
+                <br>Location (Area): {{ asset.asset_location_room }} 
             {% endif %}
             
         </div>
