@@ -53,6 +53,10 @@
                 <p>Requires Calibration: {{ asset.requires_calibration }}
                 <br />Last Calibrated: {{ asset.calibration_date_prev }}
                 <br />Next Calibration Due: {{ asset.calibration_date_next }}</p>
+                
+                {% if asset.calibration_records %}
+                	<p><a href="{{ asset.calibration_records }}" target="_blank">View Calibration Records</a></p>
+                {% endif %}
             {% endif %}
             
             {% if asset.requires_safety_checks %}
@@ -64,7 +68,13 @@
             {% endif %}
             
             {% if asset.requires_planned_maintenance %}
-                <p>Requires Planned Preventative Maintenance: {{ asset.requires_planned_maintenance }}</p>
+                <p>Requires Planned Preventative Maintenance: {{ asset.requires_planned_maintenance }}
+               	
+               	{% if asset.maintenance_records %}
+               		<br /><a href="{{ asset.maintenance_records }}" target="_blank">View Maintenance Records</a>
+               	{% endif %}
+               	
+               	</p>
             {% endif %}
             
             {% if asset.asset_value %}
@@ -106,6 +116,14 @@
             {% if asset.maintenance_instructions %}
                 <p><a href="{{ asset.maintenance_instructions }}" target="_blank">Download Maintenance Instructions</a></p>
             {% endif %}
+            
+            {% if asset.asset_handling_and_storage_instructions %}
+                <p><a href="{{ asset.asset_handling_and_storage_instructions }}" target="_blank">Download Handling and Storage Instructions</a></p>
+            {% endif %}
+            
+            {% if asset.asset_operating_instructions %}
+                <p><a href="{{ asset.asset_operating_instructions }}" target="_blank">Download Operating Instructions</a></p>
+            {% endif %}            
             
             <br />
             <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank" onclick="window.open('{% url 'asset_qr' pk=asset.pk %}', 'newwindow', 'width=665, height=310'); return false;">Generate Large Asset QR Code</a>
