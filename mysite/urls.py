@@ -26,8 +26,7 @@ urlpatterns = [
     url(r'', include('assetregister.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-#if settings.DEBUG:
+# if settings.DEBUG:
 #    urlpatterns += (
 #        url(r'^media/(?P<path>.*)$', "django.views.static.serve", {'document_root': settings.MEDIA_ROOT, }),
 #    )
-    

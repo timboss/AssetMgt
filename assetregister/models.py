@@ -191,5 +191,7 @@ class Asset(models.Model):
   
     def __str__(self):
         return self.asset_description
-  
-  
+    
+
+class CalibrationRecord(models.Model):
+    pass
