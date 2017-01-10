@@ -44,7 +44,7 @@ def calibrated_asset_list(request):
 
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
-    #ToDo - "ParentOf" field
+    # ToDo - "ParentOf" field
     #     - Status number -> words translation
     return render(request, "assetregister/asset_details.html", {"asset": asset})
 
@@ -90,12 +90,15 @@ def asset_edit(request, pk):
     return render(request, "assetregister/asset_edit.html", {"form": form})
 
 
-# Depreciated this "quick delete" in favour of using Django's built in generic DeleteView class view to require manually confirming deletion
+# Depreciated this "quick delete" in favour of using Django's _
+# built in generic DeleteView class view to require manually confirming deletion
+
 # @login_required
 # def asset_remove(request, pk):
 #    asset = get_object_or_404(Asset, pk=pk)
 #    asset.delete()
 #    return redirect("asset_list")
+
 
 @method_decorator(login_required, name="dispatch")
 class asset_confirm_delete(DeleteView):
@@ -115,18 +118,18 @@ class calibration_search(SearchView):
 
 
 def calibrated_asset_export_active(request):
-    calibration_export = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+    calibration_export = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Active_Assets_Needing_Calibration.csv")
 
 
 def calibrated_asset_export_all(request):
-    calibration_export = Asset.objects.filter(requires_calibration=True).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+    calibration_export = Asset.objects.filter(requires_calibration=True).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="All_Assets_Needing_Calibration.csv")
 
 
 def calibration_asset_export_nextmonth(request):
     plusonemonth = timezone.now() + timedelta(days=30)
-    calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+    calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_" + str(plusonemonth.date()) + ".csv")
 
 
@@ -142,6 +145,6 @@ def calibration_asset_export_custom(request):
     elif request.GET.get('date'):
         newdate = request.GET.get('date')
     else:
-        return HttpResponseNotFound('<h2>No "?day=" or "?date=" URL GET parameters found!</h2>')  
-    calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=newdate).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+        return HttpResponseNotFound('<h2>No "?day=" or "?date=" URL GET parameters found!</h2>')
+    calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=newdate).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_" + str(newdate) + ".csv")
