@@ -78,19 +78,19 @@ class Asset(models.Model):
                 from django.core.files.base import ContentFile
                 from django.core.files.storage import default_storage as storage
                 from io import BytesIO
-                from PIL import Image # , ImageEnhance
+                from PIL import Image  # , ImageEnhance
 
                 # Create image filename using pk / asset_ID and original file extension
                 oldfile = self.asset_image.name
                 lastdot = oldfile.rfind(".")
-                newfile = "images/" + str( self.pk ) + oldfile[lastdot:]
+                newfile = "images/" + str(self.pk) + oldfile[lastdot:]
 
                 # Create image with new filename, remove old image if "filepath"_
                 # (really only file extension!) is now different
                 if newfile != oldfile:
                     self.asset_image.storage.delete(newfile)
                     self.asset_image.storage.save(newfile, asset_image)
-                    self.asset_image.name = newfile 
+                    self.asset_image.name = newfile
                     self.asset_image.close()
                     self.asset_image.storage.delete(oldfile)
 
@@ -100,8 +100,8 @@ class Asset(models.Model):
                     oldthumbname = self.asset_image_thumbnail.name
                     self.asset_image_thumbnail.storage.delete(oldthumbname)
 
-                # Save changes    
-                super( Asset, self ).save( *args, **kwargs )
+                # Save changes
+                super(Asset, self).save(*args, **kwargs)
 
                 # -- THUMBNAIL --
                 THUMB_SIZE = (250, 150)
@@ -141,7 +141,7 @@ class Asset(models.Model):
                 img_w = img.size[0]
                 img_h = img.size[1]
 
-                # resize logo to be quarter of asset_image width, but same aspect ratio!      
+                # resize logo to be quarter of asset_image width, but same aspect ratio!
                 logo_aspect_ratio = float(logo.size[0] / logo.size[1])
 
                 # If image width or height <= 400 resize logo to be half, else 1/5th of image's shortest side
