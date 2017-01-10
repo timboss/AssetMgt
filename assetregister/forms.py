@@ -14,7 +14,7 @@ class EditAsset(forms.ModelForm):
             "calibration_date_next", "requires_insurance", "requires_safety_checks", "requires_environmental_checks",
             "requires_planned_maintenance", "maintenance_instructions", "maintenance_records", "asset_value",
             "purchase_order_ref", "funded_by", "acquired_on", "related_to_other_asset", "asset_location_building",
-            "asset_location_room", "asset_operating_instructions", "asset_handling_and_storage_instructions" 
+            "asset_location_room", "asset_operating_instructions", "asset_handling_and_storage_instructions"
             ]
 
 
@@ -34,11 +34,11 @@ class CalibrationSearch(SearchForm):
             return self.SearchQuerySet().all()
 
         if self.is_valid():
-            #check to see if any date filters used, if so apply filter
+            # check to see if any date filters used, if so apply filter
             if self.cleaned_data['calibration_due_before']:
                 sqs = sqs.filter(calibration_date_next__lte=self.cleaned_data['calibration_due_before'])
-            
+
             if self.cleaned_data['calibration_due_after']:
                 sqs = sqs.filter(calibration_date_next__gte=self.cleaned_data['calibration_due_after'])
-        
+
             return sqs

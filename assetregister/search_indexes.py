@@ -23,7 +23,7 @@ class AssetIndex(indexes.SearchIndex, indexes.Indexable):
         return Asset
 
     def no_query_found(self):
-        # return self.searchqueryset.exclude(content='zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz') 
+        # return self.searchqueryset.exclude(content='zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')
         # ^this should not match anything!
         return self.searchqueryset.all()
 

@@ -19,7 +19,8 @@ def asset_list(request):
     assets = Asset.objects.order_by("asset_id")
     return render(request, "assetregister/asset_list.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
-        }) 
+        })
+
 
 def active_asset_list(request):
     asset_count = Asset.objects.count()
@@ -27,7 +28,8 @@ def active_asset_list(request):
     assets = Asset.objects.filter(asset_status="Active / In-Use").order_by("asset_id")
     return render(request, "assetregister/asset_list_active.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
-        }) 
+        })
+
 
 def calibrated_asset_list(request):
     asset_count = Asset.objects.count()
@@ -38,20 +40,24 @@ def calibrated_asset_list(request):
     return render(request, "assetregister/calibration_asset_list.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count, "calibrated_asset_count": calibrated_asset_count, "active_calibrated_asset_count": active_calibrated_asset_count
         })
-    
+
+
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     #ToDo - "ParentOf" field
     #     - Status number -> words translation
     return render(request, "assetregister/asset_details.html", {"asset": asset})
 
+
 def asset_qr(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     return render(request, "assetregister/asset_qr.html", {"asset": asset})
 
+
 def asset_qr_small(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     return render(request, "assetregister/asset_qr_small.html", {"asset": asset})
+
 
 @login_required
 def asset_new(request):
@@ -66,6 +72,7 @@ def asset_new(request):
     else:
         form = EditAsset()
     return render(request, "assetregister/asset_edit.html", {"form": form})
+
 
 @login_required
 def asset_edit(request, pk):
@@ -82,9 +89,10 @@ def asset_edit(request, pk):
         form = EditAsset(instance=asset)
     return render(request, "assetregister/asset_edit.html", {"form": form})
 
-#Depreciated this "quick delete" in favour of using Django's built in generic DeleteView class view to require manually confirming deletion
-#@login_required
-#def asset_remove(request, pk):
+
+# Depreciated this "quick delete" in favour of using Django's built in generic DeleteView class view to require manually confirming deletion
+# @login_required
+# def asset_remove(request, pk):
 #    asset = get_object_or_404(Asset, pk=pk)
 #    asset.delete()
 #    return redirect("asset_list")
@@ -94,12 +102,13 @@ class asset_confirm_delete(DeleteView):
     model = Asset
     success_url = reverse_lazy("asset_list")
 
+
 class calibration_search(SearchView):
     template_name = 'search/search.html'
     form_class = CalibrationSearch
     queryset = SearchQuerySet().filter(requires_calibration=True)
 #    return render(request, template, {'form' : form_class})
-    
+
 #    def get_queryset(self):
 #        queryset = super(calibration_search, self).get_queryset()
 #        return queryset
@@ -109,17 +118,21 @@ def calibrated_asset_export_active(request):
     calibration_export = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Active_Assets_Needing_Calibration.csv")
 
+
 def calibrated_asset_export_all(request):
     calibration_export = Asset.objects.filter(requires_calibration=True).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="All_Assets_Needing_Calibration.csv")
+
 
 def calibration_asset_export_nextmonth(request):
     plusonemonth = timezone.now() + timedelta(days=30)
     calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description","asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_" + str(plusonemonth.date()) + ".csv")
 
+
 def calibration_asset_export_custom_select(request):
     return render(request, "assetregister/calibration_export.html")
+
 
 def calibration_asset_export_custom(request):
     if request.GET.get('days'):
