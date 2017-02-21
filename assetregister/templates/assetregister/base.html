@@ -2,34 +2,45 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<!-- things needed for Bootstrap -->
 		<meta charset="utf-8">
+		
+		<!-- things needed for Bootstrap -->
   		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link href="{% static 'css/bootstrap.min.css' %}">
+		<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
 		<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet" integrity="sha384-zF4BRsG/fLiTGfR9QL82DrilZxrwgY/+du4p/c7J72zZj+FLYq4zY00RylP9ZjiT" crossorigin="anonymous">
+		
+		<!-- things needed for JQuery -->
+		<link href="{% static 'css/jquery-ui.css' %}" rel="stylesheet" />
+		<script src="{% static 'js/jquery.js' %}"></script>
+		<script src="{% static 'js/jquery-ui.js' %}"></script>
+		<script>
+        $(function() {
+            $( ".datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+        </script>
 		
 		<!-- our styling -->
 		<link rel="stylesheet" href="{% static 'css/assets.css' %}">
 		<link href='https://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'>
+		
 	</head>
 
 	<body>
 		
-		<!-- ...more things needed for Bootstrap -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<!-- ...even more things for Bootstrap -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-		<!-- Begin bootstrap "navbar" header menu -->
+		<!-- bootstrap "navbar" menu -->
 		<nav class="navbar navbar-default">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" title="Open Menu">
 						<span class="sr-only">Toggle navigation</span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a href="/" class="navbar-left"><img src="{% static 'logo/Logo5.png' %}" alt="AMRC Asset Management"></a>
+					<a href="/" class="navbar-left"><img src="{% static 'logo/Logo6.png' %}" alt="AMRC Asset Management"></a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -45,15 +56,18 @@
 								</li>
 							</ul>
 						</li>
-						<li>
-							<a href="#">Link 2</a>
-						</li>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
 								<li>
-									<a href="{% url 'calibrated_asset_list' %}">Calibration List</a>
+									<a href="{% url 'calibrated_asset_list' %}">Calibrated Asset List</a>
 								</li>
+								{% if user.is_authenticated %} 
+									<li class="divider"></li>
+									<li>
+										<a href="{% url 'new_calibration' %}">New Calibration</a>
+									</li>
+								{% endif %}
 								<li class="divider"></li>
 								<li>
 									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
@@ -75,7 +89,6 @@
 								<li>
 									<a href="{% url 'calibrated_asset_list' %}">Maintenance List</a>
 								</li>
-								</li>
 								<li class="divider"></li>
 								<li>
 									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Maintenance</a>
@@ -89,22 +102,22 @@
 							</ul>
 						</li>
 					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						<li>
+					<ul class="nav navbar-nav navbar-right userauth">
+						<li id="user_auth">
 							{% if user.is_authenticated %} 
 								<a href="{% url 'asset_new' %}" class="top-menu" title="Add new asset"><span class="glyphicon glyphicon-plus gi-2x"></span></a>
 								<p class="top-menu" id="logged_in_as">
 									&nbsp;&nbsp;Hello {{ user.username }}! <small>(<a href="{% url 'logout' %}">Log out</a>)</small>
 								</p> 
 							{% else %} 
-								<a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock gi-2x"></span></a> 
+								<a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock gi-2x" title="Log in"></span></a> 
 							{% endif %}
 						</li>
 					</ul>
 					<ul>
 						<form role="search" class="navbar-form navbar-right " action="/search/?q=">
 							<div class="form-group">
-								<input type="text" size="35" name="q" id="id_q" class="form-control" placeholder="Search all assets...">
+								<input type="text" size="30" name="q" id="id_q" class="form-control" placeholder="Search all assets...">
 							</div>
 							<button class="btn btn-default" type="submit">
 								Search

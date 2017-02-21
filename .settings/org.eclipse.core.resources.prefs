@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//myvenv/Lib/site-packages/haystack/admin.py=utf-8
 encoding//myvenv/Lib/site-packages/haystack/fields.py=utf-8
 encoding//myvenv/Lib/site-packages/haystack/forms.py=utf-8
 encoding//myvenv/Lib/site-packages/haystack/indexes.py=utf-8

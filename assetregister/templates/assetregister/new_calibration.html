@@ -1,0 +1,10 @@
+{% extends "assetregister/base.html" %}
+
+{% block content %}
+    <h1>New Calibration</h1>
+    <br />
+    <form enctype="multipart/form-data" method="POST" class="asset-form">{% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" class="save btn btn-default">Save</button><br /><br />
+    </form>
+{% endblock %}

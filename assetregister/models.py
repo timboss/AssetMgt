@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
+from django.contrib.auth import get_user_model
 import os
 from haystack.management.commands import update_index
 
@@ -57,7 +59,7 @@ class Asset(models.Model):
     related_to_other_asset = models.ForeignKey("self", blank=True, null=True)
     asset_location_building = models.CharField(max_length=128, choices=BUILDINGS, blank=True)
     asset_location_room = models.CharField(max_length=255, blank=True)
-    edited_by = models.ForeignKey("auth.User")
+    edited_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
     edited_on = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
@@ -191,8 +193,32 @@ class Asset(models.Model):
         return "/asset/%i/" % self.asset_id
 
     def __str__(self):
-        return self.asset_description
+        if not self.asset_manufacturer:
+            return self.asset_description
+        else:
+            return "{} - {}".format(self.asset_manufacturer, self.asset_description)
 
+CALIBRATION_OUTCOME = (
+                       ("Pass", "Pass"),
+                       ("Fail", "Fail")
+                     )
 
 class CalibrationRecord(models.Model):
-    pass
+    calibration_record_id = models.AutoField(primary_key=True)
+    asset = models.ForeignKey("assetregister.Asset", on_delete=models.CASCADE, related_name="calibration")
+    calibration_description = models.CharField(max_length=200)
+    calibration_date = models.DateField()
+    calibration_date_next = models.DateField(null=True, blank=True)
+    calibrated_by_internal = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="calibrator")
+    calibrated_by_external = models.CharField(max_length=200, null=True, blank=True)
+    calibration_outcome = models.CharField(max_length=4, choices=CALIBRATION_OUTCOME, default="Pass")
+    calibration_notes = models.TextField(null=True, blank=True)
+    calibration_certificate = models.URLField(max_length=255, null=True, blank=True)
+    calibration_entered_by = models.ForeignKey("auth.User", related_name="calibration_entered_by", default=1)
+    calibration_entered_on = models.DateTimeField(default=timezone.now)
+    
+    def get_absolute_url(self):
+        return "/calibrationrecord/{}/".format(self.calibration_record_id)
+
+    def __str__(self):
+        return "Calibration Record {} - {}".format(self.asset, self.calibration_description)

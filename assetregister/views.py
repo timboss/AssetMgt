@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
 from .models import Asset
-from .forms import EditAsset, CalibrationSearch
+from .forms import EditAsset, CalibrationSearch, Calibrate
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
@@ -88,6 +88,8 @@ def asset_edit(request, pk):
             asset.edited_on = timezone.now()
             asset.save()
             return redirect("asset_detail", pk=asset.pk)
+        else:
+            i
     else:
         form = EditAsset(instance=asset)
     return render(request, "assetregister/asset_edit.html", {"form": form})
@@ -107,6 +109,35 @@ def asset_edit(request, pk):
 class asset_confirm_delete(DeleteView):
     model = Asset
     success_url = reverse_lazy("asset_list")
+
+
+@login_required
+def new_calibration(request):
+    if request.method == "POST":
+        form = Calibrate(request.POST)
+        if form.is_valid():
+            calibration = form.save(commit=False)
+            calibration.entered_by = request.user
+            calibration.edited_on = timezone.now()
+            calibration.save()
+            return redirect("asset_detail", pk=calibration.asset.asset_id)
+    else:
+        form = Calibrate()
+    return render(request, "assetregister/new_calibration.html", {"form": form})
+
+@login_required
+def new_calibration_asset(request, urlpk):
+    if request.method == "POST":
+        form = Calibrate(request.POST)
+        if form.is_valid():
+            calibration = form.save(commit=False)
+            calibration.entered_by = request.user
+            calibration.edited_on = timezone.now()
+            calibration.save()
+            return redirect("asset_detail", pk=calibration.asset.asset_id)
+    else:
+        form = Calibrate(initial={"asset": urlpk})
+    return render(request, "assetregister/new_calibration.html", {"form": form})
 
 
 class calibration_search(SearchView):

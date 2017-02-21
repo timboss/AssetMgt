@@ -1,8 +1,10 @@
 from django import forms
-from .models import Asset
+from .models import Asset, CalibrationRecord
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 class EditAsset(forms.ModelForm):
     class Meta:
@@ -16,6 +18,26 @@ class EditAsset(forms.ModelForm):
             "purchase_order_ref", "funded_by", "acquired_on", "related_to_other_asset", "asset_location_building",
             "asset_location_room", "asset_operating_instructions", "asset_handling_and_storage_instructions"
             ]
+        widgets = {
+            'acquired_on': DateInput(attrs={'id': 'datepicker'}),
+        }
+        
+
+
+class Calibrate(forms.ModelForm):
+    class Meta:
+        model = CalibrationRecord
+        fields = [
+                  "asset", "calibration_description", "calibration_date", "calibration_date_next", "calibrated_by_internal",
+                  "calibrated_by_external", "calibration_outcome", "calibration_notes", "calibration_certificate"
+                  ]
+        widgets = {
+            'calibration_date': DateInput(attrs={'class': 'datepicker'}),
+            'calibration_date_next': DateInput(attrs={'class': 'datepicker'}),
+        }
+        labels = {
+                  "calibration_certificate": ("Calibration Certificate URL"),
+                  }
 
 
 class CalibrationSearch(SearchForm):

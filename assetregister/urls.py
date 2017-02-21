@@ -6,6 +6,8 @@ urlpatterns = [
     url(r'^$', views.asset_list, name="asset_list"),
     url(r'^active/$', views.active_asset_list, name="active_asset_list"),
     url(r'^calibration/$', views.calibrated_asset_list, name="calibrated_asset_list"),
+    url(r'^calibration/new/$', views.new_calibration, name="new_calibration"),
+    url(r'^calibration/new/(?P<urlpk>\d+)/$', views.new_calibration_asset, name="new_calibration_asset"),
     url(r'^calibration/export/active/$', views.calibrated_asset_export_active, name="calibrated_asset_export_active"),
     url(r'^calibration/export/all/$', views.calibrated_asset_export_all, name="calibrated_asset_export_all"),
     url(r'^calibration/export/all/nextmonth/$', views.calibration_asset_export_nextmonth,

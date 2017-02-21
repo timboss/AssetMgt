@@ -50,13 +50,19 @@
             {% endif %}
             
             {% if asset.requires_calibration %}
-                <p>Requires Calibration: {{ asset.requires_calibration }}
-                <br />Last Calibrated: {{ asset.calibration_date_prev }}
-                <br />Next Calibration Due: {{ asset.calibration_date_next }}</p>
+            	<hr>
+                <p>Requires Calibration: {{ asset.requires_calibration }} &nbsp;&nbsp; <a href="{% url 'new_calibration_asset' urlpk=asset.pk %}">Add Calibration Record</a>
                 
-                {% if asset.calibration_records %}
-                	<p><a href="{{ asset.calibration_records }}" target="_blank">View Calibration Records</a></p>
-                {% endif %}
+				{% for calibrations in asset.calibration.all %}
+				    <div class="calibrations">
+				        {{ calibrations.calibration_description }} | Calibrated on: {{ calibrations.calibration_date }} | Outcome: 
+				        <strong>{{ calibrations.calibration_outcome }}</strong> | Next Calibration Due: {{ calibrations.calibration_date_next }}
+				    </div>
+				{% empty %}
+				    <p>No calibration records yet :(</p>
+				{% endfor %}
+				<hr>
+
             {% endif %}
             
             {% if asset.requires_safety_checks %}
