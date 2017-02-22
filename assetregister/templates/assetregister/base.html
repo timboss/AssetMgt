@@ -54,6 +54,12 @@
 								<li>
 									<a href="{% url 'active_asset_list' %}">"Active" Assets</a>
 								</li>
+									{% if user.is_authenticated %} 
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'asset_new' %}">Add New Asset</a>
+										</li>
+									{% endif %}
 							</ul>
 						</li>
 						<li class="dropdown">
@@ -62,10 +68,13 @@
 								<li>
 									<a href="{% url 'calibrated_asset_list' %}">Calibrated Asset List</a>
 								</li>
+								<li>
+									<a href="{% url 'calibration_list' %}">All Calibrations</a>
+								</li>
 								{% if user.is_authenticated %} 
 									<li class="divider"></li>
 									<li>
-										<a href="{% url 'new_calibration' %}">New Calibration</a>
+										<a href="{% url 'new_calibration' %}">Add New Calibration</a>
 									</li>
 								{% endif %}
 								<li class="divider"></li>
@@ -84,20 +93,28 @@
 							</ul>
 						</li>
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Maintenance <span class="caret"></span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Reports <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
 								<li>
-									<a href="{% url 'calibrated_asset_list' %}">Maintenance List</a>
-								</li>
-								<li class="divider"></li>
-								<li>
-									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Maintenance</a>
+									<a href="{% url 'maintenance_export_all' %}">Export All Assets Requiring Maintenance</a>
 								</li>
 								<li>
-									<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Maintenance</a>
+									<a href="{% url 'environmental_export_all' %}">Export All Assets Requiring Environmental Checks</a>
 								</li>
 								<li>
-									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export Assets With Maintenance Due in Next 30 Days</a>
+									<a href="{% url 'insurance_export_all' %}">Export All Assets Requiring Insurance</a>
+								</li>
+								<li>
+									<a href="{% url 'safety_export_all' %}">Export All Assets Requiring Safety Checks</a>
+								</li>
+								<li>
+									<a href="{% url 'calibrated_asset_export_all' %}">Export Assets By Value</a>
+								</li>
+								<li>
+									<a href="{% url 'calibrated_asset_export_all' %}">Export Assets By Funding Source</a>
+								</li>
+								<li>
+									<a href="{% url 'calibrated_asset_export_all' %}">Export Assets By Location</a>
 								</li>
 							</ul>
 						</li>
@@ -105,12 +122,12 @@
 					<ul class="nav navbar-nav navbar-right userauth">
 						<li id="user_auth">
 							{% if user.is_authenticated %} 
-								<a href="{% url 'asset_new' %}" class="top-menu" title="Add new asset"><span class="glyphicon glyphicon-plus gi-2x"></span></a>
+								<a href="{% url 'asset_new' %}" class="top-menu menu-icon" title="Add new asset"><span class="glyphicon glyphicon-plus gi-2x"></span></a>
 								<p class="top-menu" id="logged_in_as">
 									&nbsp;&nbsp;Hello {{ user.username }}! <small>(<a href="{% url 'logout' %}">Log out</a>)</small>
 								</p> 
 							{% else %} 
-								<a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock gi-2x" title="Log in"></span></a> 
+								<a href="{% url 'login' %}" class="top-menu menu-icon"><span class="glyphicon glyphicon-lock gi-2x" title="Log in"></span></a> 
 							{% endif %}
 						</li>
 					</ul>

@@ -10,3 +10,4 @@ Haystack - SearchQuerySet = "SearchQuerySet().exclude('zzzzzzzzzzzzzzzzzzzzzz')"
 Haystack Browser admin.py - Add manual def for "patterns" and remove from imports, depreciated in Dj>1.8!
 pyodbc - lib/site-packages/sql_server/pyodbc/base.py - new line 150 = "13:2016," - [support SQL server 13 / 2016]
 settings.py "DEBUG = FALSE"
+Change QR code URLs

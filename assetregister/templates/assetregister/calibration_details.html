@@ -1,0 +1,60 @@
+{% extends 'assetregister/base.html' %}
+
+    {% block content %}
+    
+        <div class="asset">
+            
+            <h3>{{ calibration.calibration_description }}
+            
+            {% if user.is_authenticated %}
+                <a class="btn btn-default" href="nowhere" title="Edit Calibration"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
+            {% endif %}
+            {% if request.user.is_superuser %}
+                <a class="btn btn-default" href="{% url 'calibration_confirm_delete' pk=calibration.pk %}" title="Delete Calibration"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
+            {% endif %}
+            
+            </h3>
+            <br />
+            
+            <p>Calibration I.D. {{ calibration.calibration_record_id }}</p>
+            
+            <p>Asset: <a href="{% url 'asset_detail' pk=calibration.asset.asset_id %}">{{ calibration.asset }}</a></p> 
+            
+            {% if asset.asset_manufacturer %}
+                <p>Manufacturer: {{ calibration.asset.asset_manufacturer }}</p>
+            {% endif %}
+            
+            {% if calibration.asset.asset_status %}
+                <p>Asset Staus: {{ calibration.asset.asset_status}}</p>
+            {% endif %}
+            
+            <p>Calibration Date: {{ calibration.calibration_date }}</p>
+            
+            <p>Calibration Result: <b>{{ calibration.calibration_outcome }}</b></p>
+            
+            {% if calibration.calibration_date_next %}
+                <p>Next Calibration Due: {{ calibration.calibration_date_next }}</p>
+            {% endif %}
+            
+            {% if calibration.calibrated_by_internal %}
+                <p>Calibrated By (Internal): {{ calibration.calibrated_by_internal }}</p>
+            {% endif %}
+          
+            {% if calibration.calibrated_by_external %}
+                <p>Calibrated By (External): {{ calibration.calibrated_by_external }}</p>
+            {% endif %}
+            
+            {% if calibration.calibration_notes %}
+                <p>Notes: {{ calibration.calibration_notes|linebreaks }}</p>
+            {% endif %}
+            
+            {% if calibration.calibration_certificate %}
+            	<br /><p><a href="{{ calibration.calibration_certificate }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Calibration Certificate</a></p>
+           	{% endif %}
+           	
+           	<br />
+			<p>Calibration Record Last Edited {{ calibration.calibration_entered_on }} By {{ calibration.calibration_entered_by }}</p>
+
+    	</div>
+
+    {% endblock %}

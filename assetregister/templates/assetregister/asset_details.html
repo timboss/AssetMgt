@@ -4,16 +4,18 @@
     
         <div class="asset">
             
-            <h3>{{ asset.asset_description }}</h3>
+            <h3>{{ asset.asset_description }}
             
             {% if user.is_authenticated %}
-                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit asset"><span class="glyphicon glyphicon-edit gi-2x"></span></a>
+                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit asset"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
             {% endif %}
             {% if request.user.is_superuser %}
-                <a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-2x"></span></a>
+                <a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
             {% endif %}
             
-            <br /><br />
+            </h3>
+            
+            <br />
             
             <p>Asset I.D. {{ asset.asset_id }}</p>
 
@@ -51,30 +53,72 @@
             
             {% if asset.requires_calibration %}
             	<hr>
-                <p>Requires Calibration: {{ asset.requires_calibration }} &nbsp;&nbsp; <a href="{% url 'new_calibration_asset' urlpk=asset.pk %}">Add Calibration Record</a>
+                <p>Requires Calibration: <span class="glyphicon glyphicon-ok gi-1x"></span>
                 
-				{% for calibrations in asset.calibration.all %}
-				    <div class="calibrations">
-				        {{ calibrations.calibration_description }} | Calibrated on: {{ calibrations.calibration_date }} | Outcome: 
-				        <strong>{{ calibrations.calibration_outcome }}</strong> | Next Calibration Due: {{ calibrations.calibration_date_next }}
-				    </div>
-				{% empty %}
-				    <p>No calibration records yet :(</p>
-				{% endfor %}
+                <div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse1">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Calibration Records</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse1" class="panel-collapse collapse">
+					    	<div class="panel-body">
+					    	
+					    	{% if asset.calibration.all %}
+					    	
+					    		<table class="table table-striped">
+									<thead>
+										<tr>
+										    <th>Calibration Description</th>
+										    <th>Calibration Date</th>
+										    <th>Result</th>
+										    <th>Next Calibration Due</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for calibrations in asset.calibration.all %}
+											<tr>
+												<td>{{ calibrations.calibration_description }}</td>
+												<td>{{ calibrations.calibration_date }}</td>
+												<td><b>{{ calibrations.calibration_outcome }}</b></td>
+												<td>{{ calibrations.calibration_date_next }}</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							{% else %}
+								<h4>No calibration records yet :(</h4>
+							{% endif %}	
+								
+					    	</div>
+					      	<div class="panel-footer">
+					      		<a href="{% url 'new_calibration_asset' urlpk=asset.pk %}">Add Calibration Record</a>
+					      	</div>
+						</div>
+					</div>
+				</div>
+				
 				<hr>
+				<br />
 
             {% endif %}
             
             {% if asset.requires_safety_checks %}
-                <p>Requires Safety Checks: {{ asset.requires_safety_checks }}</p>
+                <p>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
             {% endif %}
             
             {% if asset.requires_environmental_checks %}
-                <p>Requires Environmental Checks: {{ asset.requires_environmental_checks }}</p>
+                <p>Requires Environmental Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
             {% endif %}
             
             {% if asset.requires_planned_maintenance %}
-                <p>Requires Planned Preventative Maintenance: {{ asset.requires_planned_maintenance }}
+                <p>Requires Planned Preventative Maintenance: <span class="glyphicon glyphicon-ok gi-1x"></span>
                	
                	{% if asset.maintenance_records %}
                		<br /><a href="{{ asset.maintenance_records }}" target="_blank">View Maintenance Records</a>
@@ -116,25 +160,25 @@
             <br /><br />
             
             {% if asset.calibration_instructions %}
-                <p><a href="{{ asset.calibration_instructions }}" target="_blank">Download Calibration Instructions</a></p>
+                <p><a href="{{ asset.calibration_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Calibration Instructions</a></p>
             {% endif %}    
             
             {% if asset.maintenance_instructions %}
-                <p><a href="{{ asset.maintenance_instructions }}" target="_blank">Download Maintenance Instructions</a></p>
+                <p><a href="{{ asset.maintenance_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Maintenance Instructions</a></p>
             {% endif %}
             
             {% if asset.asset_handling_and_storage_instructions %}
-                <p><a href="{{ asset.asset_handling_and_storage_instructions }}" target="_blank">Download Handling and Storage Instructions</a></p>
+                <p><a href="{{ asset.asset_handling_and_storage_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Handling and Storage Instructions</a></p>
             {% endif %}
             
             {% if asset.asset_operating_instructions %}
-                <p><a href="{{ asset.asset_operating_instructions }}" target="_blank">Download Operating Instructions</a></p>
+                <p><a href="{{ asset.asset_operating_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Operating Instructions</a></p>
             {% endif %}            
             
             <br />
-            <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank" onclick="window.open('{% url 'asset_qr' pk=asset.pk %}', 'newwindow', 'width=665, height=310'); return false;">Generate Large Asset QR Code</a>
+            <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank" onclick="window.open('{% url 'asset_qr' pk=asset.pk %}', 'newwindow', 'width=665, height=310'); return false;"><span class="glyphicon glyphicon-barcode gi-1x"></span>  Generate Large Asset QR Code</a>
             <br />
-            <a href="{% url 'asset_qr_small' pk=asset.pk %}" target="_blank" onclick="window.open('{% url 'asset_qr_small' pk=asset.pk %}', 'newwindow2', 'width=130, height=190'); return false;">Generate Small Asset QR Code</a>
+            <a href="{% url 'asset_qr_small' pk=asset.pk %}" target="_blank" onclick="window.open('{% url 'asset_qr_small' pk=asset.pk %}', 'newwindow2', 'width=130, height=190'); return false;"><span class="glyphicon glyphicon-barcode gi-1x"></span>  Generate Small Asset QR Code</a>
         </div>
 
     {% endblock %}

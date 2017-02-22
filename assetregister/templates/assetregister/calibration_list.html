@@ -1,0 +1,37 @@
+{% extends 'assetregister/base.html' %}
+
+{% block content %}
+
+    <div class="count">
+        We currently have a total of <b>{{ calibration_count }}</b> calibration records.   
+        {% if user.is_authenticated %}
+        	(<a href="{% url 'new_calibration' %}">Add new calibration</a>)
+        {% endif %}	
+    </div>
+
+    {% for calibration in calibrations %}
+        <div class="calibration">
+            
+            <a href="{% url 'calibration_detail' pk=calibration.pk %}"><h4>{{ calibration.calibration_description }}</h4></a>
+            
+            <p>Calibration ID: {{ calibration.calibration_record_id }} </p>
+   			
+   			{{ calibration.asset.asset_description }} <br />
+            
+            {% if calibration.asset.asset_manufacturer %}
+                Manufacturer: {{ calibration.asset.asset_manufacturer }} <br />
+            {% endif %}
+            
+            {% if calibration.calibration_date %}
+                Calibrated on: {{ calibration.calibration_date }} <br />
+            {% endif %}
+            
+            {% if calibration.calibration_outcome %}
+                Calibration result: <b>{{ calibration.calibration_outcome }}</b> <br />
+            {% endif %}
+            
+            <p>&nbsp;</p>
+        </div>
+    {% endfor %}
+    
+{% endblock %}

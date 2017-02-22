@@ -146,18 +146,18 @@ class Asset(models.Model):
                 # resize logo to be quarter of asset_image width, but same aspect ratio!
                 logo_aspect_ratio = float(logo.size[0] / logo.size[1])
 
-                # If image width or height <= 400 resize logo to be half, else 1/5th of image's shortest side
+                # If image width or height <= 400 resize logo to be half, else 1/4th of image's shortest side
                 if img_w > img_h:
                     if img_w <= 400:
                         logo_w = int(img_w / 2)
                     else:
-                        logo_w = int(img_w / 5)
+                        logo_w = int(img_w / 4)
                     logo_h = int(logo_w / logo_aspect_ratio)
                 else:
                     if img_h <= 400:
                         logo_h = int(img_h / 2)
                     else:
-                        logo_h = int(img_h / 5)
+                        logo_h = int(img_h / 4)
                     logo_w = int(logo_h * logo_aspect_ratio)
 
                 logo = logo.resize((logo_w, logo_h), Image.ANTIALIAS)

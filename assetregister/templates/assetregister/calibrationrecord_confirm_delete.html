@@ -1,0 +1,11 @@
+{% extends "assetregister/base.html" %}
+
+{% block content %}
+    <h1>Confirm Record Deletion</h1>
+    <form action="" method="post">{% csrf_token %}
+        <p>Are you sure you want to permanently delete the "{{ object }}" calibration record?</p>
+        <p><b>If you are absolutely sure you want to permanently delete this record, click "Confirm".</b></p>
+        <input class="btn btn-link" type="button" value="Cancel" onclick="window.history.go(-1);"/>
+        <input type="submit" value="Confirm" />
+    </form>
+{% endblock %}

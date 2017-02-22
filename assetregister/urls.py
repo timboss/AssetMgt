@@ -5,7 +5,10 @@ from django.conf import settings
 urlpatterns = [
     url(r'^$', views.asset_list, name="asset_list"),
     url(r'^active/$', views.active_asset_list, name="active_asset_list"),
-    url(r'^calibration/$', views.calibrated_asset_list, name="calibrated_asset_list"),
+    url(r'^calibration/$', views.calibration_list, name="calibration_list"),
+    url(r'^calibration/(?P<pk>\d+)/$', views.calibration_detail, name="calibration_detail"),
+    url(r'^calibration/(?P<pk>\d+)/remove/$', views.calibration_confirm_delete.as_view(), name="calibration_confirm_delete"),
+    url(r'^calibration/assets/$', views.calibrated_asset_list, name="calibrated_asset_list"),
     url(r'^calibration/new/$', views.new_calibration, name="new_calibration"),
     url(r'^calibration/new/(?P<urlpk>\d+)/$', views.new_calibration_asset, name="new_calibration_asset"),
     url(r'^calibration/export/active/$', views.calibrated_asset_export_active, name="calibrated_asset_export_active"),
@@ -23,6 +26,10 @@ urlpatterns = [
     url(r'^asset/(?P<pk>\d+)/qr/$', views.asset_qr, name="asset_qr"),
     url(r'^search/calibration/', views.calibration_search.as_view(), name="calibration_search"),
     url(r'^search/', include("haystack.urls")),
+    url(r'^maintenance/export/all/$', views.maintenance_export_all, name="maintenance_export_all"),
+    url(r'^environmental/export/all/$', views.environmental_export_all, name="environmental_export_all"),
+    url(r'^insurance/export/all/$', views.insurance_export_all, name="insurance_export_all"),
+    url(r'^safety/export/all/$', views.safety_export_all, name="safety_export_all"),  
 ]
 
 if settings.DEBUG:
