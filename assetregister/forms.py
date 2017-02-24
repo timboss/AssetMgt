@@ -3,8 +3,10 @@ from .models import Asset, CalibrationRecord
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
 
+
 class DateInput(forms.DateInput):
     input_type = 'date'
+
 
 class EditAsset(forms.ModelForm):
     class Meta:
@@ -12,8 +14,8 @@ class EditAsset(forms.ModelForm):
         fields = [
             "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
             "asset_serial_number", "asset_status", "person_responsible", "person_responsible_email",
-            "requires_calibration", "calibration_instructions", "requires_insurance", 
-            "requires_safety_checks", "requires_environmental_checks", "requires_planned_maintenance", 
+            "requires_calibration", "calibration_instructions", "requires_insurance",
+            "requires_safety_checks", "requires_environmental_checks", "requires_planned_maintenance",
             "maintenance_instructions", "maintenance_records", "asset_value",
             "purchase_order_ref", "funded_by", "acquired_on", "parent_assets", "asset_location_building",
             "asset_location_room", "asset_operating_instructions", "asset_handling_and_storage_instructions"
@@ -21,7 +23,6 @@ class EditAsset(forms.ModelForm):
         widgets = {
             'acquired_on': DateInput(attrs={'class': 'datepicker'}),
         }
-        
 
 
 class Calibrate(forms.ModelForm):

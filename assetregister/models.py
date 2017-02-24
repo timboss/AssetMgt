@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from datetime import date
 from django.conf import settings
-from django.contrib.auth import get_user_model
 import os
 from haystack.management.commands import update_index
 import logging
@@ -207,6 +205,7 @@ CALIBRATION_OUTCOME = (
                        ("Fail", "Fail")
                      )
 
+
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)
     asset = models.ForeignKey("assetregister.Asset", on_delete=models.CASCADE, related_name="calibration", limit_choices_to={'requires_calibration': True})
@@ -220,27 +219,27 @@ class CalibrationRecord(models.Model):
     calibration_certificate = models.URLField(max_length=255, null=True, blank=True)
     calibration_entered_by = models.ForeignKey("auth.User", related_name="calibration_entered_by", default=1)
     calibration_entered_on = models.DateTimeField(default=timezone.now)
-    
+
     def get_absolute_url(self):
         return "/calibrationrecord/{}/".format(self.calibration_record_id)
 
     def __str__(self):
         return "Calibration Record {} - {}".format(self.asset, self.calibration_description)
-    
+
     def save(self, *args, **kwargs):
-        
+
         Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_prev=self.calibration_date)
-        
+
         if self.calibration_date_next:
             Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=self.calibration_date_next)
         else:
             Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=None)
-            
+
         if self.calibration_outcome == "Pass":
             Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=True)
         else:
             Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=False)
-        
+
         super(CalibrationRecord, self).save(*args, **kwargs)
-                
+
                 

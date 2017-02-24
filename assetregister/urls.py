@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^maintenance/export/all/$', views.maintenance_export_all, name="maintenance_export_all"),
     url(r'^environmental/export/all/$', views.environmental_export_all, name="environmental_export_all"),
     url(r'^insurance/export/all/$', views.insurance_export_all, name="insurance_export_all"),
-    url(r'^safety/export/all/$', views.safety_export_all, name="safety_export_all"),  
+    url(r'^safety/export/all/$', views.safety_export_all, name="safety_export_all"),
 ]
 
 if settings.DEBUG:

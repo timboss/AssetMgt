@@ -30,12 +30,14 @@ def active_asset_list(request):
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
         })
 
+
 def calibration_list(request):
     calibration_count = CalibrationRecord.objects.count()
     calibrations = CalibrationRecord.objects.order_by("-pk")
     return render(request, "assetregister/calibration_list.html", {
         "calibrations": calibrations, "calibration_count": calibration_count
         })
+
 
 def calibrated_asset_list(request):
     asset_count = Asset.objects.count()
@@ -48,7 +50,8 @@ def calibrated_asset_list(request):
         "calibrated_asset_count": calibrated_asset_count,
         "active_calibrated_asset_count": active_calibrated_asset_count
         })
-    
+
+
 def calibrated_asset_list_active(request):
     asset_count = Asset.objects.count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
@@ -58,11 +61,13 @@ def calibrated_asset_list_active(request):
         "assets": assets, "asset_count": asset_count, "active_calibrated_asset_count": active_calibrated_asset_count
         })
 
+
 def calibration_detail(request, pk):
     calibration = get_object_or_404(CalibrationRecord, pk=pk)
     # ToDo - "ParentOf" field
     #     - Status number -> words translation
     return render(request, "assetregister/calibration_details.html", {"calibration": calibration})
+
 
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
@@ -235,8 +240,8 @@ def maintenance_export_all(request):
     export = Asset.objects.filter(requires_planned_maintenance=True).order_by("asset_id").values(
                                                 "asset_id", "requires_planned_maintenance", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "person_responsible", "person_responsible_email", 
-                                                "maintenance_instructions", "maintenance_records", 
+                                                "asset_status", "person_responsible", "person_responsible_email",
+                                                "maintenance_instructions", "maintenance_records",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
                                                 "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Maintenance_" + str(timezone.now().date()) + ".csv")
@@ -246,7 +251,7 @@ def environmental_export_all(request):
     export = Asset.objects.filter(requires_environmental_checks=True).order_by("asset_id").values(
                                                 "asset_id", "requires_environmental_checks", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "person_responsible", "person_responsible_email", 
+                                                "asset_status", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
                                                 "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Environmental_Checks_" + str(timezone.now().date()) + ".csv")
@@ -257,8 +262,8 @@ def insurance_export_all(request):
                                                 "asset_id", "requires_insurance", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status", "asset_value", "purchase_order_ref",
-                                                "funded_by", "acquired_on", "person_responsible", "person_responsible_email", 
-                                                "parent_assets", "asset_location_building", 
+                                                "funded_by", "acquired_on", "person_responsible", "person_responsible_email",
+                                                "parent_assets", "asset_location_building",
                                                 "asset_location_room", "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Insurance_" + str(timezone.now().date()) + ".csv")
 
@@ -267,7 +272,7 @@ def safety_export_all(request):
     export = Asset.objects.filter(requires_safety_checks=True).order_by("asset_id").values(
                                                 "asset_id", "requires_safety_checks", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "person_responsible", "person_responsible_email", 
+                                                "asset_status", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
                                                 "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Safety_Checks_" + str(timezone.now().date()) + ".csv")
