@@ -14,15 +14,18 @@
 		<script src="{% static 'js/jquery.js' %}"></script>
 		<script src="{% static 'js/jquery-ui.js' %}"></script>
 		<script>
-        $(function() {
-            $( ".datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
-        });
+	        $(function() {
+	            $( ".datepicker" ).datepicker({ dateFormat: 'dd/mm/yy' });
+	        });
         </script>
+        
+        <!-- things needed for bootstrap-multiselect -->
+        <script type="text/javascript" src="{% static 'js/bootstrap-multiselect.js' %}"></script>
+		<link rel="stylesheet" href="{% static 'css/bootstrap-multiselect.css' %}" type="text/css"/>
 		
 		<!-- our styling -->
 		<link rel="stylesheet" href="{% static 'css/assets.css' %}">
 		<link href='https://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'>
-		
 	</head>
 
 	<body>
@@ -66,13 +69,16 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
 								<li>
-									<a href="{% url 'calibrated_asset_list' %}">Calibrated Asset List</a>
+									<a href="{% url 'calibrated_asset_list' %}">All Assets Requiring Calibration</a>
 								</li>
 								<li>
-									<a href="{% url 'calibration_list' %}">All Calibrations</a>
+									<a href="{% url 'calibrated_asset_list_active' %}">"Active" Assets Requiring Calibration</a>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a href="{% url 'calibration_list' %}">All Calibration Records</a>
 								</li>
 								{% if user.is_authenticated %} 
-									<li class="divider"></li>
 									<li>
 										<a href="{% url 'new_calibration' %}">Add New Calibration</a>
 									</li>

@@ -2,6 +2,12 @@
 
 {% block content %}
 
+<ul class="breadcrumb">
+  <li><a href="#">Home</a></li>
+  <li><a href="{% url 'asset_list' %}">Assets</a></li>
+  <li class="active">Active</li>
+</ul>
+
     <div class="count">
         We currently have a total of <b>{{ active_asset_count }}</b> "active" asset records.
     </div>

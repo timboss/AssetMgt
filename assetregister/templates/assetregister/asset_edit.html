@@ -1,6 +1,13 @@
 {% extends "assetregister/base.html" %}
 
 {% block content %}
+
+	<ul class="breadcrumb">
+	  <li><a href="#">Home</a></li>
+	  <li><a href="{% url 'asset_list' %}">Assets</a></li>
+	  <li class="active">Edit</li>
+	</ul>
+
     <h1>Asset Details</h1>
     <br />
     <form enctype="multipart/form-data" method="POST" class="asset-form">{% csrf_token %}

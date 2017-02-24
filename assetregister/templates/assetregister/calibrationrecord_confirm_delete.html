@@ -1,6 +1,13 @@
 {% extends "assetregister/base.html" %}
 
 {% block content %}
+	
+	<ul class="breadcrumb">
+	  <li><a href="#">Home</a></li>
+	  <li><a href="{% url 'calibration_list' %}">Calibration</a></li>
+	  <li class="active">Remove</li>
+	</ul>
+
     <h1>Confirm Record Deletion</h1>
     <form action="" method="post">{% csrf_token %}
         <p>Are you sure you want to permanently delete the "{{ object }}" calibration record?</p>

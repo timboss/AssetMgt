@@ -2,6 +2,11 @@
 
 {% block content %}
 
+	<ul class="breadcrumb">
+	  <li><a href="#">Home</a></li>
+	  <li class="active">Caibration</li>
+	</ul>
+
     <div class="count">
         We currently have a total of <b>{{ calibration_count }}</b> calibration records.   
         {% if user.is_authenticated %}

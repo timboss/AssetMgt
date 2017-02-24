@@ -1,7 +1,14 @@
 {% extends "assetregister/base.html" %}
 
 {% block content %}
-    <h1>New Calibration</h1>
+	
+	<ul class="breadcrumb">
+	  <li><a href="#">Home</a></li>
+	  <li><a href="{% url 'calibration_list' %}">Calibration</a></li>
+	  <li class="active">Details</li>
+	</ul>
+
+    <h1>Calibration Details</h1>
     <br />
     <form enctype="multipart/form-data" method="POST" class="asset-form">{% csrf_token %}
         {{form.as_p}}

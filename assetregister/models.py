@@ -1,10 +1,13 @@
 from django.db import models
 from django.utils import timezone
+from datetime import date
 from django.conf import settings
 from django.contrib.auth import get_user_model
 import os
 from haystack.management.commands import update_index
+import logging
 
+logger = logging.getLogger(__name__)
 
 BUILDINGS = (
     ("Rolls-Royce Factory of the Future (8306)", "Rolls-Royce Factory of the Future (8306)"),
@@ -48,15 +51,15 @@ class Asset(models.Model):
     maintenance_instructions = models.URLField(max_length=255, null=True, blank=True)
     maintenance_records = models.URLField(max_length=255, null=True, blank=True)
     requires_calibration = models.BooleanField()
+    passed_calibration = models.BooleanField(default=False)
     calibration_date_prev = models.DateField(null=True, blank=True)
     calibration_date_next = models.DateField(null=True, blank=True)
     calibration_instructions = models.URLField(max_length=255, null=True, blank=True)
-    calibration_records = models.URLField(max_length=255, null=True, blank=True)
     asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     purchase_order_ref = models.CharField(max_length=15, blank=True)
     funded_by = models.CharField(max_length=255, blank=True)
-    acquired_on = models.DateTimeField(null=True, blank=True)
-    related_to_other_asset = models.ForeignKey("self", blank=True, null=True)
+    acquired_on = models.DateField(null=True, blank=True)
+    parent_assets = models.ManyToManyField("self", blank=True)
     asset_location_building = models.CharField(max_length=128, choices=BUILDINGS, blank=True)
     asset_location_room = models.CharField(max_length=255, blank=True)
     edited_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
@@ -198,6 +201,7 @@ class Asset(models.Model):
         else:
             return "{} - {}".format(self.asset_manufacturer, self.asset_description)
 
+
 CALIBRATION_OUTCOME = (
                        ("Pass", "Pass"),
                        ("Fail", "Fail")
@@ -205,13 +209,13 @@ CALIBRATION_OUTCOME = (
 
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)
-    asset = models.ForeignKey("assetregister.Asset", on_delete=models.CASCADE, related_name="calibration")
+    asset = models.ForeignKey("assetregister.Asset", on_delete=models.CASCADE, related_name="calibration", limit_choices_to={'requires_calibration': True})
     calibration_description = models.CharField(max_length=200)
-    calibration_date = models.DateField()
+    calibration_date = models.DateField(default=timezone.now)
     calibration_date_next = models.DateField(null=True, blank=True)
     calibrated_by_internal = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="calibrator")
     calibrated_by_external = models.CharField(max_length=200, null=True, blank=True)
-    calibration_outcome = models.CharField(max_length=4, choices=CALIBRATION_OUTCOME, default="Pass")
+    calibration_outcome = models.CharField(max_length=10, choices=CALIBRATION_OUTCOME, default="Pass")
     calibration_notes = models.TextField(null=True, blank=True)
     calibration_certificate = models.URLField(max_length=255, null=True, blank=True)
     calibration_entered_by = models.ForeignKey("auth.User", related_name="calibration_entered_by", default=1)
@@ -222,3 +226,21 @@ class CalibrationRecord(models.Model):
 
     def __str__(self):
         return "Calibration Record {} - {}".format(self.asset, self.calibration_description)
+    
+    def save(self, *args, **kwargs):
+        
+        Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_prev=self.calibration_date)
+        
+        if self.calibration_date_next:
+            Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=self.calibration_date_next)
+        else:
+            Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=None)
+            
+        if self.calibration_outcome == "Pass":
+            Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=True)
+        else:
+            Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=False)
+        
+        super(CalibrationRecord, self).save(*args, **kwargs)
+                
+                

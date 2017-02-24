@@ -5,16 +5,17 @@
 <ul class="breadcrumb">
   <li><a href="#">Home</a></li>
   <li><a href="{% url 'calibration_list' %}">Calibration</a></li>
-  <li class="active">Assets</li>
+  <li><a href="{% url 'calibrated_asset_list' %}">Assets</a></li>
+  <li class="active">Active</li>
 </ul>
 
     <div class="SubHeading">
-        <p><b>All Assets Requiring Calibration</b></p>
+        <p><b>"Active" Assets Requiring Calibration</b></p>
     </div>
 
     <div class="count">
-        Out of the <b>{{ asset_count }}</b> total assets <b>{{ calibrated_asset_count }}</b> require calibration, of which <b>{{ active_calibrated_asset_count }}</b> are currently active.
-    	<br /><a href="{% url 'calibrated_asset_list_active' %}">View "Active" assets requring calibration only</a>
+        Out of the <b>{{ asset_count }}</b> total assets <b>{{ active_calibrated_asset_count }}</b> are "Active" and require calibration.
+        <br /><a href="{% url 'calibrated_asset_list' %}">View ALL assets requring calibration</a>
     </div>
 
     {% for asset in assets %}
@@ -30,8 +31,6 @@
             {% if asset.asset_manufacturer %}
                 Manufacturer: {{ asset.asset_manufacturer }}</p>
             {% endif %}
-            
-            <p>Asset Status: {{ asset.asset_status }}</p>
             
             {% if asset.requires_calibration %}
                 <p>Last Calibrated: {{ asset.calibration_date_prev }}

@@ -2,6 +2,13 @@
 
     {% block content %}
     
+    <ul class="breadcrumb">
+		<li><a href="#">Home</a></li>
+		<li><a href="{% url 'asset_list' %}">Assets</a></li>
+		<li class="active">Details</li>
+	</ul>
+
+    
         <div class="asset">
             
             <h3>{{ asset.asset_description }}
@@ -53,7 +60,15 @@
             
             {% if asset.requires_calibration %}
             	<hr>
-                <p>Requires Calibration: <span class="glyphicon glyphicon-ok gi-1x"></span>
+                <p>Requires Calibration: <span class="glyphicon glyphicon-ok gi-1x"></span><br />
+                	
+                
+              	<b>Passed Last Calibration: </b>
+              	{% if asset.passed_calibration == True %}
+              		<span = class="glyphicon glyphicon-ok gi-2x"></span>
+              	{% else %}
+              		<span = class="glyphicon glyphicon-remove gi-2x"></span>
+              	{% endif %}
                 
                 <div class="panel-group">
 					<div class="panel panel-default">
@@ -70,7 +85,7 @@
 					    <div id="collapse1" class="panel-collapse collapse">
 					    	<div class="panel-body">
 					    	
-					    	{% if asset.calibration.all %}
+					    	{% if calibrations %}
 					    	
 					    		<table class="table table-striped">
 									<thead>
@@ -82,12 +97,12 @@
 										</tr>
 									</thead>
 									<tbody>
-										{% for calibrations in asset.calibration.all %}
+										{% for calibration in calibrations %}
 											<tr>
-												<td>{{ calibrations.calibration_description }}</td>
-												<td>{{ calibrations.calibration_date }}</td>
-												<td><b>{{ calibrations.calibration_outcome }}</b></td>
-												<td>{{ calibrations.calibration_date_next }}</td>
+												<td><a href="{% url 'calibration_detail' pk=calibration.calibration_record_id %}">{{ calibration.calibration_description }}</a></td>
+												<td>{{ calibration.calibration_date }}</td>
+												<td><b>{{ calibration.calibration_outcome }}</b></td>
+												<td>{{ calibration.calibration_date_next }}</td>
 											</tr>
 										{% endfor %}
 									</tbody>
@@ -97,15 +112,16 @@
 							{% endif %}	
 								
 					    	</div>
-					      	<div class="panel-footer">
-					      		<a href="{% url 'new_calibration_asset' urlpk=asset.pk %}">Add Calibration Record</a>
-					      	</div>
+					    	{% if user.is_authenticated %}
+						      	<div class="panel-footer">
+						      		<a href="{% url 'new_calibration_asset' urlpk=asset.pk %}">Add Calibration Record</a>
+						      	</div>
+						    {% endif %}
 						</div>
 					</div>
 				</div>
 				
 				<hr>
-				<br />
 
             {% endif %}
             
@@ -143,9 +159,46 @@
                 <p>Acquired On: {{ asset.acquired_on }}</p>
             {% endif %}
             
-            {% if asset.related_to_other_asset %}
-                <p>'Child' of: {{ asset.related_to_other_asset }}</p>
-            {% endif %}
+            {% if asset.parent_assets.all %}
+            	<hr>
+           		<div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse2">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Related To</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse2" class="panel-collapse collapse">
+					    	<div class="panel-body">
+					    		<table class="table table-striped">
+									<thead>
+										<tr>
+										    <th>Asset I.D.</th>
+										    <th>Asset Description</th>
+										    <th></th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for relative in asset.parent_assets.all %}
+											<tr>
+												<td><a href="{% url 'asset_detail' pk=relative.asset_id %}">{{ relative.asset_id }}</a></td>
+												<td><a href="{% url 'asset_detail' pk=relative.asset_id %}">{{ relative }}</a></td>
+												<td><a href="{% url 'asset_detail' pk=relative.asset_id %}"><img src="/media/{{ relative.asset_image_thumbnail }}" width="50%" height="50%"></a></td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+					    	</div>
+						</div>
+					</div>
+				</div>
+				<hr>
+			{% endif %}
             
             {% if asset.asset_location_building %}
                 <p>Location (Building): {{ asset.asset_location_building }}</p>

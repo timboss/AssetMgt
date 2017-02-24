@@ -2,12 +2,19 @@
 
     {% block content %}
     
+	<ul class="breadcrumb">
+	  <li><a href="#">Home</a></li>
+	  <li><a href="{% url 'calibration_list' %}">Calibration</a></li>
+	  <li class="active">Details</li>
+	</ul>
+
+    
         <div class="asset">
             
             <h3>{{ calibration.calibration_description }}
             
             {% if user.is_authenticated %}
-                <a class="btn btn-default" href="nowhere" title="Edit Calibration"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
+                <a class="btn btn-default" href="{% url 'calibration_edit' pk=calibration.pk %}" title="Edit Calibration"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
             {% endif %}
             {% if request.user.is_superuser %}
                 <a class="btn btn-default" href="{% url 'calibration_confirm_delete' pk=calibration.pk %}" title="Delete Calibration"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
@@ -18,9 +25,9 @@
             
             <p>Calibration I.D. {{ calibration.calibration_record_id }}</p>
             
-            <p>Asset: <a href="{% url 'asset_detail' pk=calibration.asset.asset_id %}">{{ calibration.asset }}</a></p> 
+            <p>Asset: <a href="{% url 'asset_detail' pk=calibration.asset.asset_id %}">{{ calibration.asset.asset_description }}</a></p> 
             
-            {% if asset.asset_manufacturer %}
+            {% if calibration.asset.asset_manufacturer %}
                 <p>Manufacturer: {{ calibration.asset.asset_manufacturer }}</p>
             {% endif %}
             

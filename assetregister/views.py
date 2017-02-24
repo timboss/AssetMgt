@@ -32,22 +32,30 @@ def active_asset_list(request):
 
 def calibration_list(request):
     calibration_count = CalibrationRecord.objects.count()
-    calibrations = CalibrationRecord.objects.order_by("-calibration_date")
+    calibrations = CalibrationRecord.objects.order_by("-pk")
     return render(request, "assetregister/calibration_list.html", {
         "calibrations": calibrations, "calibration_count": calibration_count
         })
 
 def calibrated_asset_list(request):
     asset_count = Asset.objects.count()
-    active_asset_count = Asset.objects.filter(asset_status="Active / In-Use").count()
     calibrated_asset_count = Asset.objects.filter(requires_calibration=True).count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
                                                          asset_status="Active / In-Use").count()
     assets = Asset.objects.filter(requires_calibration=True).order_by("asset_status", "calibration_date_next")
     return render(request, "assetregister/calibration_asset_list.html", {
-        "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count,
+        "assets": assets, "asset_count": asset_count,
         "calibrated_asset_count": calibrated_asset_count,
         "active_calibrated_asset_count": active_calibrated_asset_count
+        })
+    
+def calibrated_asset_list_active(request):
+    asset_count = Asset.objects.count()
+    active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
+                                                         asset_status="Active / In-Use").count()
+    assets = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").order_by("calibration_date_next")
+    return render(request, "assetregister/calibration_asset_list_active.html", {
+        "assets": assets, "asset_count": asset_count, "active_calibrated_asset_count": active_calibrated_asset_count
         })
 
 def calibration_detail(request, pk):
@@ -58,10 +66,10 @@ def calibration_detail(request, pk):
 
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
-    # ToDo - "ParentOf" field
-    #     - Status number -> words translation
-    return render(request, "assetregister/asset_details.html", {"asset": asset})
-
+    assetcalibrations = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_record_id")
+    parent_of = Asset.objects.filter(parent_assets=pk)
+    return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations,
+                                                                "parent_of": parent_of})
 
 def asset_qr(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
@@ -82,6 +90,7 @@ def asset_new(request):
             asset.edited_by = request.user
             asset.edited_on = timezone.now()
             asset.save()
+            form.save_m2m()
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset()
@@ -98,29 +107,19 @@ def asset_edit(request, pk):
             asset.edited_by = request.user
             asset.edited_on = timezone.now()
             asset.save()
+            form.save_m2m()
             return redirect("asset_detail", pk=asset.pk)
-        else:
-            i
     else:
         form = EditAsset(instance=asset)
     return render(request, "assetregister/asset_edit.html", {"form": form})
-
-
-# Depreciated this "quick delete" in favour of using Django's _
-# built in generic DeleteView class view to require manually confirming deletion
-
-# @login_required
-# def asset_remove(request, pk):
-#    asset = get_object_or_404(Asset, pk=pk)
-#    asset.delete()
-#    return redirect("asset_list")
 
 
 @method_decorator(login_required, name="dispatch")
 class asset_confirm_delete(DeleteView):
     model = Asset
     success_url = reverse_lazy("asset_list")
-    
+
+
 @method_decorator(login_required, name="dispatch")
 class calibration_confirm_delete(DeleteView):
     model = CalibrationRecord
@@ -140,6 +139,23 @@ def new_calibration(request):
     else:
         form = Calibrate()
     return render(request, "assetregister/new_calibration.html", {"form": form})
+
+
+@login_required
+def calibration_edit(request, pk):
+    calibration = get_object_or_404(CalibrationRecord, pk=pk)
+    if request.method == "POST":
+        form = Calibrate(request.POST, instance=calibration)
+        if form.is_valid():
+            calibration = form.save(commit=False)
+            calibration.entered_by = request.user
+            calibration.edited_on = timezone.now()
+            calibration.save()
+            return redirect("asset_detail", pk=calibration.asset.asset_id)
+    else:
+        form = Calibrate(instance=calibration)
+    return render(request, "assetregister/new_calibration.html", {"form": form})
+
 
 @login_required
 def new_calibration_asset(request, urlpk):
@@ -221,7 +237,7 @@ def maintenance_export_all(request):
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status", "person_responsible", "person_responsible_email", 
                                                 "maintenance_instructions", "maintenance_records", 
-                                                "related_to_other_asset", "asset_location_building", "asset_location_room",
+                                                "parent_assets", "asset_location_building", "asset_location_room",
                                                 "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Maintenance_" + str(timezone.now().date()) + ".csv")
 
@@ -231,7 +247,7 @@ def environmental_export_all(request):
                                                 "asset_id", "requires_environmental_checks", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status", "person_responsible", "person_responsible_email", 
-                                                "related_to_other_asset", "asset_location_building", "asset_location_room",
+                                                "parent_assets", "asset_location_building", "asset_location_room",
                                                 "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Environmental_Checks_" + str(timezone.now().date()) + ".csv")
 
@@ -242,7 +258,7 @@ def insurance_export_all(request):
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status", "asset_value", "purchase_order_ref",
                                                 "funded_by", "acquired_on", "person_responsible", "person_responsible_email", 
-                                                "related_to_other_asset", "asset_location_building", 
+                                                "parent_assets", "asset_location_building", 
                                                 "asset_location_room", "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Insurance_" + str(timezone.now().date()) + ".csv")
 
@@ -252,7 +268,7 @@ def safety_export_all(request):
                                                 "asset_id", "requires_safety_checks", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status", "person_responsible", "person_responsible_email", 
-                                                "related_to_other_asset", "asset_location_building", "asset_location_room",
+                                                "parent_assets", "asset_location_building", "asset_location_room",
                                                 "asset_handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Safety_Checks_" + str(timezone.now().date()) + ".csv")
 
