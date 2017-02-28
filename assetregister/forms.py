@@ -14,15 +14,40 @@ class EditAsset(forms.ModelForm):
         fields = [
             "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
             "asset_serial_number", "asset_status", "person_responsible", "person_responsible_email",
-            "requires_calibration", "calibration_instructions", "requires_insurance",
-            "requires_safety_checks", "requires_environmental_checks", "requires_planned_maintenance",
-            "maintenance_instructions", "maintenance_records", "asset_value",
-            "purchase_order_ref", "funded_by", "acquired_on", "parent_assets", "asset_location_building",
-            "asset_location_room", "asset_operating_instructions", "asset_handling_and_storage_instructions"
+            "requires_calibration", "calibration_instructions", "requires_safety_checks",
+            "requires_environmental_checks", "environmental_aspects", "environmental_notes",
+            "requires_planned_maintenance", "maintenance_instructions", "maintenance_records",
+            "asset_value", "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on",
+            "parent_assets", "asset_location_building", "asset_location_room", "operating_instructions",
+            "handling_and_storage_instructions"
             ]
         widgets = {
-            'acquired_on': DateInput(attrs={'class': 'datepicker'}),
+            'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_details': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+            'asset_manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_status': forms.Select(attrs={'class': 'form-control'}),
+            'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
+            'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'calibration_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+            'environmental_aspects': forms.CheckboxSelectMultiple(),
+            'environmental_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+            'maintenance_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+            'maintenance_records': forms.URLInput(attrs={'class': 'form-control'}),
+            'asset_value': forms.TextInput(attrs={'class': 'form-control'}),
+            'purchase_order_ref': forms.TextInput(attrs={'class': 'form-control'}),
+            'funded_by': forms.TextInput(attrs={'class': 'form-control'}),
+            'acquired_on': DateInput(attrs={'class': 'datepicker form-control'}),
+            'parent_assets': forms.SelectMultiple(attrs={'class': 'form-control example-enableFiltering'}),
+            'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
+            'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
+            'operating_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+            'handling_and_storage_instructions': forms.URLInput(attrs={'class': 'form-control'}),
         }
+        labels = {
+          "parent_assets": ("Related Assets"),
+          }
 
 
 class Calibrate(forms.ModelForm):
@@ -33,8 +58,15 @@ class Calibrate(forms.ModelForm):
                   "calibrated_by_external", "calibration_outcome", "calibration_notes", "calibration_certificate"
                   ]
         widgets = {
-            'calibration_date': DateInput(attrs={'class': 'datepicker'}),
-            'calibration_date_next': DateInput(attrs={'class': 'datepicker'}),
+            'asset': forms.Select(attrs={'class': 'form-control example-enableFiltering'}),
+            'calibration_description': forms.TextInput(attrs={'class': 'form-control'}),
+            'calibration_date': DateInput(attrs={'class': 'datepicker form-control'}),
+            'calibration_date_next': DateInput(attrs={'class': 'datepicker form-control'}),
+            'calibrated_by_internal': forms.Select(attrs={'class': 'form-control'}),
+            'calibrated_by_external': forms.TextInput(attrs={'class': 'form-control'}),
+            'calibration_outcome': forms.Select(attrs={'class': 'form-control'}),
+            'calibration_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+            'calibration_certificate': forms.URLInput(attrs={'class': 'form-control'}),
         }
         labels = {
                   "calibration_certificate": ("Calibration Certificate URL"),

@@ -28,10 +28,12 @@ urlpatterns = [
     url(r'^asset/(?P<pk>\d+)/qr/$', views.asset_qr, name="asset_qr"),
     url(r'^search/calibration/', views.calibration_search.as_view(), name="calibration_search"),
     url(r'^search/', include("haystack.urls")),
+    url(r'^asset/export/all/$', views.export_all_assets, name="asset_export_all"),
     url(r'^maintenance/export/all/$', views.maintenance_export_all, name="maintenance_export_all"),
     url(r'^environmental/export/all/$', views.environmental_export_all, name="environmental_export_all"),
     url(r'^insurance/export/all/$', views.insurance_export_all, name="insurance_export_all"),
     url(r'^safety/export/all/$', views.safety_export_all, name="safety_export_all"),
+    url(r'^example/$', views.example, name="example")
 ]
 
 if settings.DEBUG:

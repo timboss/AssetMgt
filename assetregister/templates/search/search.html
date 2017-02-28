@@ -14,7 +14,7 @@
             
             {% for result in page.object_list %}
                 <p>
-                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a><br />
+                    <h4><a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a></h4><br />
                     {% if result.object.asset_image_thumbnail %}
                         <a href="{{ result.object.get_absolute_url }}"><img src="/media/{{ result.object.asset_image_thumbnail }}"></a><br />
                     {% endif %}
@@ -24,6 +24,7 @@
                     {%if result.object.asset_location_building %}
                         Location: {{ result.object.asset_location_building }} <br />
                     {% endif %}
+                    <hr>
                 </p> </br >
             {% empty %}
                 <p>No results found.</p>

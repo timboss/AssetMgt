@@ -25,39 +25,82 @@
             
             <p>Calibration I.D. {{ calibration.calibration_record_id }}</p>
             
-            <p>Asset: <a href="{% url 'asset_detail' pk=calibration.asset.asset_id %}">{{ calibration.asset.asset_description }}</a></p> 
-            
-            {% if calibration.asset.asset_manufacturer %}
-                <p>Manufacturer: {{ calibration.asset.asset_manufacturer }}</p>
-            {% endif %}
-            
-            {% if calibration.asset.asset_status %}
-                <p>Asset Staus: {{ calibration.asset.asset_status}}</p>
-            {% endif %}
-            
-            <p>Calibration Date: {{ calibration.calibration_date }}</p>
-            
-            <p>Calibration Result: <b>{{ calibration.calibration_outcome }}</b></p>
-            
-            {% if calibration.calibration_date_next %}
-                <p>Next Calibration Due: {{ calibration.calibration_date_next }}</p>
-            {% endif %}
-            
-            {% if calibration.calibrated_by_internal %}
-                <p>Calibrated By (Internal): {{ calibration.calibrated_by_internal }}</p>
-            {% endif %}
-          
-            {% if calibration.calibrated_by_external %}
-                <p>Calibrated By (External): {{ calibration.calibrated_by_external }}</p>
-            {% endif %}
-            
-            {% if calibration.calibration_notes %}
-                <p>Notes: {{ calibration.calibration_notes|linebreaks }}</p>
-            {% endif %}
-            
-            {% if calibration.calibration_certificate %}
-            	<br /><p><a href="{{ calibration.calibration_certificate }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Calibration Certificate</a></p>
-           	{% endif %}
+            <table class="table table-striped">
+				<tbody>
+						<tr>
+							<td class="col-md-3">Asset:</td>
+							<td><a href="{% url 'asset_detail' pk=calibration.asset.asset_id %}">{{ calibration.asset.asset_description }}</a></td>
+						</tr>
+        			
+        			{% if calibration.asset.asset_manufacturer %}
+						<tr>
+							<td class="col-md-3">Manufacturer:</td>
+							<td>{{ calibration.asset.asset_manufacturer }}</td>
+						</tr>
+        			{% endif %}
+        			
+					{% if calibration.asset.asset_status %}
+						<tr>
+							<td class="col-md-3">Asset Status:</td>
+							<td>{{ calibration.asset.asset_status }}</td>
+						</tr>
+        			{% endif %}
+
+            		{% if calibration.calibration_date %}
+						<tr>
+							<td class="col-md-3">Calibration Date:</td>
+							<td>{{ calibration.calibration_date  }}</td>
+						</tr>
+        			{% endif %}
+        			
+						<tr>
+							<td class="col-md-3">Calibration Result:</td>
+							<td>
+								<b>{{ calibration.calibration_outcome }}</b>
+								{% if calibration.calibration_outcome == "Pass" %}
+									<span = class="glyphicon glyphicon-ok gi-2x"></span>
+								{% else %}
+									<span = class="glyphicon glyphicon-remove gi-2x"></span>
+								{% endif %}
+							</td>
+						</tr>
+					
+        			{% if calibration.calibration_date_next %}
+						<tr>
+							<td class="col-md-3">Next Calibration Due:</td>
+							<td>{{ calibration.calibration_date_next  }}</td>
+						</tr>
+        			{% endif %}
+
+					{% if calibration.calibrated_by_internal %}
+						<tr>
+							<td class="col-md-3">Calibrated By (Interal):</td>
+							<td>{{ calibration.calibrated_by_internal  }}</td>
+						</tr>
+        			{% endif %}
+        			
+        			{% if calibration.calibrated_by_external %}
+						<tr>
+							<td class="col-md-3">Calibrated By (External):</td>
+							<td>{{ calibration.calibrated_by_external  }}</td>
+						</tr>
+        			{% endif %}
+           
+            		{% if calibration.calibration_notes %}
+            			<tr>
+							<td class="col-md-3">Notes:</td>
+							<td>{{ calibration.calibration_notes|linebreaks  }}</td>
+						</tr>
+					{% endif %}
+
+            		{% if calibration.calibration_certificate %}
+            			<tr>
+							<td class="col-md-3">Certificate:</td>
+							<td><a href="{{ calibration.calibration_certificate }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Calibration Certificate</a></td>
+						</tr>
+					{% endif %}
+				</tbody>
+			</table>
            	
            	<br />
 			<p>Calibration Record Last Edited {{ calibration.calibration_entered_on }} By {{ calibration.calibration_entered_by }}</p>

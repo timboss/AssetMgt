@@ -1,19 +1,45 @@
 {% extends "assetregister/base.html" %}
 
-<ul class="breadcrumb">
-  <li><a href="#">Home</a></li>
-  <li><a href="{% url 'asset_list' %}">Assets</a></li>
-  <li class="active">Remove</li>
-</ul>
-
 {% block content %}
-    <h1>Confirm Asset Deletion</h1>
-    <form action="" method="post">{% csrf_token %}
-        <p>Are you sure you want to permanently delete "{{ object }}" and all associated calibration records?</p>
-        <p>It is usually better to keep a record of all assets that have ever been on site... <br />
-        Consider changing this asset's status to "archived" instead?</p>
-        <p><b>If you are absolutely sure you want to permanently delete this asset and all associated records, click "Confirm".</b></p>
-        <input class="btn btn-link" type="button" value="Cancel" onclick="window.history.go(-1);"/>
-        <input type="submit" value="Confirm" />
-    </form>
+
+	<ul class="breadcrumb">
+		<li><a href="#">Home</a></li>
+		<li><a href="{% url 'asset_list' %}">Assets</a></li>
+		<li><a href="{% url 'asset_detail' pk=object.pk %}">Details</a></li>
+		<li class="active">Remove</li>
+	</ul>
+    
+    <script type="text/javascript">
+    $(window).load(function(){
+        $('#myModal').modal('show');
+    });
+	</script>
+
+	<div class="myModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+					<h4 class="modal-title">Confirm Asset Deletion</h4>
+				</div>
+				<div class="modal-body">
+			        <p>Are you sure you want to permanently delete "{{ object }}" and any associated calibration records?</p>
+			        <p>It is usually better to keep a record of all assets that have ever been on site... <br />
+			        Consider changing this asset's status to "archived" instead?</p>
+			        <p><b>If you are absolutely sure you want to permanently delete this asset and all associated records, click "Confirm".</b></p>
+				</div>
+				<div class="modal-footer">
+					<form action="" method="post">{% csrf_token %}
+						<button type="button" class="btn btn-default" value="Cancel" onclick="window.history.go(-1);">
+							Cancel
+						</button>
+						<button type="submit" value="Confirm" class="btn btn-primary">
+							Confirm
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+    
 {% endblock %}

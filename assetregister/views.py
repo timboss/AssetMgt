@@ -11,11 +11,16 @@ from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
 from django.http import HttpResponseNotFound
+from django.conf import settings
+
+
+def example(request):
+    return render(request, "assetregister/example.html")
 
 
 def asset_list(request):
     asset_count = Asset.objects.count()
-    active_asset_count = Asset.objects.filter(asset_status="Active / In-Use").count()
+    active_asset_count = Asset.objects.filter(asset_status=1).count()
     assets = Asset.objects.order_by("asset_id")
     return render(request, "assetregister/asset_list.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
@@ -24,13 +29,14 @@ def asset_list(request):
 
 def active_asset_list(request):
     asset_count = Asset.objects.count()
-    active_asset_count = Asset.objects.filter(asset_status="Active / In-Use").count()
-    assets = Asset.objects.filter(asset_status="Active / In-Use").order_by("asset_id")
+    active_asset_count = Asset.objects.filter(asset_status=1).count()
+    assets = Asset.objects.filter(asset_status=1).order_by("asset_id")
     return render(request, "assetregister/asset_list_active.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
         })
 
 
+@login_required
 def calibration_list(request):
     calibration_count = CalibrationRecord.objects.count()
     calibrations = CalibrationRecord.objects.order_by("-pk")
@@ -39,11 +45,12 @@ def calibration_list(request):
         })
 
 
+@login_required
 def calibrated_asset_list(request):
     asset_count = Asset.objects.count()
     calibrated_asset_count = Asset.objects.filter(requires_calibration=True).count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
-                                                         asset_status="Active / In-Use").count()
+                                                         asset_status=1).count()
     assets = Asset.objects.filter(requires_calibration=True).order_by("asset_status", "calibration_date_next")
     return render(request, "assetregister/calibration_asset_list.html", {
         "assets": assets, "asset_count": asset_count,
@@ -52,11 +59,12 @@ def calibrated_asset_list(request):
         })
 
 
+@login_required
 def calibrated_asset_list_active(request):
     asset_count = Asset.objects.count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
-                                                         asset_status="Active / In-Use").count()
-    assets = Asset.objects.filter(requires_calibration=True, asset_status="Active / In-Use").order_by("calibration_date_next")
+                                                         asset_status=1).count()
+    assets = Asset.objects.filter(requires_calibration=True, asset_status=1).order_by("calibration_date_next")
     return render(request, "assetregister/calibration_asset_list_active.html", {
         "assets": assets, "asset_count": asset_count, "active_calibrated_asset_count": active_calibrated_asset_count
         })
@@ -71,19 +79,28 @@ def calibration_detail(request, pk):
 
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
-    assetcalibrations = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_record_id")
+    assetcalibrations = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_record_id")[:5]
     parent_of = Asset.objects.filter(parent_assets=pk)
-    return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations,
-                                                                "parent_of": parent_of})
+    enviro_aspect_count = Asset.objects
+    if assetcalibrations.count() > 0:
+        last_cal = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_record_id")[:1]
+        return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations,
+                                                                    "parent_of": parent_of, "last_cal": last_cal})
+    else:
+        return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations,
+                                                                    "parent_of": parent_of})
+
 
 def asset_qr(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
-    return render(request, "assetregister/asset_qr.html", {"asset": asset})
+    baseurl = settings.BASEURL
+    return render(request, "assetregister/asset_qr.html", {"asset": asset, "baseurl":baseurl})
 
 
 def asset_qr_small(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
-    return render(request, "assetregister/asset_qr_small.html", {"asset": asset})
+    baseurl = settings.BASEURL
+    return render(request, "assetregister/asset_qr_small.html", {"asset": asset, "baseurl":baseurl})
 
 
 @login_required
@@ -105,6 +122,7 @@ def asset_new(request):
 @login_required
 def asset_edit(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
+    assets_to_relate = Asset.objects.exclude(asset_id=pk).order_by("asset_manufacturer", "asset_description")
     if request.method == "POST":
         form = EditAsset(request.POST, request.FILES, instance=asset)
         if form.is_valid():
@@ -116,7 +134,7 @@ def asset_edit(request, pk):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset(instance=asset)
-    return render(request, "assetregister/asset_edit.html", {"form": form})
+    return render(request, "assetregister/asset_edit.html", {"form": form, "assets_to_relate": assets_to_relate})
 
 
 @method_decorator(login_required, name="dispatch")
@@ -188,6 +206,7 @@ class calibration_search(SearchView):
 #        return queryset
 
 
+@login_required
 def calibrated_asset_export_active(request):
     calibration_export = Asset.objects.filter(requires_calibration=True,
                                               asset_status="Active / In-Use").order_by("calibration_date_next").values(
@@ -200,6 +219,7 @@ def calibrated_asset_export_active(request):
     return render_to_csv_response(calibration_export, filename="Active_Assets_Needing_Calibration_" + str(timezone.now().date()) + ".csv")
 
 
+@login_required
 def calibrated_asset_export_all(request):
     calibration_export = Asset.objects.filter(requires_calibration=True).order_by("calibration_date_next").values(
                                                 "asset_id", "requires_calibration", "asset_description",
@@ -211,6 +231,7 @@ def calibrated_asset_export_all(request):
     return render_to_csv_response(calibration_export, filename="All_Assets_Needing_Calibration_" + str(timezone.now().date()) + ".csv")
 
 
+@login_required
 def calibration_asset_export_nextmonth(request):
     plusonemonth = timezone.now() + timedelta(days=30)
     calibration_export = Asset.objects.filter(requires_calibration=True,
@@ -219,10 +240,12 @@ def calibration_asset_export_nextmonth(request):
                                   str(plusonemonth.date()) + ".csv")
 
 
+@login_required
 def calibration_asset_export_custom_select(request):
     return render(request, "assetregister/calibration_export.html")
 
 
+@login_required
 def calibration_asset_export_custom(request):
     if request.GET.get('days'):
         getdays = int(request.GET.get('days'))
@@ -243,7 +266,7 @@ def maintenance_export_all(request):
                                                 "asset_status", "person_responsible", "person_responsible_email",
                                                 "maintenance_instructions", "maintenance_records",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
-                                                "asset_handling_and_storage_instructions")
+                                                "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Maintenance_" + str(timezone.now().date()) + ".csv")
 
 
@@ -253,7 +276,7 @@ def environmental_export_all(request):
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
-                                                "asset_handling_and_storage_instructions")
+                                                "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Environmental_Checks_" + str(timezone.now().date()) + ".csv")
 
 
@@ -264,7 +287,7 @@ def insurance_export_all(request):
                                                 "asset_status", "asset_value", "purchase_order_ref",
                                                 "funded_by", "acquired_on", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building",
-                                                "asset_location_room", "asset_handling_and_storage_instructions")
+                                                "asset_location_room", "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Insurance_" + str(timezone.now().date()) + ".csv")
 
 
@@ -274,9 +297,11 @@ def safety_export_all(request):
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
-                                                "asset_handling_and_storage_instructions")
+                                                "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Safety_Checks_" + str(timezone.now().date()) + ".csv")
 
 
+@login_required
 def export_all_assets(request):
-    pass
+    export = Asset.objects.all()
+    return render_to_csv_response(export, filename="All_Assets__" + str(timezone.now().date()) + ".csv")

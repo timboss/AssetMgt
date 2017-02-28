@@ -11,16 +11,8 @@
 		
 		<!-- things needed for JQuery -->
 		<link href="{% static 'css/jquery-ui.css' %}" rel="stylesheet" />
-		<script src="{% static 'js/jquery.js' %}"></script>
-		<script src="{% static 'js/jquery-ui.js' %}"></script>
-		<script>
-	        $(function() {
-	            $( ".datepicker" ).datepicker({ dateFormat: 'dd/mm/yy' });
-	        });
-        </script>
-        
-        <!-- things needed for bootstrap-multiselect -->
-        <script type="text/javascript" src="{% static 'js/bootstrap-multiselect.js' %}"></script>
+
+        <!-- things needed for Bootstrap-MultiSelect -->
 		<link rel="stylesheet" href="{% static 'css/bootstrap-multiselect.css' %}" type="text/css"/>
 		
 		<!-- our styling -->
@@ -30,8 +22,28 @@
 
 	<body>
 		
+		<script src="{% static 'js/jquery.js' %}"></script>
+		<script src="{% static 'js/jquery-ui.js' %}"></script>
+		<script>
+	        $(function() {
+	            $( ".datepicker" ).datepicker({ dateFormat: 'dd/mm/yy' });
+	        });
+        </script>
+		
 		<!-- ...even more things for Bootstrap -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+		<!-- things needed for bootstrap-multiselect -->
+        <script type="text/javascript" src="{% static 'js/bootstrap-multiselect.js' %}"></script>
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+	            $('.example-enableFiltering').multiselect({
+	                enableCaseInsensitiveFiltering: true,
+	                buttonWidth: '100%'
+	            });
+	        });
+	    </script>
+
 
 		<!-- bootstrap "navbar" menu -->
 		<nav class="navbar navbar-default">
@@ -65,39 +77,41 @@
 									{% endif %}
 							</ul>
 						</li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu">
-								<li>
-									<a href="{% url 'calibrated_asset_list' %}">All Assets Requiring Calibration</a>
-								</li>
-								<li>
-									<a href="{% url 'calibrated_asset_list_active' %}">"Active" Assets Requiring Calibration</a>
-								</li>
-								<li class="divider"></li>
-								<li>
-									<a href="{% url 'calibration_list' %}">All Calibration Records</a>
-								</li>
-								{% if user.is_authenticated %} 
+						{% if user.is_authenticated %} 
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
 									<li>
-										<a href="{% url 'new_calibration' %}">Add New Calibration</a>
+										<a href="{% url 'calibrated_asset_list' %}">All Assets Requiring Calibration</a>
 									</li>
-								{% endif %}
-								<li class="divider"></li>
-								<li>
-									<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
-								</li>
-								<li>
-									<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Calibration</a>
-								</li>
-								<li>
-									<a href="{% url 'calibration_asset_export_nextmonth' %}">Export All Assets With Calibration Due in Next 30 Days</a>
-								</li>
-								<li>
-									<a href="{% url 'calibration_asset_export_custom_select' %}">Create Custom Export...</a>
-								</li>
-							</ul>
-						</li>
+									<li>
+										<a href="{% url 'calibrated_asset_list_active' %}">"Active" Assets Requiring Calibration</a>
+									</li>
+									<li class="divider"></li>
+									<li>
+										<a href="{% url 'calibration_list' %}">All Calibration Records</a>
+									</li>
+									{% if user.is_authenticated %} 
+										<li>
+											<a href="{% url 'new_calibration' %}">Add New Calibration</a>
+										</li>
+									{% endif %}
+									<li class="divider"></li>
+									<li>
+										<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
+									</li>
+									<li>
+										<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Calibration</a>
+									</li>
+									<li>
+										<a href="{% url 'calibration_asset_export_nextmonth' %}">Export All Assets With Calibration Due in Next 30 Days</a>
+									</li>
+									<li>
+										<a href="{% url 'calibration_asset_export_custom_select' %}">Create Custom Export...</a>
+									</li>
+								</ul>
+							</li>
+						{% endif %}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Reports <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
@@ -152,7 +166,7 @@
 		</nav>
 
 		<!-- page content block -->
-		<div class="content container">
+		<div class="content container-fluid">
 			<div class="row">
 				<div class="col-md-8">
 					{% block content %}

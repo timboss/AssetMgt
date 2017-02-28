@@ -7,26 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-BUILDINGS = (
-    ("Rolls-Royce Factory of the Future (8306)", "Rolls-Royce Factory of the Future (8306)"),
-    ("Factory 2050 (8324)", "Factory 2050 (8324)"),
-    ("Design, Prototyping & Testing Centre (8304)", "Design, Prototyping & Testing Centre (8304)"),
-    ("Nuclear AMRC (8307)", "Nuclear AMRC (8307)"),
-    ("Knowledge Transfer Centre (8313)", "Knowledge Transfer Centre (8313)"),
-    ("AMRC Training Centre (8320)", "AMRC Training Centre (8320)"),
-    ("Castings Technology International 1 (Waverly 1) (8322)",
-     "Castings Technology International 1 (Waverly 1) (8322)"),
-    ("Castings Foundry of the Future (Waverly 2) (8323)", "Castings Foundry of the Future (Waverly 2) (8323)"),
-)
-
-ASSET_STATUS = (
-    ("Active / In-Use", "Active / In-Use"),
-    ("Inactive (Being Comissioned / Repaired)", "Inactive (Being Comissioned / Repaired)"),
-    ("Quarantined", "Quarantined"),
-    ("Decomissioned / Withdrawn", "Decomissioned / Withdrawn"),
-    ("Archived", "Archived"),
-)
-
+active_asset_status = 1
 
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
@@ -37,14 +18,16 @@ class Asset(models.Model):
     asset_manufacturer = models.CharField(max_length=255, blank=True)
     asset_model = models.CharField(max_length=255, blank=True)
     asset_serial_number = models.CharField(max_length=255, blank=True)
-    asset_handling_and_storage_instructions = models.URLField(max_length=255, null=True, blank=True)
-    asset_operating_instructions = models.URLField(max_length=255, null=True, blank=True)
-    asset_status = models.CharField(max_length=100, choices=ASSET_STATUS, default="Active / In-Use")
+    handling_and_storage_instructions = models.URLField(max_length=255, null=True, blank=True)
+    operating_instructions = models.URLField(max_length=255, null=True, blank=True)
+    asset_status = models.ForeignKey("AssetStatus", on_delete=models.SET_NULL, null=True, default=active_asset_status, related_name="status")
     person_responsible = models.CharField(max_length=100)
     person_responsible_email = models.EmailField()
     requires_insurance = models.BooleanField()
     requires_safety_checks = models.BooleanField()
     requires_environmental_checks = models.BooleanField()
+    environmental_aspects = models.ManyToManyField("EnviroAspects", blank=True)
+    environmental_notes = models.TextField(blank=True)
     requires_planned_maintenance = models.BooleanField()
     maintenance_instructions = models.URLField(max_length=255, null=True, blank=True)
     maintenance_records = models.URLField(max_length=255, null=True, blank=True)
@@ -58,7 +41,7 @@ class Asset(models.Model):
     funded_by = models.CharField(max_length=255, blank=True)
     acquired_on = models.DateField(null=True, blank=True)
     parent_assets = models.ManyToManyField("self", blank=True)
-    asset_location_building = models.CharField(max_length=128, choices=BUILDINGS, blank=True)
+    asset_location_building = models.ForeignKey("Buildings", on_delete=models.SET_NULL, blank=True, null=True, related_name="building")
     asset_location_room = models.CharField(max_length=255, blank=True)
     edited_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
     edited_on = models.DateTimeField(default=timezone.now)
@@ -107,7 +90,7 @@ class Asset(models.Model):
                 super(Asset, self).save(*args, **kwargs)
 
                 # -- THUMBNAIL --
-                THUMB_SIZE = (250, 150)
+                THUMB_SIZE = (300, 200)
 
                 # Open image to thumbnail
                 fh = storage.open(self.asset_image.name)
@@ -137,7 +120,7 @@ class Asset(models.Model):
 
                 # -- WATERMARK --
                 assetimage = storage.open(self.asset_image.name)
-                logoimage = storage.open("images/watermarklogo2.png")
+                logoimage = storage.open("images/watermarklogo3.png")
                 img = Image.open(assetimage).convert("RGBA")
                 logo = Image.open(logoimage).convert("RGBA")
 
@@ -227,19 +210,44 @@ class CalibrationRecord(models.Model):
         return "Calibration Record {} - {}".format(self.asset, self.calibration_description)
 
     def save(self, *args, **kwargs):
-
-        Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_prev=self.calibration_date)
-
-        if self.calibration_date_next:
-            Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=self.calibration_date_next)
-        else:
-            Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=None)
-
-        if self.calibration_outcome == "Pass":
-            Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=True)
-        else:
-            Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=False)
-
+        
         super(CalibrationRecord, self).save(*args, **kwargs)
+        
+        # Check if this is the latest calibration record for any asset, if so update asset.calibration_dates
+        latest_asset_calibration = CalibrationRecord.objects.filter(asset=self.calibration_record_id).order_by("-calibration_record_id")[:1]
+        
+        if self.calibration_record_id == latest_asset_calibration.calibration_record_id:
+            
+            Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_prev=self.calibration_date)
 
-                
+            if self.calibration_date_next:
+                Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=self.calibration_date_next)
+            else:
+                Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_next=None)
+
+            if self.calibration_outcome == "Pass":
+                Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=True)
+            else:
+                Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=False)
+
+
+class Buildings(models.Model):
+    building_name = models.CharField(max_length=255)
+    EFM_building_code = models.CharField(max_length=6)
+
+    def __str__(self):
+        return "{} ({})".format(self.building_name, self.EFM_building_code)
+
+
+class AssetStatus(models.Model):
+    status_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.status_name
+
+
+class EnviroAspects(models.Model):
+    aspect = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.aspect
