@@ -71,6 +71,16 @@ class Calibrate(forms.ModelForm):
         labels = {
                   "calibration_certificate": ("Calibration Certificate URL"),
                   }
+    
+    def clean(self):
+        cleaned_data = super(Calibrate, self).clean()
+        byinternal = cleaned_data.get("calibrated_by_internal")
+        byexternal = cleaned_data.get("calibrated_by_external")
+        
+        if not byinternal and not byexternal:
+            error = "You must enter details for either Calibrated By Internal or Calibrated By External!"
+            self.add_error("calibrated_by_internal", error)
+            self.add_error("calibrated_by_external", error)
 
 
 class CalibrationSearch(SearchForm):

@@ -207,17 +207,20 @@ class CalibrationRecord(models.Model):
         return "/calibrationrecord/{}/".format(self.calibration_record_id)
 
     def __str__(self):
-        return "Calibration Record {} - {}".format(self.asset, self.calibration_description)
+        return "Calibration #{} - {} - {}".format(self.pk, self.asset, self.calibration_description)
 
     def save(self, *args, **kwargs):
         
         super(CalibrationRecord, self).save(*args, **kwargs)
         
         # Check if this is the latest calibration record for any asset, if so update asset.calibration_dates
-        latest_asset_calibration = CalibrationRecord.objects.filter(asset=self.calibration_record_id).order_by("-calibration_record_id")[:1]
-        
-        if self.calibration_record_id == latest_asset_calibration.calibration_record_id:
-            
+        newassetid = self.asset.pk
+        latest_asset_calibration = CalibrationRecord.objects.filter(asset=newassetid).order_by("-calibration_record_id")[:1]
+        for calibration in latest_asset_calibration:
+            latest_calibration_id = calibration.pk
+
+        if self.pk == latest_calibration_id:
+
             Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_prev=self.calibration_date)
 
             if self.calibration_date_next:

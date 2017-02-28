@@ -146,20 +146,20 @@
             	<hr>
             	<h3>Calibration</h3>
                 
-              	{% if last_cal %}     				
+              	{% if last_cal_result %}     				
      				<p><b>
-                	{% if last_cal.calibration_outcome == 'Pass' %}
+                	{% if last_cal_result == 'Pass' %}
               			Last Calibration Result: <b>Pass <span class="glyphicon glyphicon-ok gi-2x"></span></b>
               		{% else %}
               			Last Calibration Result: <b>Fail <span class="glyphicon glyphicon-remove gi-2x"></span></b>
               		{% endif %}
               		</b></p>
-     				<p>Next Calibration Due: {{ last_cal.calibration_date_next }}</p>
+     				<p>Next Calibration Due: {{ last_cal_next_date }}</p>
      			{% endif %}
      			
      			
 	            <div class="panel-group">
-	            	{% if last_cal.calibration_outcome == 'Pass' %}
+	            	{% if last_cal_result == 'Pass' %}
 						<div class="panel panel-success">
 					{% else %}
 						<div class="panel panel-danger">
@@ -168,7 +168,11 @@
 						      <h4 class="panel-title">
 						        <a data-toggle="collapse" href="#collapse1">
 						        	<div id="calibration-expand-container">
-						        		<div id="calibration-expand-left" align="left">Last 5 Calibration Records</div>
+						        		{% if user.is_authenticated %}
+						        			<div id="calibration-expand-left" align="left">All Calibration Records</div>
+						        		{% else %}
+						        			<div id="calibration-expand-left" align="left">Last 3 Calibration Records</div>
+						        		{% endif %}
 						        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
 						        	</div>
 						        </a>
@@ -188,23 +192,43 @@
 											</tr>
 										</thead>
 										<tbody>
-											{% for calibration in calibrations %}
-												{% if calibration.calibration_outcome == 'Pass' %}
-													<tr>
-												{% else %}
-													<tr class="danger">
-												{% endif %}	
-														<td>
-															{% if calibration.asset == last_cal.asset %}
-															 	<span class="glyphicon glyphicon-asterisk" title="Latest Calibration"></span>
-															 {% endif %}
-															<a href="{% url 'calibration_detail' pk=calibration.calibration_record_id %}">{{ calibration.calibration_description }}</a>
-														</td>
-														<td>{{ calibration.calibration_date }}</td>
-														<td><b>{{ calibration.calibration_outcome }}</b></td>
-														<td>{{ calibration.calibration_date_next }}</td>
-													</tr>
-											{% endfor %}
+											{% if user.is_authenticated %}
+												{% for calibration in allcalibrations %}
+													{% if calibration.calibration_outcome == 'Pass' %}
+														<tr>
+													{% else %}
+														<tr class="danger">
+													{% endif %}	
+															<td>
+																{% if calibration.asset == last_cal.asset %}
+																 	<span class="glyphicon glyphicon-asterisk" title="Latest Calibration"></span>
+																 {% endif %}
+																<a href="{% url 'calibration_detail' pk=calibration.calibration_record_id %}">{{ calibration.calibration_description }}</a>
+															</td>
+															<td>{{ calibration.calibration_date }}</td>
+															<td><b>{{ calibration.calibration_outcome }}</b></td>
+															<td>{{ calibration.calibration_date_next }}</td>
+														</tr>
+												{% endfor %}
+											{% else %}
+												{% for calibration in calibrations %}
+													{% if calibration.calibration_outcome == 'Pass' %}
+														<tr>
+													{% else %}
+														<tr class="danger">
+													{% endif %}	
+															<td>
+																{% if calibration.asset == last_cal.asset %}
+																 	<span class="glyphicon glyphicon-asterisk" title="Latest Calibration"></span>
+																 {% endif %}
+																<a href="{% url 'calibration_detail' pk=calibration.calibration_record_id %}">{{ calibration.calibration_description }}</a>
+															</td>
+															<td>{{ calibration.calibration_date }}</td>
+															<td><b>{{ calibration.calibration_outcome }}</b></td>
+															<td>{{ calibration.calibration_date_next }}</td>
+														</tr>
+												{% endfor %}
+											{% endif %}
 										</tbody>
 									</table>
 								{% else %}
