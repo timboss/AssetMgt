@@ -3,21 +3,21 @@
     {% block content %}
     
 	<ul class="breadcrumb">
-	  <li><a href="#">Home</a></li>
+	  <li><a href="/">Home</a></li>
 	  <li><a href="{% url 'calibration_list' %}">Calibration</a></li>
 	  <li class="active">Details</li>
 	</ul>
 
-    
+
         <div class="asset">
             
             <h3>{{ calibration.calibration_description }}
             
             {% if user.is_authenticated %}
-                <a class="btn btn-default" href="{% url 'calibration_edit' pk=calibration.pk %}" title="Edit Calibration"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
+                <a class="btn btn-default" href="{% url 'calibration_edit' slug=calibration.slug %}" title="Edit Calibration"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
             {% endif %}
             {% if request.user.is_superuser %}
-                <a class="btn btn-default" href="{% url 'calibration_confirm_delete' pk=calibration.pk %}" title="Delete Calibration"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
+                <a class="btn btn-default" href="{% url 'calibration_confirm_delete' slug=calibration.slug %}" title="Delete Calibration"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
             {% endif %}
             
             </h3>

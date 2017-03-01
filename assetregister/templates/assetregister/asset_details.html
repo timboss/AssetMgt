@@ -3,7 +3,7 @@
     {% block content %}
     
     <ul class="breadcrumb">
-		<li><a href="#">Home</a></li>
+		<li><a href="/">Home</a></li>
 		<li><a href="{% url 'asset_list' %}">Assets</a></li>
 		<li class="active">Details</li>
 	</ul>
@@ -146,20 +146,20 @@
             	<hr>
             	<h3>Calibration</h3>
                 
-              	{% if last_cal_result %}     				
+              	{% if last_cal %}     				
      				<p><b>
-                	{% if last_cal_result == 'Pass' %}
+                	{% if last_cal.calibration_outcome == 'Pass' %}
               			Last Calibration Result: <b>Pass <span class="glyphicon glyphicon-ok gi-2x"></span></b>
               		{% else %}
               			Last Calibration Result: <b>Fail <span class="glyphicon glyphicon-remove gi-2x"></span></b>
               		{% endif %}
               		</b></p>
-     				<p>Next Calibration Due: {{ last_cal_next_date }}</p>
+     				<p>Next Calibration Due: {{ last_cal.calibration_date_next }}</p>
      			{% endif %}
      			
      			
 	            <div class="panel-group">
-	            	{% if last_cal_result == 'Pass' %}
+	            	{% if last_cal.calibration_outcome == 'Pass' %}
 						<div class="panel panel-success">
 					{% else %}
 						<div class="panel panel-danger">
@@ -200,10 +200,10 @@
 														<tr class="danger">
 													{% endif %}	
 															<td>
-																{% if calibration.asset == last_cal.asset %}
-																 	<span class="glyphicon glyphicon-asterisk" title="Latest Calibration"></span>
+																{% if calibration.pk == last_cal.pk %}
+																 	<span class="glyphicon glyphicon-time" title="Latest Calibration"></span>
 																 {% endif %}
-																<a href="{% url 'calibration_detail' pk=calibration.calibration_record_id %}">{{ calibration.calibration_description }}</a>
+																<a href="{% url 'calibration_detail' slug=calibration.slug %}">{{ calibration.calibration_description }}</a>
 															</td>
 															<td>{{ calibration.calibration_date }}</td>
 															<td><b>{{ calibration.calibration_outcome }}</b></td>
@@ -218,10 +218,10 @@
 														<tr class="danger">
 													{% endif %}	
 															<td>
-																{% if calibration.asset == last_cal.asset %}
-																 	<span class="glyphicon glyphicon-asterisk" title="Latest Calibration"></span>
+																{% if calibration.pk == last_cal.pk %}
+																 	<span class="glyphicon glyphicon-time" title="Latest Calibration"></span>
 																 {% endif %}
-																<a href="{% url 'calibration_detail' pk=calibration.calibration_record_id %}">{{ calibration.calibration_description }}</a>
+																<a href="{% url 'calibration_detail' slug=calibration.slug %}">{{ calibration.calibration_description }}</a>
 															</td>
 															<td>{{ calibration.calibration_date }}</td>
 															<td><b>{{ calibration.calibration_outcome }}</b></td>
@@ -249,7 +249,7 @@
             {% if asset.requires_safety_checks %}
             	<hr>
             	<h3>Safety</h3>
-                <p>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+                <p><b>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></b></p>
             {% endif %}
             
             {% if asset.requires_environmental_checks or asset.environmental_aspects.all or asset.environmental_notes %}
@@ -270,7 +270,8 @@
 					    <div id="collapse4" class="panel-collapse collapse">
 					    	<div class="panel-body">
 					    		{% if asset.requires_environmental_checks %}
-					    			<p>Requires Environmental Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+					    			<p><b>Requires Environmental Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></b></p>
+					    			<br />
 					    		{% endif %}
 					    		
 					    		{% if asset.environmental_aspects.all %}
@@ -279,6 +280,7 @@
 											<tr>
 											    <th>Environmental Aspect</th>
 											    <th>Applies To Asset</th>
+											    <th></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -286,6 +288,7 @@
 												<tr>
 													<td>{{ easpect.aspect }}</td>
 													<td><span class="glyphicon glyphicon-ok gi-2x"></span></td>
+													<td></td>
 												</tr>
 											{% endfor %}
 										</tbody>
@@ -294,7 +297,7 @@
 								
 								{% if asset.environmental_notes %}
 									<p>
-										Environmental Notes:
+										<b>Environmental Notes:</b>
 										<br />{{ asset.environmental_notes|linebreaks }}
 									</p>
 								{% endif %}
@@ -363,9 +366,11 @@
             
             <br /><br />
             
-            {% if asset.calibration_instructions %}
-                <p><a href="{{ asset.calibration_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Calibration Instructions</a></p>
-            {% endif %}    
+            {% if user.is_authenticated %}
+	            {% if asset.calibration_instructions %}
+	                <p><a href="{{ asset.calibration_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Calibration Instructions</a></p>
+	            {% endif %}
+	        {% endif %}
             
             {% if asset.maintenance_instructions %}
                 <p><a href="{{ asset.maintenance_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Maintenance Instructions</a></p>
@@ -381,7 +386,6 @@
             
             <br />
             <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank" class="btn btn-primary btn-sm" onclick="window.open('{% url 'asset_qr' pk=asset.pk %}', 'newwindow', 'width=665, height=310'); return false;"><span class="glyphicon glyphicon-barcode gi-1x"></span>  Generate Large Asset QR Code</a>
-            <br /><br />
             <a href="{% url 'asset_qr_small' pk=asset.pk %}" target="_blank" class="btn btn-primary btn-sm" onclick="window.open('{% url 'asset_qr_small' pk=asset.pk %}', 'newwindow2', 'width=130, height=190'); return false;"><span class="glyphicon glyphicon-barcode gi-1x"></span>  Generate Small Asset QR Code</a>
         </div>
 

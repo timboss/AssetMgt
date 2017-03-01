@@ -4,6 +4,7 @@ from django.conf import settings
 import os
 from haystack.management.commands import update_index
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -191,16 +192,17 @@ CALIBRATION_OUTCOME = (
 
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)
+    slug = models.CharField(max_length=64, blank=True, null=True)
     asset = models.ForeignKey("assetregister.Asset", on_delete=models.CASCADE, related_name="calibration", limit_choices_to={'requires_calibration': True})
     calibration_description = models.CharField(max_length=200)
     calibration_date = models.DateField(default=timezone.now)
     calibration_date_next = models.DateField(null=True, blank=True)
-    calibrated_by_internal = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="calibrator")
+    calibrated_by_internal = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="calibrator")
     calibrated_by_external = models.CharField(max_length=200, null=True, blank=True)
     calibration_outcome = models.CharField(max_length=10, choices=CALIBRATION_OUTCOME, default="Pass")
     calibration_notes = models.TextField(null=True, blank=True)
     calibration_certificate = models.URLField(max_length=255, null=True, blank=True)
-    calibration_entered_by = models.ForeignKey("auth.User", related_name="calibration_entered_by", default=1)
+    calibration_entered_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
     calibration_entered_on = models.DateTimeField(default=timezone.now)
 
     def get_absolute_url(self):
@@ -213,13 +215,10 @@ class CalibrationRecord(models.Model):
         
         super(CalibrationRecord, self).save(*args, **kwargs)
         
-        # Check if this is the latest calibration record for any asset, if so update asset.calibration_dates
-        newassetid = self.asset.pk
-        latest_asset_calibration = CalibrationRecord.objects.filter(asset=newassetid).order_by("-calibration_record_id")[:1]
-        for calibration in latest_asset_calibration:
-            latest_calibration_id = calibration.pk
+        # Check if this is the latest calibration record for any asset, if so update asset.calibration_dates and status
+        latest_asset_calibration = CalibrationRecord.objects.filter(asset=self.asset.pk).order_by("-calibration_date", "-calibration_record_id")[0]
 
-        if self.pk == latest_calibration_id:
+        if self.pk == latest_asset_calibration.pk:
 
             Asset.objects.filter(pk=self.asset.asset_id).update(calibration_date_prev=self.calibration_date)
 
@@ -232,6 +231,12 @@ class CalibrationRecord(models.Model):
                 Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=True)
             else:
                 Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=False)
+        
+        # If new record, generate unique slug
+        if not self.slug:
+            self.slug = uuid.uuid1()
+
+        super(CalibrationRecord, self).save(*args, **kwargs)
 
 
 class Buildings(models.Model):

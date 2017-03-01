@@ -2,6 +2,7 @@ from django import forms
 from .models import Asset, CalibrationRecord
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
+from django.utils import timezone
 
 
 class DateInput(forms.DateInput):
@@ -81,6 +82,16 @@ class Calibrate(forms.ModelForm):
             error = "You must enter details for either Calibrated By Internal or Calibrated By External!"
             self.add_error("calibrated_by_internal", error)
             self.add_error("calibrated_by_external", error)
+        elif byinternal and byexternal:
+            error = "You must select either an Internal caibrator OR an External calibrator, not both!"
+            self.add_error("calibrated_by_internal", error)
+            self.add_error("calibrated_by_external", error)
+            
+        calibrationdate = cleaned_data.get("calibration_date")
+        
+        if calibrationdate > timezone.now().date():
+            error = "Calibration date cannot be in the future!"
+            self.add_error("calibration_date", error)
 
 
 class CalibrationSearch(SearchForm):

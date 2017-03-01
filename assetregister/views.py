@@ -70,31 +70,25 @@ def calibrated_asset_list_active(request):
         })
 
 
-def calibration_detail(request, pk):
-    calibration = get_object_or_404(CalibrationRecord, pk=pk)
-    # ToDo - "ParentOf" field
-    #     - Status number -> words translation
+def calibration_detail(request, slug):
+    calibration = get_object_or_404(CalibrationRecord, slug=slug)
     return render(request, "assetregister/calibration_details.html", {"calibration": calibration})
 
 
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
-    assetcalibrations_3 = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_record_id")[:3]
-    assetcalibrations_all = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_record_id")
+    assetcalibrations_3 = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")[:3]
+    assetcalibrations_all = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")
     parent_of = Asset.objects.filter(parent_assets=pk)
     enviro_aspect_count = Asset.objects
     if assetcalibrations_3.count() > 0:
-        last_cal = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_record_id")[:1]
-        for c in last_cal:
-            last_cal_result = c.calibration_outcome
-            last_cal_next_date = c.calibration_date_next
+        last_cal = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")[0]
         return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations_3,
-                                                                    "parent_of": parent_of, "last_cal_result": last_cal_result,
-                                                                    "last_cal_next_date": last_cal_next_date,
+                                                                    "parent_of": parent_of, "last_cal": last_cal,
                                                                     "allcalibrations": assetcalibrations_all})
     else:
         return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations_3,
-                                                                    "parent_of": parent_of, "allcalibrations": assetcalibrations_all})
+                                                                    "parent_of": parent_of})
 
 
 def asset_qr(request, pk):
@@ -171,8 +165,8 @@ def new_calibration(request):
 
 
 @login_required
-def calibration_edit(request, pk):
-    calibration = get_object_or_404(CalibrationRecord, pk=pk)
+def calibration_edit(request, slug):
+    calibration = get_object_or_404(CalibrationRecord, slug=slug)
     if request.method == "POST":
         form = Calibrate(request.POST, instance=calibration)
         if form.is_valid():

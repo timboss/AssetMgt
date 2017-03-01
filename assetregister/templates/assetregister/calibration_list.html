@@ -3,21 +3,21 @@
 {% block content %}
 
 	<ul class="breadcrumb">
-	  <li><a href="#">Home</a></li>
+	  <li><a href="/">Home</a></li>
 	  <li class="active">Caibration</li>
 	</ul>
 
     <div class="count">
-        We currently have a total of <b>{{ calibration_count }}</b> calibration records.   
+        We currently have a total of <b>{{ calibration_count }}</b> calibration records.
         {% if user.is_authenticated %}
         	(<a href="{% url 'new_calibration' %}">Add new calibration</a>)
-        {% endif %}	
+        {% endif %}
     </div>
 
     {% for calibration in calibrations %}
         <div class="calibration">
             
-            <a href="{% url 'calibration_detail' pk=calibration.pk %}"><h4>{{ calibration.calibration_description }}</h4></a>
+            <a href="{% url 'calibration_detail' slug=calibration.slug %}"><h4>{{ calibration.calibration_description }}</h4></a>
             
             <p>Calibration ID: {{ calibration.calibration_record_id }} </p>
    			
