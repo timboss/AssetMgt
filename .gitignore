@@ -5,6 +5,7 @@ myvenv
 /media
 .DS_Store
 settings.py
+settings-production.py
 /mysite/whoosh_index
 org.eclipse.core.resources.prefs
 .project
