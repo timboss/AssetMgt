@@ -1,0 +1,18 @@
+{% extends "assetregister/base.html" %}
+
+{% block content %}
+
+	<ul class="breadcrumb">
+	  <li class="active">Home</li>
+	</ul>
+	
+	<div class="jumbotron">
+  	<h1>Welcome to AMRC Asset Management!</h1>
+		<p>
+			To look up an Asset by it's I.D. enter it in the box below, otherwise you can use the search bar 
+			in the top right to search across all AMRC assets, or alternatively <a href="{% url 'asset_list_filter' %}">click here</a> to use advanced filtering.
+		</p>
+	 	<p><a class="btn btn-primary btn-lg">Learn more</a></p>
+	</div>
+	  
+{% endblock %}

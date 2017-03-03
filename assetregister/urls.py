@@ -3,7 +3,7 @@ from . import views
 from django.conf import settings
 
 urlpatterns = [
-    url(r'^$', views.asset_list, name="asset_list"),
+    url(r'^$', views.home, name="home"),
     url(r'^active/$', views.active_asset_list, name="active_asset_list"),
     url(r'^calibration/$', views.calibration_list, name="calibration_list"),
     url(r'^calibration/new/$', views.new_calibration, name="new_calibration"),
@@ -20,20 +20,22 @@ urlpatterns = [
     url(r'^calibration/(?P<slug>[-\w]+)/$', views.calibration_detail, name="calibration_detail"),
     url(r'^calibration/(?P<slug>[-\w]+)/edit$', views.calibration_edit, name="calibration_edit"),
     url(r'^calibration/(?P<slug>[-\w]+)/remove/$', views.calibration_confirm_delete.as_view(), name="calibration_confirm_delete"),
-    url(r'^asset/(?P<pk>\d+)/$', views.asset_detail, name="asset_detail"),
+    url(r'^asset/$', views.asset_list, name="asset_list"),
     url(r'^asset/new/$', views.asset_new, name="asset_new"),
     url(r'^asset/(?P<pk>\d+)/edit/$', views.asset_edit, name="asset_edit"),
     url(r'^asset/(?P<pk>\d+)/remove/$', views.asset_confirm_delete.as_view(), name="asset_confirm_delete"),
     url(r'^asset/(?P<pk>\d+)/qr/small/$', views.asset_qr_small, name="asset_qr_small"),
     url(r'^asset/(?P<pk>\d+)/qr/$', views.asset_qr, name="asset_qr"),
+    url(r'^asset/(?P<pk>\d+)/$', views.asset_detail, name="asset_detail"),
     url(r'^search/calibration/', views.calibration_search.as_view(), name="calibration_search"),
     url(r'^search/', include("haystack.urls")),
+    url(r'^search/advanced/$', views.asset_list_filter, name="asset_list_filter"),
     url(r'^asset/export/all/$', views.export_all_assets, name="asset_export_all"),
     url(r'^maintenance/export/all/$', views.maintenance_export_all, name="maintenance_export_all"),
     url(r'^environmental/export/all/$', views.environmental_export_all, name="environmental_export_all"),
     url(r'^insurance/export/all/$', views.insurance_export_all, name="insurance_export_all"),
     url(r'^safety/export/all/$', views.safety_export_all, name="safety_export_all"),
-    url(r'^example/$', views.example, name="example")
+    url(r'^examplemodal/$', views.examplemodal, name="examplemodal")
 ]
 
 if settings.DEBUG:

@@ -3,6 +3,7 @@ from .models import Asset, CalibrationRecord
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
 from django.utils import timezone
+import django_filters
 
 
 class DateInput(forms.DateInput):
@@ -14,7 +15,7 @@ class EditAsset(forms.ModelForm):
         model = Asset
         fields = [
             "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
-            "asset_serial_number", "asset_status", "person_responsible", "person_responsible_email",
+            "asset_serial_number", "amrc_equipment_ID", "asset_status", "person_responsible", "person_responsible_email",
             "requires_calibration", "calibration_instructions", "requires_safety_checks",
             "requires_environmental_checks", "environmental_aspects", "environmental_notes",
             "requires_planned_maintenance", "maintenance_instructions", "maintenance_records",
@@ -28,6 +29,7 @@ class EditAsset(forms.ModelForm):
             'asset_manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'amrc_equipment_ID': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_status': forms.Select(attrs={'class': 'form-control'}),
             'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
             'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -118,3 +120,37 @@ class CalibrationSearch(SearchForm):
                 sqs = sqs.filter(calibration_date_next__gte=self.cleaned_data['calibration_due_after'])
 
             return sqs
+
+
+class AssetFilter(django_filters.FilterSet):
+    asset_description = django_filters.CharFilter(lookup_expr="icontains")
+    asset_details = django_filters.CharFilter(lookup_expr="icontains")
+    asset_manufacturer = django_filters.CharFilter(lookup_expr="icontains")
+    asset_model = django_filters.CharFilter(lookup_expr="icontains")
+    asset_serial_number = django_filters.CharFilter(lookup_expr="icontains")
+    amrc_equipment_ID = django_filters.CharFilter(lookup_expr="icontains")
+    person_responsible = django_filters.CharFilter(lookup_expr="icontains")
+    person_responsible_email = django_filters.CharFilter(lookup_expr="icontains")
+    environmental_notes = django_filters.CharFilter(lookup_expr="icontains")
+    asset_value__gt = django_filters.NumberFilter(name="asset_value", lookup_expr="gt")
+    asset_value__lt = django_filters.NumberFilter(name="asset_value", lookup_expr="lt")
+    purchase_order_ref = django_filters.CharFilter(lookup_expr="exact")
+    funded_by = django_filters.CharFilter(lookup_expr="icontains")
+    acquired_on__gt = django_filters.DateFilter(name="acquired_on", lookup_expr="acquired_on__gt")
+    acquired_on__lt = django_filters.DateFilter(name="acquired_on", lookup_expr="acquired_on__lt")
+    asset_location_building__building_name = django_filters.CharFilter(lookup_expr="icontains")
+    asset_location_building__EFM_building_code = django_filters.CharFilter(lookup_expr="icontains")
+    asset_location_room = django_filters.CharFilter(lookup_expr="icontains")
+    
+    class Meta:
+        model = Asset
+        fields = ["requires_calibration", "requires_safety_checks", "requires_environmental_checks",
+                  "requires_planned_maintenance", "requires_insurance"]
+        widgets = {
+            'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_details': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
+            
+        }

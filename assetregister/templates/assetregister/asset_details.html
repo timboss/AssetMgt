@@ -59,6 +59,13 @@
 						</tr>
         			{% endif %}
         			
+        			{% if asset.amrc_equipment_ID %}
+						<tr>
+							<td class="col-md-3">AMRC Equipment ID:</td>
+							<td>{{ asset.amrc_equipment_ID }}</td>
+						</tr>
+        			{% endif %}
+        			
         			{% if asset.asset_value %}
 						<tr>
 							<td class="col-md-3">Value:</td>
@@ -117,14 +124,13 @@
         			
 				</tbody>
 			</table>
-            <br />
 
             {% if asset.asset_details %}
             	<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
 					      <h4 class="panel-title">
-					        <a data-toggle="collapse" href="#collapse3">
+					        <a data-toggle="collapse" href="#collapse-details">
 					        	<div id="calibration-expand-container">
 					        		<div id="calibration-expand-left" align="left">Asset Details / Notes</div>
 					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
@@ -132,7 +138,7 @@
 					        </a>
 					      </h4>
 					    </div>
-					    <div id="collapse3" class="panel-collapse collapse">
+					    <div id="collapse-details" class="panel-collapse collapse">
 					    	<div class="panel-body">
                 				{{ asset.asset_details|linebreaks }}
                 			</div>
@@ -143,21 +149,6 @@
             
             
             {% if asset.requires_calibration %}
-            	<hr>
-            	<h3>Calibration</h3>
-                
-              	{% if last_cal %}     				
-     				<p><b>
-                	{% if last_cal.calibration_outcome == 'Pass' %}
-              			Last Calibration Result: <b>Pass <span class="glyphicon glyphicon-ok gi-2x"></span></b>
-              		{% else %}
-              			Last Calibration Result: <b>Fail <span class="glyphicon glyphicon-remove gi-2x"></span></b>
-              		{% endif %}
-              		</b></p>
-     				<p>Next Calibration Due: {{ last_cal.calibration_date_next }}</p>
-     			{% endif %}
-     			
-     			
 	            <div class="panel-group">
 	            	{% if last_cal.calibration_outcome == 'Pass' %}
 						<div class="panel panel-success">
@@ -166,7 +157,7 @@
 					{% endif %}
 						    <div class="panel-heading">
 						      <h4 class="panel-title">
-						        <a data-toggle="collapse" href="#collapse1">
+						        <a data-toggle="collapse" href="#collapse-calibration">
 						        	<div id="calibration-expand-container">
 						        		{% if user.is_authenticated %}
 						        			<div id="calibration-expand-left" align="left">All Calibration Records</div>
@@ -178,63 +169,81 @@
 						        </a>
 						      </h4>
 						    </div>
-						    <div id="collapse1" class="panel-collapse collapse">
+						    <div id="collapse-calibration" class="panel-collapse collapse">
 						    	<div class="panel-body">
+						    		
+						   			{% if last_cal %}     				
+	     								<p><b>
+	                						{% if last_cal.calibration_outcome == 'Pass' %}
+	              								Last Calibration Result: <b>Pass <span class="glyphicon glyphicon-ok gi-2x"></span></b>
+	              							{% else %}
+	              								Last Calibration Result: <b>Fail <span class="glyphicon glyphicon-remove gi-2x"></span></b>
+	              							{% endif %}
+	              						</b></p>
+	     								<p><b>Next Calibration Due: {{ last_cal.calibration_date_next }}</b></p>
+     								{% endif %}
+     			
 						    	
-						    	{% if calibrations %}
-						    		<table class="table table-hover ">
-										<thead>
-											<tr>
-											    <th>Calibration</th>
-											    <th>Calibration Date</th>
-											    <th>Result</th>
-											    <th>Next Calibration Due</th>
-											</tr>
-										</thead>
-										<tbody>
-											{% if user.is_authenticated %}
-												{% for calibration in allcalibrations %}
-													{% if calibration.calibration_outcome == 'Pass' %}
-														<tr>
-													{% else %}
-														<tr class="danger">
-													{% endif %}	
-															<td>
-																{% if calibration.pk == last_cal.pk %}
-																 	<span class="glyphicon glyphicon-time" title="Latest Calibration"></span>
-																 {% endif %}
-																<a href="{% url 'calibration_detail' slug=calibration.slug %}">{{ calibration.calibration_description }}</a>
-															</td>
-															<td>{{ calibration.calibration_date }}</td>
-															<td><b>{{ calibration.calibration_outcome }}</b></td>
-															<td>{{ calibration.calibration_date_next }}</td>
-														</tr>
-												{% endfor %}
-											{% else %}
-												{% for calibration in calibrations %}
-													{% if calibration.calibration_outcome == 'Pass' %}
-														<tr>
-													{% else %}
-														<tr class="danger">
-													{% endif %}	
-															<td>
-																{% if calibration.pk == last_cal.pk %}
-																 	<span class="glyphicon glyphicon-time" title="Latest Calibration"></span>
-																 {% endif %}
-																<a href="{% url 'calibration_detail' slug=calibration.slug %}">{{ calibration.calibration_description }}</a>
-															</td>
-															<td>{{ calibration.calibration_date }}</td>
-															<td><b>{{ calibration.calibration_outcome }}</b></td>
-															<td>{{ calibration.calibration_date_next }}</td>
-														</tr>
-												{% endfor %}
-											{% endif %}
-										</tbody>
-									</table>
-								{% else %}
-									<h5>No calibration records yet :(</h5>
-								{% endif %}	
+						    		{% if calibrations %}
+							    		<table class="table table-hover ">
+											<thead>
+												<tr>
+												    <th>Calibration</th>
+												    <th>Calibration Date</th>
+												    <th>Result</th>
+												    <th>Next Calibration Due</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% if user.is_authenticated %}
+													{% for calibration in allcalibrations %}
+														{% if calibration.calibration_outcome == 'Pass' %}
+															<tr>
+														{% else %}
+															<tr class="danger">
+														{% endif %}	
+																<td>
+																	{% if calibration.pk == last_cal.pk %}
+																	 	<span class="glyphicon glyphicon-time" title="Latest Calibration"></span>
+																	 {% endif %}
+																	<a href="{% url 'calibration_detail' slug=calibration.slug %}">{{ calibration.calibration_description }}</a>
+																</td>
+																<td>{{ calibration.calibration_date }}</td>
+																<td><b>{{ calibration.calibration_outcome }}</b></td>
+																<td>{{ calibration.calibration_date_next }}</td>
+															</tr>
+													{% endfor %}
+												{% else %}
+													{% for calibration in calibrations %}
+														{% if calibration.calibration_outcome == 'Pass' %}
+															<tr>
+														{% else %}
+															<tr class="danger">
+														{% endif %}	
+																<td>
+																	{% if calibration.pk == last_cal.pk %}
+																	 	<span class="glyphicon glyphicon-time" title="Latest Calibration"></span>
+																	 {% endif %}
+																	<a href="{% url 'calibration_detail' slug=calibration.slug %}">{{ calibration.calibration_description }}</a>
+																</td>
+																<td>{{ calibration.calibration_date }}</td>
+																<td><b>{{ calibration.calibration_outcome }}</b></td>
+																<td>{{ calibration.calibration_date_next }}</td>
+															</tr>
+													{% endfor %}
+												{% endif %}
+											</tbody>
+										</table>
+									{% else %}
+										<h5>No calibration records yet :(</h5>
+									{% endif %}	
 									
+									{% if user.is_authenticated %}
+							            {% if asset.calibration_instructions %}
+							            	<br />
+							                <p><a href="{{ asset.calibration_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Calibration Instructions</a></p>
+							            {% endif %}
+								    {% endif %}
 						    	</div>
 						    	{% if user.is_authenticated %}
 							      	<div class="panel-footer">
@@ -247,19 +256,33 @@
             {% endif %}
             
             {% if asset.requires_safety_checks %}
-            	<hr>
-            	<h3>Safety</h3>
-                <p><b>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></b></p>
+            	<div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse-safety">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Safety</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse-safety" class="panel-collapse collapse">
+					    	<div class="panel-body">
+                				<p><b>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></b></p>
+                			</div>
+						</div>
+					</div>
+				</div>
             {% endif %}
             
             {% if asset.requires_environmental_checks or asset.environmental_aspects.all or asset.environmental_notes %}
-            	<hr>
-            	<h3>Environmental</h3>
            		<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
 					      <h4 class="panel-title">
-					        <a data-toggle="collapse" href="#collapse4">
+					        <a data-toggle="collapse" href="#collapse-enviro">
 					        	<div id="calibration-expand-container">
 					        		<div id="calibration-expand-left" align="left">Environmental</div>
 					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
@@ -267,11 +290,10 @@
 					        </a>
 					      </h4>
 					    </div>
-					    <div id="collapse4" class="panel-collapse collapse">
+					    <div id="collapse-enviro" class="panel-collapse collapse">
 					    	<div class="panel-body">
 					    		{% if asset.requires_environmental_checks %}
 					    			<p><b>Requires Environmental Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></b></p>
-					    			<br />
 					    		{% endif %}
 					    		
 					    		{% if asset.environmental_aspects.all %}
@@ -308,26 +330,41 @@
             {% endif %}
             
             {% if asset.requires_planned_maintenance %}
-            	<hr>
-            	<h3>Maintenance</h3>
-                <p>Requires Planned Preventative Maintenance: <span class="glyphicon glyphicon-ok gi-1x"></span>
-               	
-               	{% if asset.maintenance_records %}
-               		<br /><a href="{{ asset.maintenance_records }}" target="_blank">View Maintenance Records</a>
-               	{% endif %}
-               	
-               	</p>
+            	<div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse-maintenance">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Maintenance</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse-maintenance" class="panel-collapse collapse">
+					    	<div class="panel-body">
+                				<p>Requires Planned Preventative Maintenance: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+				               	{% if asset.maintenance_records %}
+				               		<br />
+				               		<p><a href="{{ asset.maintenance_records }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Maintenance Records</a></p>
+				               	{% endif %}
+								{% if asset.maintenance_instructions %}
+									<p><a href="{{ asset.maintenance_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Download Maintenance Instructions</a></p>
+								{% endif %}
+                			</div>
+						</div>
+					</div>
+				</div>
             {% endif %}
             
             
             {% if asset.parent_assets.all %}
-            	<hr>
-            	<h3>Related Assets</h3>
            		<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
 					      <h4 class="panel-title">
-					        <a data-toggle="collapse" href="#collapse2">
+					        <a data-toggle="collapse" href="#collapse-related">
 					        	<div id="calibration-expand-container">
 					        		<div id="calibration-expand-left" align="left">Related To</div>
 					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
@@ -335,7 +372,7 @@
 					        </a>
 					      </h4>
 					    </div>
-					    <div id="collapse2" class="panel-collapse collapse">
+					    <div id="collapse-related" class="panel-collapse collapse">
 					    	<div class="panel-body">
 					    		<table class="table table-striped table-hover ">
 									<thead>
@@ -359,22 +396,11 @@
 						</div>
 					</div>
 				</div>
-				<hr>
 			{% endif %}
             
+            <br />
             <p>Asset Record Last Edited {{ asset.edited_on }} by {{ asset.edited_by }}</p>
-            
-            <br /><br />
-            
-            {% if user.is_authenticated %}
-	            {% if asset.calibration_instructions %}
-	                <p><a href="{{ asset.calibration_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Calibration Instructions</a></p>
-	            {% endif %}
-	        {% endif %}
-            
-            {% if asset.maintenance_instructions %}
-                <p><a href="{{ asset.maintenance_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Maintenance Instructions</a></p>
-            {% endif %}
+            <br />
             
             {% if asset.asset_handling_and_storage_instructions %}
                 <p><a href="{{ asset.asset_handling_and_storage_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Handling and Storage Instructions</a></p>

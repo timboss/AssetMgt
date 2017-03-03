@@ -7,22 +7,15 @@
 		<li class="active">Search</li>
 	</ul>
 
+	<h3>Search</h3>
+	<a href="{% url 'asset_list_filter' %}">Use Advanced Search</a>
+    <br /><br />
+    
     <form method="get" action=".">
-        
-        {% if query %}
-            <h3>Search results</h3>
-            
-            {% if page.paginator.count %}
-                Showing {{ page.object_list|length }} of {{ page.paginator.count }} Results on Page {{ page.number }} of {{ page.paginator.num_pages }}
-                <br /><br />
-            {% endif %}
-            
+       {% if query %}
             {% for result in page.object_list %}
                 <p>
                     <h4><a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a></h4><br />
-                    {% if result.object.asset_image_thumbnail %}
-                        <a href="{{ result.object.get_absolute_url }}"><img src="/media/{{ result.object.asset_image_thumbnail }}"></a><br />
-                    {% endif %}
                     {% if result.object.asset_manufacturer %}
                         Manufacturer: {{ result.object.asset_manufacturer }} <br />
                     {% endif %}
@@ -49,7 +42,7 @@
                 </div>
             {% endif %}
         {% else %}
-            <br />Please enter terms to search for.
+            Please enter terms to search for.
         {% endif %}
     </form>
     

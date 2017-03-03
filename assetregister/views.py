@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
 from .models import Asset, CalibrationRecord
-from .forms import EditAsset, CalibrationSearch, Calibrate
+from .forms import EditAsset, CalibrationSearch, Calibrate, AssetFilter
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
@@ -14,8 +14,12 @@ from django.http import HttpResponseNotFound
 from django.conf import settings
 
 
-def example(request):
+def examplemodal(request):
     return render(request, "assetregister/example.html")
+
+
+def home(request):
+    return render(request, "assetregister/home.html")
 
 
 def asset_list(request):
@@ -23,9 +27,17 @@ def asset_list(request):
     active_asset_count = Asset.objects.filter(asset_status=1).count()
     assets = Asset.objects.order_by("asset_id")
     return render(request, "assetregister/asset_list.html", {
-        "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
+        "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count,
         })
 
+def asset_list_filter(request):
+    if request.GET:
+        filter = AssetFilter(request.GET, queryset=Asset.objects.all())
+    else:
+        #this is a bit hacky, but should work forever...
+        filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=9999))
+    return render(request, "assetregister/asset_list_filtered.html", {"filter": filter, 
+        })
 
 def active_asset_list(request):
     asset_count = Asset.objects.count()

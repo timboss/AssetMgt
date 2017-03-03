@@ -19,6 +19,7 @@ class Asset(models.Model):
     asset_manufacturer = models.CharField(max_length=255, blank=True)
     asset_model = models.CharField(max_length=255, blank=True)
     asset_serial_number = models.CharField(max_length=255, blank=True)
+    amrc_equipment_ID = models.CharField(max_length=10, null=True, blank=True)
     handling_and_storage_instructions = models.URLField(max_length=255, null=True, blank=True)
     operating_instructions = models.URLField(max_length=255, null=True, blank=True)
     asset_status = models.ForeignKey("AssetStatus", on_delete=models.SET_NULL, null=True, default=active_asset_status, related_name="status")

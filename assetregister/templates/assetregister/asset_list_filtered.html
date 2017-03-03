@@ -1,0 +1,60 @@
+{% extends 'assetregister/base.html' %}
+
+{% block content %}
+
+	<ul class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li><a href="/search">Search</a></li>
+	  <li class="active">Advanced Search</li>
+	</ul>
+
+
+	<form action="" method="get" class="form-horizontal asset-form">
+		<fieldset>
+			{% for field in filter.form %}
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ field.label_tag }}</label>
+					<div class="col-lg-6">
+						{{ field }}
+					</div>
+				</div>
+			{% endfor %}
+				<div class="form-group">
+					<div class="col-lg-3 col-lg-offset-3">
+						<button type="reset" class="btn btn-default">
+							Cancel
+						</button>
+						<button type="submit" class="btn btn-primary">
+							Submit
+						</button>
+					</div>
+				</div>
+		</fieldset>
+    </form>
+    
+	<br />
+	<br />
+	
+    {% for asset in filter.qs %}
+    	<div class="asset">
+            <a href="{% url 'asset_detail' pk=asset.pk %}"><h3>{{ asset.asset_description }}</h3></a>
+            
+            <p>Asset ID: {{ asset.asset_id }} </p>
+            
+            {% if asset.asset_manufacturer %}
+                <p>Manufacturer: {{ asset.asset_manufacturer }}</p> 
+            {% endif %}
+            
+            {% if asset.asset_location_building %}
+                Location (Building): {{ asset.asset_location_building }} 
+            {% endif %}
+            
+            {% if asset.asset_location_room %}
+                <br />Location (Area): {{ asset.asset_location_room }} 
+            {% endif %}
+            <hr>
+        </div>
+    {% endfor %}
+
+    
+{% endblock %}

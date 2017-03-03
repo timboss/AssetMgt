@@ -9,3 +9,4 @@
 {{ object.purchase_order_ref }}
 {{ object.person_responsible }}
 {{ object.person_responsible_email }}
+{{ object.amrc_equipment_ID }}
