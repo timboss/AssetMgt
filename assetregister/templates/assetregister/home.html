@@ -12,7 +12,10 @@
 			To look up an Asset by it's I.D. enter it in the box below, otherwise you can use the search bar 
 			in the top right to search across all AMRC assets, or alternatively <a href="{% url 'asset_list_filter' %}">click here</a> to use advanced filtering.
 		</p>
-	 	<p><a class="btn btn-primary btn-lg">Learn more</a></p>
+		<form onsubmit="window.location = '{{ baseurl }}/asset/' + search.value; return false;">
+			<input id="search" class="form-control input-sm" placeholder="Asset ID" type="search" name="search"></input>
+			<input class="btn btn-default" type="submit" value="Submit">
+		</form>
 	</div>
 	  
 {% endblock %}

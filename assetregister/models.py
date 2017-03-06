@@ -42,6 +42,7 @@ class Asset(models.Model):
     purchase_order_ref = models.CharField(max_length=15, blank=True)
     funded_by = models.CharField(max_length=255, blank=True)
     acquired_on = models.DateField(null=True, blank=True)
+    disposal_date = models.DateField(null=True, blank=True)
     parent_assets = models.ManyToManyField("self", blank=True)
     asset_location_building = models.ForeignKey("Buildings", on_delete=models.SET_NULL, blank=True, null=True, related_name="building")
     asset_location_room = models.CharField(max_length=255, blank=True)
@@ -182,7 +183,7 @@ class Asset(models.Model):
         if not self.asset_manufacturer:
             return self.asset_description
         else:
-            return "{} - {}".format(self.asset_manufacturer, self.asset_description)
+            return "{} - {} - {}".format(self.asset_id, self.asset_manufacturer, self.asset_description)
 
 
 CALIBRATION_OUTCOME = (
@@ -193,7 +194,7 @@ CALIBRATION_OUTCOME = (
 
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)
-    slug = models.CharField(max_length=64, blank=True, null=True)
+    slug = models.CharField(max_length=64, blank=True, null=True, unique=True)
     asset = models.ForeignKey("assetregister.Asset", on_delete=models.CASCADE, related_name="calibration", limit_choices_to={'requires_calibration': True})
     calibration_description = models.CharField(max_length=200)
     calibration_date = models.DateField(default=timezone.now)

@@ -19,7 +19,8 @@ def examplemodal(request):
 
 
 def home(request):
-    return render(request, "assetregister/home.html")
+    baseurl = settings.BASEURL
+    return render(request, "assetregister/home.html", {"baseurl": baseurl})
 
 
 def asset_list(request):
@@ -93,14 +94,20 @@ def asset_detail(request, pk):
     assetcalibrations_all = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")
     parent_of = Asset.objects.filter(parent_assets=pk)
     enviro_aspect_count = Asset.objects
+    curdate = timezone.now().date()
     if assetcalibrations_3.count() > 0:
         last_cal = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")[0]
+        if last_cal.calibration_date_next and last_cal.calibration_outcome == "Pass" and last_cal.calibration_date_next >= timezone.now().date():
+            calibration_OK = True
+        else:
+            calibration_OK = False
         return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations_3,
                                                                     "parent_of": parent_of, "last_cal": last_cal,
-                                                                    "allcalibrations": assetcalibrations_all})
+                                                                    "allcalibrations": assetcalibrations_all,
+                                                                    "calibration_OK": calibration_OK, "curdate": curdate})
     else:
         return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations_3,
-                                                                    "parent_of": parent_of})
+                                                                    "parent_of": parent_of, "curdate": curdate})
 
 
 def asset_qr(request, pk):

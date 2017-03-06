@@ -26,10 +26,6 @@
             
             <p>Asset I.D. {{ asset.asset_id }}</p>
             
-           	{% if asset.asset_status %}
-                <p>Current Staus: {{ asset.asset_status}}</p>
-            {% endif %}
-
             {% if asset.asset_image_thumbnail%}
                 	<p><a href="/media/{{ asset.asset_image }}" target="_blank"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
             {% endif %}
@@ -38,12 +34,19 @@
             <!-- big table -->
 			<table class="table table-striped">
 				<tbody>
+					{% if asset.asset_status %}
+						<tr>
+							<td class="col-md-3">Current Staus:</td>
+							<td>{{ asset.asset_status}}</td>
+						</tr>
+					{% endif %}
+
 					{% if asset.asset_manufacturer %}
 						<tr>
 							<td class="col-md-3">Manufacturer:</td>
 							<td>{{ asset.asset_manufacturer }}</td>
 						</tr>
-        			{% endif %}
+					{% endif %}
         			
 					{% if asset.asset_model %}
 						<tr>
@@ -91,6 +94,13 @@
 						<tr>
 							<td class="col-md-3">Acquired On:</td>
 							<td>{{ asset.acquired_on }}</td>
+						</tr>
+        			{% endif %}
+        			
+        			{% if asset.disposal_date %}
+						<tr>
+							<td class="col-md-3">Disposal Date:</td>
+							<td>{{ asset.disposal_date }}</td>
 						</tr>
         			{% endif %}
         			
@@ -150,7 +160,7 @@
             
             {% if asset.requires_calibration %}
 	            <div class="panel-group">
-	            	{% if last_cal.calibration_outcome == 'Pass' %}
+	            	{% if calibration_OK %}
 						<div class="panel panel-success">
 					{% else %}
 						<div class="panel panel-danger">
@@ -173,17 +183,24 @@
 						    	<div class="panel-body">
 						    		
 						   			{% if last_cal %}     				
-	     								<p><b>
+	     								<p>
 	                						{% if last_cal.calibration_outcome == 'Pass' %}
 	              								Last Calibration Result: <b>Pass <span class="glyphicon glyphicon-ok gi-2x"></span></b>
 	              							{% else %}
 	              								Last Calibration Result: <b>Fail <span class="glyphicon glyphicon-remove gi-2x"></span></b>
 	              							{% endif %}
-	              						</b></p>
-	     								<p><b>Next Calibration Due: {{ last_cal.calibration_date_next }}</b></p>
+	              						</p>
+	              						
+	     								<p>
+	     									Next Calibration Due: <b>{{ last_cal.calibration_date_next }}</b>
+	     									{% if last_cal.calibration_date_next >= curdate %}
+	     										<span class="glyphicon glyphicon-ok gi-2x"></span>
+	     									{% else %}
+	     										<span class="glyphicon glyphicon-remove gi-2x"></span>
+	     									{% endif %}
+	     								</p>
      								{% endif %}
-     			
-						    	
+
 						    		{% if calibrations %}
 							    		<table class="table table-hover ">
 											<thead>
@@ -300,7 +317,7 @@
 						    		<table class="table table-striped table-hover ">
 										<thead>
 											<tr>
-											    <th>Environmental Aspect</th>
+											    <th>Environmental Aspects</th>
 											    <th>Applies To Asset</th>
 											    <th></th>
 											</tr>
@@ -319,7 +336,7 @@
 								
 								{% if asset.environmental_notes %}
 									<p>
-										<b>Environmental Notes:</b>
+										<b>Notes:</b>
 										<br />{{ asset.environmental_notes|linebreaks }}
 									</p>
 								{% endif %}

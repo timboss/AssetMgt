@@ -19,7 +19,7 @@ class EditAsset(forms.ModelForm):
             "requires_calibration", "calibration_instructions", "requires_safety_checks",
             "requires_environmental_checks", "environmental_aspects", "environmental_notes",
             "requires_planned_maintenance", "maintenance_instructions", "maintenance_records",
-            "asset_value", "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on",
+            "asset_value", "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on", "disposal_date",
             "parent_assets", "asset_location_building", "asset_location_room", "operating_instructions",
             "handling_and_storage_instructions"
             ]
@@ -42,7 +42,8 @@ class EditAsset(forms.ModelForm):
             'purchase_order_ref': forms.TextInput(attrs={'class': 'form-control'}),
             'funded_by': forms.TextInput(attrs={'class': 'form-control'}),
             'acquired_on': DateInput(attrs={'class': 'datepicker form-control'}),
-            'parent_assets': forms.SelectMultiple(attrs={'class': 'form-control example-enableFiltering'}),
+            'disposal_date': DateInput(attrs={'class': 'datepicker form-control'}),
+            'parent_assets': forms.SelectMultiple(attrs={'class': 'form-control example-enableFiltering', 'style': 'width: 400px;'}),
             'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
             'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
             'operating_instructions': forms.URLInput(attrs={'class': 'form-control'}),
@@ -138,6 +139,9 @@ class AssetFilter(django_filters.FilterSet):
     funded_by = django_filters.CharFilter(lookup_expr="icontains")
     acquired_on__gt = django_filters.DateFilter(name="acquired_on", lookup_expr="acquired_on__gt")
     acquired_on__lt = django_filters.DateFilter(name="acquired_on", lookup_expr="acquired_on__lt")
+    disposal_date__gt = django_filters.DateFilter(name="disposal_date", lookup_expr="disposal_date__gt")
+    disposal_date__lt = django_filters.DateFilter(name="disposal_date", lookup_expr="disposal_date__lt")
+    
     asset_location_building__building_name = django_filters.CharFilter(lookup_expr="icontains")
     asset_location_building__EFM_building_code = django_filters.CharFilter(lookup_expr="icontains")
     asset_location_room = django_filters.CharFilter(lookup_expr="icontains")
