@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
 from .models import Asset, CalibrationRecord
-from .forms import EditAsset, CalibrationSearch, Calibrate, AssetFilter
+from .forms import EditAsset, Calibrate, AssetFilter
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
@@ -194,8 +194,8 @@ def calibration_edit(request, slug):
         form = Calibrate(request.POST, instance=calibration)
         if form.is_valid():
             calibration = form.save(commit=False)
-            calibration.entered_by = request.user
-            calibration.edited_on = timezone.now()
+            calibration.calibration_entered_by = request.user
+            calibration.calibration_entered_on = timezone.now()
             calibration.save()
             return redirect("asset_detail", pk=calibration.asset.asset_id)
     else:
@@ -209,8 +209,8 @@ def new_calibration_asset(request, urlpk):
         form = Calibrate(request.POST)
         if form.is_valid():
             calibration = form.save(commit=False)
-            calibration.entered_by = request.user
-            calibration.edited_on = timezone.now()
+            calibration.calibration_entered_by = request.user
+            calibration.calibration_entered_on = timezone.now()
             calibration.save()
             return redirect("asset_detail", pk=calibration.asset.asset_id)
     else:
@@ -218,24 +218,13 @@ def new_calibration_asset(request, urlpk):
     return render(request, "assetregister/new_calibration.html", {"form": form})
 
 
-class calibration_search(SearchView):
-    template_name = 'search/search.html'
-    form_class = CalibrationSearch
-    queryset = SearchQuerySet().filter(requires_calibration=True)
-#    return render(request, template, {'form' : form_class})
-
-#    def get_queryset(self):
-#        queryset = super(calibration_search, self).get_queryset()
-#        return queryset
-
-
 @login_required
 def calibrated_asset_export_active(request):
     calibration_export = Asset.objects.filter(requires_calibration=True,
-                                              asset_status="Active / In-Use").order_by("calibration_date_next").values(
+                                              asset_status=1).order_by("calibration_date_next").values(
                                                 "asset_id", "requires_calibration", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "calibration_date_prev", "calibration_date_next",
+                                                "asset_status__status_name", "calibration_date_prev", "calibration_date_next",
                                                 "calibration_instructions", "person_responsible",
                                                 "person_responsible_email", "asset_location_building",
                                                 "asset_location_room")
@@ -247,7 +236,7 @@ def calibrated_asset_export_all(request):
     calibration_export = Asset.objects.filter(requires_calibration=True).order_by("calibration_date_next").values(
                                                 "asset_id", "requires_calibration", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "calibration_date_prev", "calibration_date_next",
+                                                "asset_status__status_name", "calibration_date_prev", "calibration_date_next",
                                                 "calibration_instructions", "person_responsible",
                                                 "person_responsible_email", "asset_location_building",
                                                 "asset_location_room")
@@ -258,7 +247,7 @@ def calibrated_asset_export_all(request):
 def calibration_asset_export_nextmonth(request):
     plusonemonth = timezone.now() + timedelta(days=30)
     calibration_export = Asset.objects.filter(requires_calibration=True,
-                                              calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+                                              calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status__status_name", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_" +
                                   str(plusonemonth.date()) + ".csv")
 
@@ -278,7 +267,7 @@ def calibration_asset_export_custom(request):
         newdate = request.GET.get('date')
     else:
         return HttpResponseNotFound('<h2>No "days" or "date" selected!</h2>')
-    calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=newdate).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
+    calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=newdate).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status__status_name", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_" + str(newdate) + ".csv")
 
 
@@ -286,7 +275,7 @@ def maintenance_export_all(request):
     export = Asset.objects.filter(requires_planned_maintenance=True).order_by("asset_id").values(
                                                 "asset_id", "requires_planned_maintenance", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "person_responsible", "person_responsible_email",
+                                                "asset_status__status_name", "person_responsible", "person_responsible_email",
                                                 "maintenance_instructions", "maintenance_records",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
                                                 "handling_and_storage_instructions")
@@ -297,7 +286,7 @@ def environmental_export_all(request):
     export = Asset.objects.filter(requires_environmental_checks=True).order_by("asset_id").values(
                                                 "asset_id", "requires_environmental_checks", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "person_responsible", "person_responsible_email",
+                                                "asset_status__status_name", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
                                                 "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Environmental_Checks_" + str(timezone.now().date()) + ".csv")
@@ -307,7 +296,7 @@ def insurance_export_all(request):
     export = Asset.objects.filter(requires_insurance=True).order_by("asset_id").values(
                                                 "asset_id", "requires_insurance", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "asset_value", "purchase_order_ref",
+                                                "asset_status__status_name", "asset_value", "purchase_order_ref",
                                                 "funded_by", "acquired_on", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building",
                                                 "asset_location_room", "handling_and_storage_instructions")
@@ -318,7 +307,7 @@ def safety_export_all(request):
     export = Asset.objects.filter(requires_safety_checks=True).order_by("asset_id").values(
                                                 "asset_id", "requires_safety_checks", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status", "person_responsible", "person_responsible_email",
+                                                "asset_status__status_name", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building", "asset_location_room",
                                                 "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Safety_Checks_" + str(timezone.now().date()) + ".csv")

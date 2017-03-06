@@ -94,14 +94,15 @@
 										<a href="{% url 'calibrated_asset_list_active' %}">"Active" Assets Requiring Calibration</a>
 									</li>
 									<li class="divider"></li>
-									<li>
-										<a href="{% url 'calibration_list' %}">All Calibration Records</a>
-									</li>
 									{% if user.is_authenticated %} 
 										<li>
 											<a href="{% url 'new_calibration' %}">Add New Calibration</a>
 										</li>
 									{% endif %}
+									<li class="divider"></li>
+									<li>
+										<a href="{% url 'calibration_list' %}">All Calibration Records</a>
+									</li>
 									<li class="divider"></li>
 									<li>
 										<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
@@ -113,7 +114,7 @@
 										<a href="{% url 'calibration_asset_export_nextmonth' %}">Export All Assets With Calibration Due in Next 30 Days</a>
 									</li>
 									<li>
-										<a href="{% url 'calibration_asset_export_custom_select' %}">Create Custom Export...</a>
+										<a href="{% url 'calibration_asset_export_custom_select' %}">Custom Calibration Export...</a>
 									</li>
 								</ul>
 							</li>

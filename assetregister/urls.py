@@ -28,7 +28,6 @@ urlpatterns = [
     url(r'^asset/(?P<pk>\d+)/qr/$', views.asset_qr, name="asset_qr"),
     url(r'^asset/(?P<pk>\d+)/$', views.asset_detail, name="asset_detail"),
     url(r'^asset/equip-id/(?P<equipid>[-\w]+)/$', views.asset_detail_equipid, name="asset_detail_equipid"),
-    url(r'^search/calibration/', views.calibration_search.as_view(), name="calibration_search"),
     url(r'^search/', include("haystack.urls")),
     url(r'^search/advanced/$', views.asset_list_filter, name="asset_list_filter"),
     url(r'^asset/export/all/$', views.export_all_assets, name="asset_export_all"),

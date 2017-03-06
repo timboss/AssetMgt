@@ -29,7 +29,7 @@
 				<tbody>
 						<tr>
 							<td class="col-md-3">Asset:</td>
-							<td><a href="{% url 'asset_detail' pk=calibration.asset.asset_id %}">{{ calibration.asset.asset_description }}</a></td>
+							<td><a href="{% url 'asset_detail' pk=calibration.asset.asset_id %}">{{ calibration.asset }}</a></td>
 						</tr>
         			
         			{% if calibration.asset.asset_manufacturer %}

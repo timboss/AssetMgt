@@ -99,32 +99,6 @@ class Calibrate(forms.ModelForm):
             self.add_error("calibration_date", error)
 
 
-class CalibrationSearch(SearchForm):
-    calibration_due_before = forms.DateField(required=False)
-    calibration_due_after = forms.DateField(required=False)
-
-    def search(self):
-        # First we need to store SearchQuerySet recieved after / from any other processing that's going on
-        # sqs = super(CalibrationSearch, self).search() <- This looks for a field called 'content'
-
-        sqs = SearchQuerySet().all()
-        # searchqueryset = sqs
-
-        if not self.is_valid():
-            # return self.no_query_found()
-            return self.SearchQuerySet().all()
-
-        if self.is_valid():
-            # check to see if any date filters used, if so apply filter
-            if self.cleaned_data['calibration_due_before']:
-                sqs = sqs.filter(calibration_date_next__lte=self.cleaned_data['calibration_due_before'])
-
-            if self.cleaned_data['calibration_due_after']:
-                sqs = sqs.filter(calibration_date_next__gte=self.cleaned_data['calibration_due_after'])
-
-            return sqs
-
-
 class AssetFilter(django_filters.FilterSet):
     asset_id = django_filters.NumberFilter(lookup_expr="exact")
     asset_description = django_filters.CharFilter(lookup_expr="icontains")
