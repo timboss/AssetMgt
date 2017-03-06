@@ -15,7 +15,7 @@ class EditAsset(forms.ModelForm):
         model = Asset
         fields = [
             "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
-            "asset_serial_number", "amrc_equipment_ID", "asset_status", "person_responsible", "person_responsible_email",
+            "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible", "person_responsible_email",
             "requires_calibration", "calibration_instructions", "requires_safety_checks",
             "requires_environmental_checks", "environmental_aspects", "environmental_notes",
             "requires_planned_maintenance", "maintenance_instructions", "maintenance_records",
@@ -29,7 +29,7 @@ class EditAsset(forms.ModelForm):
             'asset_manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'amrc_equipment_ID': forms.TextInput(attrs={'class': 'form-control'}),
+            'amrc_equipment_id': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_status': forms.Select(attrs={'class': 'form-control'}),
             'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
             'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -51,6 +51,8 @@ class EditAsset(forms.ModelForm):
         }
         labels = {
           "parent_assets": ("Related Assets"),
+          "amrc_equipment_id": ("AMRC Equipment ID (e.g. V112, B05 or M206B"),
+          "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)")
           }
 
 
@@ -124,12 +126,13 @@ class CalibrationSearch(SearchForm):
 
 
 class AssetFilter(django_filters.FilterSet):
+    asset_id = django_filters.NumberFilter(lookup_expr="exact")
     asset_description = django_filters.CharFilter(lookup_expr="icontains")
     asset_details = django_filters.CharFilter(lookup_expr="icontains")
     asset_manufacturer = django_filters.CharFilter(lookup_expr="icontains")
     asset_model = django_filters.CharFilter(lookup_expr="icontains")
     asset_serial_number = django_filters.CharFilter(lookup_expr="icontains")
-    amrc_equipment_ID = django_filters.CharFilter(lookup_expr="icontains")
+    amrc_equipment_id = django_filters.CharFilter(lookup_expr="icontains")
     person_responsible = django_filters.CharFilter(lookup_expr="icontains")
     person_responsible_email = django_filters.CharFilter(lookup_expr="icontains")
     environmental_notes = django_filters.CharFilter(lookup_expr="icontains")
@@ -150,11 +153,7 @@ class AssetFilter(django_filters.FilterSet):
         model = Asset
         fields = ["requires_calibration", "requires_safety_checks", "requires_environmental_checks",
                   "requires_planned_maintenance", "requires_insurance"]
-        widgets = {
-            'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
-            'asset_details': forms.TextInput(attrs={'class': 'form-control'}),
-            'asset_manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
-            'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
-            'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
-            
-        }
+        labels = {
+          "amrc_equipment_id": ("AMRC Equipment ID (no spaces) e.g. V112, B05 or M206B"),
+          "asset_location_room": ("Asset Location (specific room or group etc.)")
+          }

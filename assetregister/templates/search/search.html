@@ -8,22 +8,21 @@
 	</ul>
 
 	<h3>Search</h3>
-	<a href="{% url 'asset_list_filter' %}">Use Advanced Search</a>
+	<a href="{% url 'asset_list_filter' %}">(Go To Advanced Search)</a>
     <br /><br />
     
     <form method="get" action=".">
        {% if query %}
             {% for result in page.object_list %}
-                <p>
-                    <h4><a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a></h4><br />
-                    {% if result.object.asset_manufacturer %}
-                        Manufacturer: {{ result.object.asset_manufacturer }} <br />
-                    {% endif %}
-                    {%if result.object.asset_location_building %}
-                        Location: {{ result.object.asset_location_building }} <br />
-                    {% endif %}
-                    <hr>
-                </p> </br >
+                <h4><a href="{{ result.object.get_absolute_url }}">{{ result.object.asset_description }}</a></h4>
+                Asset I.D.: {{result.object.asset_id }} <br />
+                {% if result.object.asset_manufacturer %}
+                    Manufacturer: {{ result.object.asset_manufacturer }} <br />
+                {% endif %}
+                {%if result.object.asset_location_building %}
+                    Location: {{ result.object.asset_location_building }} <br />
+                {% endif %}
+                <hr>
             {% empty %}
                 <p>No results found.</p>
             {% endfor %}
@@ -42,6 +41,7 @@
                 </div>
             {% endif %}
         {% else %}
+        	<br />
             Please enter terms to search for.
         {% endif %}
     </form>

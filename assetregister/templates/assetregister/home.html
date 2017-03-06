@@ -7,14 +7,28 @@
 	</ul>
 	
 	<div class="jumbotron">
-  	<h1>Welcome to AMRC Asset Management!</h1>
+  		<h1>AMRC Asset Management</h1>
 		<p>
-			To look up an Asset by it's I.D. enter it in the box below, otherwise you can use the search bar 
+			To look up an Asset by it's AMRC Asset Number or Equipment I.D. use the boxes below, otherwise you can use the search bar 
 			in the top right to search across all AMRC assets, or alternatively <a href="{% url 'asset_list_filter' %}">click here</a> to use advanced filtering.
 		</p>
-		<form onsubmit="window.location = '{{ baseurl }}/asset/' + search.value; return false;">
-			<input id="search" class="form-control input-sm" placeholder="Asset ID" type="search" name="search"></input>
-			<input class="btn btn-default" type="submit" value="Submit">
+		
+		<form class="form-inline input-group" onsubmit="window.location = '{{ baseurl }}/asset/' + search.value; return false;">
+			<label class="sr-only" for="search1">Asset Number</label>
+			<input id="search" class="form-control input" placeholder="Asset Number, e.g. 123" type="search" name="search">
+			<span class="input-group-btn">
+				<input class="btn btn-default" type="submit" value="Go">
+			</span>
+		</form>
+		
+		<br />
+		
+		<form class="form-inline input-group" onsubmit="window.location = '{{ baseurl }}/asset/equip-id/' + search1.value; return false;">
+			<label class="sr-only" for="search1">Equipment I.D.</label>
+			<input id="search1" class="form-control input" placeholder="Equipment I.D., e.g. R229B" type="search1" name="search1">
+			<span class="input-group-btn">
+				<input class="btn btn-default" type="submit" value="Go">
+			</span>
 		</form>
 	</div>
 	  

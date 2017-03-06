@@ -8,7 +8,7 @@ import uuid
 
 logger = logging.getLogger(__name__)
 
-active_asset_status = 1
+default_asset_status = 1
 
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
@@ -19,10 +19,10 @@ class Asset(models.Model):
     asset_manufacturer = models.CharField(max_length=255, blank=True)
     asset_model = models.CharField(max_length=255, blank=True)
     asset_serial_number = models.CharField(max_length=255, blank=True)
-    amrc_equipment_ID = models.CharField(max_length=10, null=True, blank=True)
+    amrc_equipment_id = models.CharField(max_length=16, null=True, blank=True)
     handling_and_storage_instructions = models.URLField(max_length=255, null=True, blank=True)
     operating_instructions = models.URLField(max_length=255, null=True, blank=True)
-    asset_status = models.ForeignKey("AssetStatus", on_delete=models.SET_NULL, null=True, default=active_asset_status, related_name="status")
+    asset_status = models.ForeignKey("AssetStatus", on_delete=models.SET_NULL, null=True, default=default_asset_status, related_name="status")
     person_responsible = models.CharField(max_length=100)
     person_responsible_email = models.EmailField()
     requires_insurance = models.BooleanField()

@@ -21,6 +21,9 @@
             <tr>
                 <td colspan="2">
                     <div align="center" id="qr_description">
+                    	{% if asset.asset_manufacturer %}
+                        	{{asset.asset_manufacturer}} - 
+                        {% endif %}
                         {{ asset.asset_description }}
                     </div>
                 </td>

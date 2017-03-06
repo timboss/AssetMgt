@@ -21,7 +21,7 @@
                 <p><a href="{% url 'asset_detail' pk=asset.pk %}"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
             {% endif %}
             
-            <p>Asset ID: {{ asset.asset_id }} </p>
+            <p>AMRC Asset Number: {{ asset.asset_id }} </p>
             
             {% if asset.asset_manufacturer %}
                 <p>Manufacturer: {{ asset.asset_manufacturer }} </p>

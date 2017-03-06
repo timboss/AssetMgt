@@ -15,7 +15,7 @@ from django.conf import settings
 
 
 def examplemodal(request):
-    return render(request, "assetregister/example.html")
+    return render(request, "assetregister/example2.html")
 
 
 def home(request):
@@ -109,6 +109,10 @@ def asset_detail(request, pk):
         return render(request, "assetregister/asset_details.html", {"asset": asset, "calibrations": assetcalibrations_3,
                                                                     "parent_of": parent_of, "curdate": curdate})
 
+def asset_detail_equipid(request, equipid):
+    asset = get_object_or_404(Asset, amrc_equipment_id=equipid)
+    pk = asset.asset_id
+    return asset_detail(request, pk)
 
 def asset_qr(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
@@ -273,7 +277,7 @@ def calibration_asset_export_custom(request):
     elif request.GET.get('date'):
         newdate = request.GET.get('date')
     else:
-        return HttpResponseNotFound('<h2>No "?day=" or "?date=" URL GET parameters found!</h2>')
+        return HttpResponseNotFound('<h2>No "days" or "date" selected!</h2>')
     calibration_export = Asset.objects.filter(requires_calibration=True, calibration_date_next__lte=newdate).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_" + str(newdate) + ".csv")
 

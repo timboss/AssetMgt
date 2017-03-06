@@ -1,0 +1,10 @@
+{% extends 'assetregister/base.html' %}
+
+{% block content %}
+
+<h1>Error 404!</h1>
+<h3>Something has gone wrong and we can't find that page :(</h3>
+<h3>If you were trying to view an Asset then the Asset ID may be wrong or that asset may no longer exist. 
+	Please use the <a href="{% url 'asset_list_filter' %}">Advanced Search</a> page to find assets.</h3>
+
+{% endblock %}

@@ -8,7 +8,10 @@
 	  <li class="active">Advanced Search</li>
 	</ul>
 
-
+	<h4>All filters on this form are combined
+		<br />e.g. Asset model contains: X AND Asset serial number contains: Y</h4>
+	<br />	
+	
 	<form action="" method="get" class="form-horizontal asset-form">
 		<fieldset>
 			{% for field in filter.form %}
@@ -39,7 +42,7 @@
     	<div class="asset">
             <a href="{% url 'asset_detail' pk=asset.pk %}"><h3>{{ asset.asset_description }}</h3></a>
             
-            <p>Asset ID: {{ asset.asset_id }} </p>
+            <p>AMRC Asset Number: {{ asset.asset_id }} </p>
             
             {% if asset.asset_manufacturer %}
                 <p>Manufacturer: {{ asset.asset_manufacturer }}</p> 

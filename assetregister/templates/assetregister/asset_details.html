@@ -24,7 +24,7 @@
             
             <br />
             
-            <p>Asset I.D. {{ asset.asset_id }}</p>
+            <p>AMRC Asset Number {{ asset.asset_id }}</p>
             
             {% if asset.asset_image_thumbnail%}
                 	<p><a href="/media/{{ asset.asset_image }}" target="_blank"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
@@ -62,10 +62,10 @@
 						</tr>
         			{% endif %}
         			
-        			{% if asset.amrc_equipment_ID %}
+        			{% if asset.amrc_equipment_id %}
 						<tr>
 							<td class="col-md-3">AMRC Equipment ID:</td>
-							<td>{{ asset.amrc_equipment_ID }}</td>
+							<td>{{ asset.amrc_equipment_id }}</td>
 						</tr>
         			{% endif %}
         			
@@ -127,7 +127,7 @@
         			
         			{% if asset.asset_location_room %}
         				<tr>
-        					<td class="col-md-3">Location (Room):</td>
+        					<td class="col-md-3">Location (Room or Group etc.):</td>
         					<td>{{ asset.asset_location_room }}</td>
         				</tr>
         			{% endif %}
