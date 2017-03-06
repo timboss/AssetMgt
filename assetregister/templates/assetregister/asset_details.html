@@ -11,29 +11,28 @@
     
         <div class="asset">
             
-            <h2>{{ asset.asset_description }}
+            <h2>
+            	{{ asset.asset_description }}
             
-            {% if user.is_authenticated %}
-                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit asset"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
-            {% endif %}
-            {% if request.user.is_superuser %}
-                <a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
-            {% endif %}
-            
+	            {% if user.is_authenticated %}
+	                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit asset"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
+	            {% endif %}
+	            {% if request.user.is_superuser %}
+	                <a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
+	            {% endif %}
             </h2>
-            
-            <br />
-            
-            <p>AMRC Asset Number {{ asset.asset_id }}</p>
             
             {% if asset.asset_image_thumbnail%}
                 	<p><a href="/media/{{ asset.asset_image }}" target="_blank"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
             {% endif %}
             
-            
             <!-- big table -->
 			<table class="table table-striped">
 				<tbody>
+					<tr>
+						<td class="col-md-3"><b>AMRC Asset Number:</b></td>
+						<td><b>{{ asset.asset_id }}</b></td>
+					</tr>
 					{% if asset.asset_status %}
 						<tr>
 							<td class="col-md-3">Current Staus:</td>
