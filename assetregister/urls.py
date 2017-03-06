@@ -4,7 +4,6 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'^$', views.home, name="home"),
-    url(r'^active/$', views.active_asset_list, name="active_asset_list"),
     url(r'^calibration/$', views.calibration_list, name="calibration_list"),
     url(r'^calibration/new/$', views.new_calibration, name="new_calibration"),
     url(r'^calibration/new/(?P<urlpk>\d+)/$', views.new_calibration_asset, name="new_calibration_asset"),
@@ -21,6 +20,7 @@ urlpatterns = [
     url(r'^calibration/(?P<slug>[-\w]+)/edit$', views.calibration_edit, name="calibration_edit"),
     url(r'^calibration/(?P<slug>[-\w]+)/remove/$', views.calibration_confirm_delete.as_view(), name="calibration_confirm_delete"),
     url(r'^asset/$', views.asset_list, name="asset_list"),
+    url(r'^asset/active/$', views.active_asset_list, name="active_asset_list"),
     url(r'^asset/new/$', views.asset_new, name="asset_new"),
     url(r'^asset/(?P<pk>\d+)/edit/$', views.asset_edit, name="asset_edit"),
     url(r'^asset/(?P<pk>\d+)/remove/$', views.asset_confirm_delete.as_view(), name="asset_confirm_delete"),

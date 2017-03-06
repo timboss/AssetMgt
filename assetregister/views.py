@@ -12,6 +12,7 @@ from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
 from django.http import HttpResponseNotFound
 from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def examplemodal(request):
@@ -26,7 +27,17 @@ def home(request):
 def asset_list(request):
     asset_count = Asset.objects.count()
     active_asset_count = Asset.objects.filter(asset_status=1).count()
-    assets = Asset.objects.order_by("asset_id")
+    all_assets = Asset.objects.order_by("asset_id")
+    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    page = request.GET.get('page')
+    try:
+        assets = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        assets = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        assets = paginator.page(paginator.num_pages)
     return render(request, "assetregister/asset_list.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count,
         })
@@ -43,7 +54,17 @@ def asset_list_filter(request):
 def active_asset_list(request):
     asset_count = Asset.objects.count()
     active_asset_count = Asset.objects.filter(asset_status=1).count()
-    assets = Asset.objects.filter(asset_status=1).order_by("asset_id")
+    all_assets = Asset.objects.filter(asset_status=1).order_by("asset_id")
+    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    page = request.GET.get('page')
+    try:
+        assets = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        assets = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        assets = paginator.page(paginator.num_pages)
     return render(request, "assetregister/asset_list_active.html", {
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count
         })
@@ -52,7 +73,17 @@ def active_asset_list(request):
 @login_required
 def calibration_list(request):
     calibration_count = CalibrationRecord.objects.count()
-    calibrations = CalibrationRecord.objects.order_by("-pk")
+    all_calibrations = CalibrationRecord.objects.order_by("-pk")
+    paginator = Paginator(all_calibrations, 10) # Show 25 contacts per page
+    page = request.GET.get('page')
+    try:
+        calibrations = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        calibrations = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        calibrations = paginator.page(paginator.num_pages)
     return render(request, "assetregister/calibration_list.html", {
         "calibrations": calibrations, "calibration_count": calibration_count
         })
@@ -64,7 +95,17 @@ def calibrated_asset_list(request):
     calibrated_asset_count = Asset.objects.filter(requires_calibration=True).count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
                                                          asset_status=1).count()
-    assets = Asset.objects.filter(requires_calibration=True).order_by("asset_status", "calibration_date_next")
+    all_assets = Asset.objects.filter(requires_calibration=True).order_by("asset_status", "calibration_date_next")
+    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    page = request.GET.get('page')
+    try:
+        assets = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        assets = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        assets = paginator.page(paginator.num_pages)
     return render(request, "assetregister/calibration_asset_list.html", {
         "assets": assets, "asset_count": asset_count,
         "calibrated_asset_count": calibrated_asset_count,
@@ -77,7 +118,17 @@ def calibrated_asset_list_active(request):
     asset_count = Asset.objects.count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
                                                          asset_status=1).count()
-    assets = Asset.objects.filter(requires_calibration=True, asset_status=1).order_by("calibration_date_next")
+    all_assets = Asset.objects.filter(requires_calibration=True, asset_status=1).order_by("calibration_date_next")
+    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    page = request.GET.get('page')
+    try:
+        assets = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        assets = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        assets = paginator.page(paginator.num_pages)
     return render(request, "assetregister/calibration_asset_list_active.html", {
         "assets": assets, "asset_count": asset_count, "active_calibrated_asset_count": active_calibrated_asset_count
         })
