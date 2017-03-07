@@ -8,9 +8,19 @@
 	</ul>
 
 	<h3>Search</h3>
-	<a href="{% url 'asset_list_filter' %}">(Use Advanced Search)</a>
-    <br /><br />
     
+	<form role="search" class="form-inline input-group " action="/search/?q=">
+		<label class="sr-only" for="q">Search terms</label>
+		<input type="text" size="30" name="q" id="id_q" class="form-control" placeholder="Search all assets...">
+		<span class="input-group-btn">
+			<button class="btn btn-default" type="submit">
+				Search
+			</button>
+		</span>
+	</form>
+	<a href="{% url 'asset_list_filter' %}">(Or Use Advanced Search)</a>
+    
+    <br /><br />
 	{% if page.paginator.count %}
 	    Showing {{ page.object_list|length }} of {{ page.paginator.count }} Results on Page {{ page.number }} of {{ page.paginator.num_pages }}
 	    <br /><br />

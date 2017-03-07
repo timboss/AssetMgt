@@ -15,13 +15,15 @@ class EditAsset(forms.ModelForm):
         model = Asset
         fields = [
             "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
-            "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible", "person_responsible_email",
-            "requires_calibration", "calibration_instructions", "requires_safety_checks", "safety_notes",
-            "requires_environmental_checks", "environmental_aspects", "environmental_notes", "emergency_response_information",
-            "requires_planned_maintenance", "maintenance_instructions", "maintenance_records", "maintenance_notes",
-            "asset_value", "charge_out_rate", "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on", "disposal_date",
-            "parent_assets", "asset_location_building", "asset_location_room", "operating_instructions",
-            "handling_and_storage_instructions"
+            "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible",
+            "person_responsible_email", "requires_calibration", "calibration_frequency",
+            "calibration_instructions", "requires_safety_checks", "safety_notes",
+            "emergency_response_information", "requires_environmental_checks", "environmental_aspects",
+            "environmental_notes", "requires_planned_maintenance", "maintenance_instructions",
+            "maintenance_records", "maintenance_notes", "asset_value", "charge_out_rate",
+            "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on", "disposal_date",
+            "parent_assets", "asset_location_building", "asset_location_room",
+            "operating_instructions", "handling_and_storage_instructions"
             ]
         widgets = {
             'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
@@ -33,6 +35,7 @@ class EditAsset(forms.ModelForm):
             'asset_status': forms.Select(attrs={'class': 'form-control'}),
             'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
             'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'calibration_frequency': forms.TextInput(attrs={'class': 'form-control'}),
             'calibration_instructions': forms.URLInput(attrs={'class': 'form-control'}),
             'safety_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'environmental_aspects': forms.CheckboxSelectMultiple(),
@@ -55,9 +58,26 @@ class EditAsset(forms.ModelForm):
         }
         labels = {
           "parent_assets": ("Related Assets"),
-          "amrc_equipment_id": ("AMRC Equipment ID (e.g. V112, B05 or M206B"),
-          "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)")
+          "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
+          "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
+          "calibration_instructions": ("Calibration Instructions URL"),
+          "maintenance_instructions": ("Maintenance Instructions URL"),
+          "maintenance_records": ("Maintenance Records URL"),
+          "operating_instructions": ("Operating Instructions URL"),
+          "handling_and_storage_instructions": ("Handling and Storage Instructions URL"),
+          "asset_value": ("Asset Value £"),
+          "charge_out_rate": ("Charge Out Rate £"),
           }
+
+    def clean (self):
+        cleaned_data = super(EditAsset, self).clean()
+        needs_calibration = cleaned_data.get("requires_calibration")
+        calibration_freq = cleaned_data.get("calibration_frequency")
+        
+        if needs_calibration and not calibration_freq:
+            error = "If asset requires calibration then you must enter a calibration frequency!"
+            self.add_error("requires_calibration", error)
+            self.add_error("calibration_frequency", error)
 
 
 class Calibrate(forms.ModelForm):
@@ -104,7 +124,10 @@ class Calibrate(forms.ModelForm):
 
 
 class AssetFilter(django_filters.FilterSet):
+    calibration_date_next__gt = django_filters.DateFilter(name="calibration_date_next", lookup_expr="calibration_date_next__gt")
+    calibration_date_next__lt = django_filters.DateFilter(name="calibration_date_next", lookup_expr="calibration_date_next__lt")
     asset_id = django_filters.NumberFilter(lookup_expr="exact")
+    amrc_equipment_id = django_filters.CharFilter(lookup_expr="icontains")
     asset_description = django_filters.CharFilter(lookup_expr="icontains")
     asset_details = django_filters.CharFilter(lookup_expr="icontains")
     asset_manufacturer = django_filters.CharFilter(lookup_expr="icontains")
@@ -114,6 +137,9 @@ class AssetFilter(django_filters.FilterSet):
     person_responsible = django_filters.CharFilter(lookup_expr="icontains")
     person_responsible_email = django_filters.CharFilter(lookup_expr="icontains")
     environmental_notes = django_filters.CharFilter(lookup_expr="icontains")
+    safety_notes = django_filters.CharFilter(lookup_expr="icontains")
+    emergency_response_information = django_filters.CharFilter(lookup_expr="icontains")
+    maintenance_notes = django_filters.CharFilter(lookup_expr="icontains")
     asset_value__gt = django_filters.NumberFilter(name="asset_value", lookup_expr="gt")
     asset_value__lt = django_filters.NumberFilter(name="asset_value", lookup_expr="lt")
     purchase_order_ref = django_filters.CharFilter(lookup_expr="exact")
@@ -122,19 +148,20 @@ class AssetFilter(django_filters.FilterSet):
     acquired_on__lt = django_filters.DateFilter(name="acquired_on", lookup_expr="acquired_on__lt")
     disposal_date__gt = django_filters.DateFilter(name="disposal_date", lookup_expr="disposal_date__gt")
     disposal_date__lt = django_filters.DateFilter(name="disposal_date", lookup_expr="disposal_date__lt")
-    
     asset_location_building__building_name = django_filters.CharFilter(lookup_expr="icontains")
     asset_location_building__EFM_building_code = django_filters.CharFilter(lookup_expr="icontains")
     asset_location_room = django_filters.CharFilter(lookup_expr="icontains")
     
     class Meta:
         model = Asset
-        fields = ["requires_calibration", "requires_safety_checks", "requires_environmental_checks",
+        fields = ["requires_calibration", "passed_calibration", "requires_safety_checks", "requires_environmental_checks",
                   "requires_planned_maintenance", "requires_insurance"]
         labels = {
           "amrc_equipment_id": ("AMRC Equipment ID (no spaces) e.g. V112, B05 or M206B"),
-          "asset_location_room": ("Asset Location (specific room or group etc.)")
+          "asset_location_room": ("Asset Location (specific room or group etc.)"),
+          "passed_calibration": ("Passed Last Calibration"),
           }
+
 
 class HighlightedSearchFormAssets(HighlightedSearchForm):
     def search(self):

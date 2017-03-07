@@ -206,6 +206,12 @@
 	     									{% endif %}
 	     								</p>
      								{% endif %}
+     								
+     								{% if asset.calibration_frequency %}
+     									<p>
+     										Calibration Frequency: <b>{{ asset.calibration_frequency }}</b>
+     									</p>
+     								{% endif %}
 
 						    		{% if calibrations %}
 							    		<table class="table table-hover ">
@@ -278,7 +284,7 @@
 					</div>
             {% endif %}
             
-            {% if asset.requires_safety_checks or asset.safety_notes %}
+            {% if asset.requires_safety_checks or asset.safety_notes or asset.emergency_response_information %}
             	<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
@@ -293,10 +299,22 @@
 					    </div>
 					    <div id="collapse-safety" class="panel-collapse collapse">
 					    	<div class="panel-body">
-                				<p>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+                				{% if asset.requires_safety_checks %}
+                					<p>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+                				{% endif %}
+                				
+                				{% if asset.emergency_response_information %}
+                					<br />
+            						<p>
+            							<b>Emergency Response Information:</b>
+            							{{ asset.emergency_response_information|linebreaks }}
+            						</p>
+            					{% endif %}
+                				
                 				{% if asset.safety_notes %}
+                					<br />
 									<p>
-										<b>Notes:</b>
+										<b>Safety Notes:</b>
 										{{ asset.safety_notes|linebreaks }}
 									</p>
 								{% endif %}
@@ -348,7 +366,7 @@
 								
 								{% if asset.environmental_notes %}
 									<p>
-										<b>Notes:</b>
+										<b>Environmental Notes:</b>
 										{{ asset.environmental_notes|linebreaks }}
 									</p>
 								{% endif %}
@@ -358,29 +376,8 @@
 				</div>
             {% endif %}
             
-            {% if asset.emergency_response_information %}
-            	<div class="panel-group">
-					<div class="panel panel-default">
-					    <div class="panel-heading">
-					      <h4 class="panel-title">
-					        <a data-toggle="collapse" href="#collapse-emergency">
-					        	<div id="calibration-expand-container">
-					        		<div id="calibration-expand-left" align="left">Emergency Response Information</div>
-					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
-					        	</div>
-					        </a>
-					      </h4>
-					    </div>
-					    <div id="collapse-emergency" class="panel-collapse collapse">
-					    	<div class="panel-body">
-								{{ asset.emergency_response_information|linebreaks }}
-					    	</div>
-						</div>
-					</div>
-				</div>
-            {% endif %}
             
-            {% if asset.requires_planned_maintenance or asset.maintenance_notes %}
+            {% if asset.requires_planned_maintenance or asset.maintenance_notes or asset.maintenance_records or asset.maintenance_instructions %}
             	<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
@@ -395,19 +392,28 @@
 					    </div>
 					    <div id="collapse-maintenance" class="panel-collapse collapse">
 					    	<div class="panel-body">
-                				<p>Requires Planned Preventative Maintenance: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+					    		{% if asset.requires_planned_maintenance %}
+                					<p>Requires Planned Preventative Maintenance: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+                				{% endif %}
+                				
+                				{% if asset.requires_planned_maintenance and asset.maintenance_notes %}
+                					<br />
+                				{% endif %}
+                				
                 				{% if asset.maintenance_notes %}
 									<p>
-										<b>Notes:</b>
+										<b>Maintenance Notes:</b>
 										{{ asset.maintenance_notes|linebreaks }}
 									</p>
 								{% endif %}
+								
 				               	{% if asset.maintenance_records %}
 				               		<br />
 				               		<p><a href="{{ asset.maintenance_records }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Maintenance Records</a></p>
 				               	{% endif %}
+				               	
 								{% if asset.maintenance_instructions %}
-									<p><a href="{{ asset.maintenance_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Download Maintenance Instructions</a></p>
+									<p><a href="{{ asset.maintenance_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Maintenance Instructions</a></p>
 								{% endif %}
                 			</div>
 						</div>
@@ -459,16 +465,16 @@
             <p>Asset Record Last Edited {{ asset.edited_on }} by {{ asset.edited_by }}</p>
             <br />
             
-            {% if asset.asset_handling_and_storage_instructions %}
-                <p><a href="{{ asset.asset_handling_and_storage_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Handling and Storage Instructions</a></p>
+            {% if asset.handling_and_storage_instructions %}
+                <p><a href="{{ asset.asset_handling_and_storage_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Handling and Storage Instructions</a></p>
             {% endif %}
             
-            {% if asset.asset_operating_instructions %}
-                <p><a href="{{ asset.asset_operating_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Download Operating Instructions</a></p>
+            {% if asset.operating_instructions %}
+                <p><a href="{{ asset.asset_operating_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span>  Operating Instructions</a></p>
             {% endif %}            
             
             <br />
-            <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank" class="btn btn-primary btn-sm" onclick="window.open('{% url 'asset_qr' pk=asset.pk %}', 'newwindow', 'width=665, height=310'); return false;"><span class="glyphicon glyphicon-barcode gi-1x"></span>  Generate Large Asset QR Code</a>
+            <a href="{% url 'asset_qr' pk=asset.pk %}" target="_blank" class="btn btn-primary btn-sm" onclick="window.open('{% url 'asset_qr' pk=asset.pk %}', 'newwindow', 'width=675, height=335'); return false;"><span class="glyphicon glyphicon-barcode gi-1x"></span>  Generate Large Asset QR Code</a>
             <a href="{% url 'asset_qr_small' pk=asset.pk %}" target="_blank" class="btn btn-primary btn-sm" onclick="window.open('{% url 'asset_qr_small' pk=asset.pk %}', 'newwindow2', 'width=130, height=190'); return false;"><span class="glyphicon glyphicon-barcode gi-1x"></span>  Generate Small Asset QR Code</a>
         </div>
 

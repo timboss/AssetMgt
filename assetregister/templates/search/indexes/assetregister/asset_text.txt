@@ -10,3 +10,7 @@
 {{ object.person_responsible }}
 {{ object.person_responsible_email }}
 {{ object.amrc_equipment_ID }}
+{{ object.safety_notes }}
+{{ object.environmental_notes }}
+{{ object.emergency_response_information }}
+{{ object.maintenance_notes }}

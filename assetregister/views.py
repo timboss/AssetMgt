@@ -45,17 +45,17 @@ def asset_list(request):
 
 def asset_list_filter(request):
     if request.GET:
-        filter_all = AssetFilter(request.GET, queryset=Asset.objects.all())
-        paginator = Paginator(filter_all, 10)
-        page = request.GET.get('page')
-        try:
-            filter = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            filter = paginator.page(1)
-        except EmptyPage:
+        filter = AssetFilter(request.GET, queryset=Asset.objects.all())
+        #paginator = Paginator(filter_all, 10)
+        #page = request.GET.get('page')
+        #try:
+        #    filter = paginator.page(page)
+        #except PageNotAnInteger:
+        #    # If page is not an integer, deliver first page.
+        #    filter = paginator.page(1)
+        #except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
-            filter = paginator.page(paginator.num_pages)
+        #    filter = paginator.page(paginator.num_pages)
     else:
         #this is a bit hacky, but should work forever...
         filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=9999))
@@ -253,6 +253,9 @@ def new_calibration(request):
 @login_required
 def calibration_edit(request, slug):
     calibration = get_object_or_404(CalibrationRecord, slug=slug)
+    asset_calib_freq = calibration.asset__calibration_frequency
+    if not asset_calib_freq:
+        asset_calib_freq = "None Set"
     if request.method == "POST":
         form = Calibrate(request.POST, instance=calibration)
         if form.is_valid():
@@ -263,11 +266,16 @@ def calibration_edit(request, slug):
             return redirect("asset_detail", pk=calibration.asset.asset_id)
     else:
         form = Calibrate(instance=calibration)
-    return render(request, "assetregister/new_calibration.html", {"form": form})
+    return render(request, "assetregister/new_calibration.html", {"form": form,
+                                                                  "asset_calib_freq": asset_calib_freq})
 
 
 @login_required
 def new_calibration_asset(request, urlpk):
+    asset_calib_freq = Asset.objects.values_list("calibration_frequency", flat=True).get(asset_id=urlpk)
+    if not asset_calib_freq:
+        asset_calib_freq = "None Set"
+    disable_asset = True
     if request.method == "POST":
         form = Calibrate(request.POST)
         if form.is_valid():
@@ -278,7 +286,8 @@ def new_calibration_asset(request, urlpk):
             return redirect("asset_detail", pk=calibration.asset.asset_id)
     else:
         form = Calibrate(initial={"asset": urlpk})
-    return render(request, "assetregister/new_calibration.html", {"form": form})
+    return render(request, "assetregister/new_calibration.html", {"form": form,
+                                                                  "asset_calib_freq": asset_calib_freq})
 
 
 @login_required
