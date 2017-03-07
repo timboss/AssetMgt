@@ -1,7 +1,7 @@
 *.pyc
 __pycache__
 myvenv
-/static
+assetregister/static/logo
 /media
 .DS_Store
 settings.py
