@@ -10,8 +10,8 @@
 
 	<h3>Advanced Search</h3>
 	
-	<h5>All filters on this form are combined with AND
-		<br />e.g. Asset model contains: "X" AND Asset serial number contains: "Y"</h5>
+	<h5>All filters on this form are combined
+		<br />e.g. Asset model contains "X" AND Asset serial number contains "Y"</h5>
 	<br />	
 	
 	<form action="" method="get" class="form-horizontal asset-form">
@@ -62,21 +62,21 @@
     {% endfor %}
 
 	<div class="pagination">
-		{% if assets.paginator.count %}
-		    Showing {{ assets.object_list|length }} of {{ assets.paginator.count }} Results on Page {{ assets.number }} of {{ assets.paginator.num_pages }}
+		{% if filter.qs.paginator.count %}
+		    Showing {{ filter.qs.object_list|length }} of {{ filter.qs.paginator.count }} Results on Page {{ filter.qs.number }} of {{ filter.qs.paginator.num_pages }}
 		    <br />
 		{% endif %}
 		
-		{% if assets.has_previous or assets.has_next %}
+		{% if filter.qs.has_previous or assets.has_next %}
 			<ul class="pager">
-				{% if assets.has_previous %}
-					<li class="previous"><a href="?page={{ assets.previous_page_number }}">&laquo; Previous</a></li>
+				{% if filter.qs.has_previous %}
+					<li class="previous"><a href="?page={{ filter.qs.previous_page_number }}">&laquo; Previous</a></li>
 				{% else %}
 					<li class="previous disabled"><a href="">&laquo; Previous</a></li>
 				{% endif %}
 				
-				{% if assets.has_next %}
-					<li class="next"><a href="?page={{ assets.next_page_number }}">Next &raquo;</a></li>
+				{% if filter.qs.has_next %}
+					<li class="next"><a href="?page={{ filter.qs.next_page_number }}">Next &raquo;</a></li>
 				{% else %}
 					<li class="next disabled"><a href="">Next &raquo;</a></li>
 				{% endif %}

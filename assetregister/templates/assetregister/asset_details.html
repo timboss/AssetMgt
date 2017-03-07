@@ -75,6 +75,13 @@
 						</tr>
         			{% endif %}
         			
+        			{% if asset.charge_out_rate %}
+						<tr>
+							<td class="col-md-3">Charge Out Rate:</td>
+							<td>£{{ asset.charge_out_rate }}</td>
+						</tr>
+        			{% endif %}
+        			
         			{% if asset.purchase_order_ref %}							
         				<tr>
 							<td class="col-md-3">PO Ref:</td>
@@ -271,7 +278,7 @@
 					</div>
             {% endif %}
             
-            {% if asset.requires_safety_checks %}
+            {% if asset.requires_safety_checks or asset.safety_notes %}
             	<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
@@ -286,7 +293,13 @@
 					    </div>
 					    <div id="collapse-safety" class="panel-collapse collapse">
 					    	<div class="panel-body">
-                				<p><b>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></b></p>
+                				<p>Requires Safety Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+                				{% if asset.safety_notes %}
+									<p>
+										<b>Notes:</b>
+										{{ asset.safety_notes|linebreaks }}
+									</p>
+								{% endif %}
                 			</div>
 						</div>
 					</div>
@@ -309,7 +322,7 @@
 					    <div id="collapse-enviro" class="panel-collapse collapse">
 					    	<div class="panel-body">
 					    		{% if asset.requires_environmental_checks %}
-					    			<p><b>Requires Environmental Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></b></p>
+					    			<p>Requires Environmental Checks: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
 					    		{% endif %}
 					    		
 					    		{% if asset.environmental_aspects.all %}
@@ -336,7 +349,7 @@
 								{% if asset.environmental_notes %}
 									<p>
 										<b>Notes:</b>
-										<br />{{ asset.environmental_notes|linebreaks }}
+										{{ asset.environmental_notes|linebreaks }}
 									</p>
 								{% endif %}
 					    	</div>
@@ -345,7 +358,29 @@
 				</div>
             {% endif %}
             
-            {% if asset.requires_planned_maintenance %}
+            {% if asset.emergency_response_information %}
+            	<div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse-emergency">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Emergency Response Information</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse-emergency" class="panel-collapse collapse">
+					    	<div class="panel-body">
+								{{ asset.emergency_response_information|linebreaks }}
+					    	</div>
+						</div>
+					</div>
+				</div>
+            {% endif %}
+            
+            {% if asset.requires_planned_maintenance or asset.maintenance_notes %}
             	<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
@@ -361,6 +396,12 @@
 					    <div id="collapse-maintenance" class="panel-collapse collapse">
 					    	<div class="panel-body">
                 				<p>Requires Planned Preventative Maintenance: <span class="glyphicon glyphicon-ok gi-1x"></span></p>
+                				{% if asset.maintenance_notes %}
+									<p>
+										<b>Notes:</b>
+										{{ asset.maintenance_notes|linebreaks }}
+									</p>
+								{% endif %}
 				               	{% if asset.maintenance_records %}
 				               		<br />
 				               		<p><a href="{{ asset.maintenance_records }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Maintenance Records</a></p>

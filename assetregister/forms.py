@@ -1,6 +1,6 @@
 from django import forms
 from .models import Asset, CalibrationRecord
-from haystack.forms import SearchForm
+from haystack.forms import HighlightedSearchForm
 from haystack.query import SearchQuerySet
 from django.utils import timezone
 import django_filters
@@ -16,10 +16,10 @@ class EditAsset(forms.ModelForm):
         fields = [
             "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
             "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible", "person_responsible_email",
-            "requires_calibration", "calibration_instructions", "requires_safety_checks",
-            "requires_environmental_checks", "environmental_aspects", "environmental_notes",
-            "requires_planned_maintenance", "maintenance_instructions", "maintenance_records",
-            "asset_value", "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on", "disposal_date",
+            "requires_calibration", "calibration_instructions", "requires_safety_checks", "safety_notes",
+            "requires_environmental_checks", "environmental_aspects", "environmental_notes", "emergency_response_information",
+            "requires_planned_maintenance", "maintenance_instructions", "maintenance_records", "maintenance_notes",
+            "asset_value", "charge_out_rate", "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on", "disposal_date",
             "parent_assets", "asset_location_building", "asset_location_room", "operating_instructions",
             "handling_and_storage_instructions"
             ]
@@ -34,11 +34,15 @@ class EditAsset(forms.ModelForm):
             'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
             'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'calibration_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+            'safety_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'environmental_aspects': forms.CheckboxSelectMultiple(),
             'environmental_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+            'emergency_response_information': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'maintenance_instructions': forms.URLInput(attrs={'class': 'form-control'}),
             'maintenance_records': forms.URLInput(attrs={'class': 'form-control'}),
+            'maintenance_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'asset_value': forms.TextInput(attrs={'class': 'form-control'}),
+            'charge_out_rate': forms.TextInput(attrs={'class': 'form-control'}),
             'purchase_order_ref': forms.TextInput(attrs={'class': 'form-control'}),
             'funded_by': forms.TextInput(attrs={'class': 'form-control'}),
             'acquired_on': DateInput(attrs={'class': 'datepicker form-control'}),
@@ -131,3 +135,10 @@ class AssetFilter(django_filters.FilterSet):
           "amrc_equipment_id": ("AMRC Equipment ID (no spaces) e.g. V112, B05 or M206B"),
           "asset_location_room": ("Asset Location (specific room or group etc.)")
           }
+
+class HighlightedSearchFormAssets(HighlightedSearchForm):
+    def search(self):
+        sqs = super(HighlightedSearchFormAssets, self).search()
+        if not self.is_valid():
+            return self.no_query_found()
+        return sqs

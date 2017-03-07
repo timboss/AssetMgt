@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
 from . import views
+from assetregister.views import NewSearchView
 from django.conf import settings
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
     url(r'^calibration/export/custom/$', views.calibration_asset_export_custom, name="calibration_asset_export_custom"),
     url(r'^calibration/export/$', views.calibration_asset_export_custom_select,
         name="calibration_asset_export_custom_select"),
+    url(r'^calibration/export/records/$', views.export_all_calibratons, name="export_calibration_records"),
     url(r'^calibration/(?P<slug>[-\w]+)/$', views.calibration_detail, name="calibration_detail"),
     url(r'^calibration/(?P<slug>[-\w]+)/edit$', views.calibration_edit, name="calibration_edit"),
     url(r'^calibration/(?P<slug>[-\w]+)/remove/$', views.calibration_confirm_delete.as_view(), name="calibration_confirm_delete"),
@@ -35,7 +37,8 @@ urlpatterns = [
     url(r'^environmental/export/all/$', views.environmental_export_all, name="environmental_export_all"),
     url(r'^insurance/export/all/$', views.insurance_export_all, name="insurance_export_all"),
     url(r'^safety/export/all/$', views.safety_export_all, name="safety_export_all"),
-    url(r'^example/$', views.examplemodal, name="examplemodal")
+    url(r'^example/$', views.examplemodal, name="examplemodal"),
+    url(r'^newsearch/?$', NewSearchView.as_view(), name='new_search_view'),
 ]
 
 if settings.DEBUG:

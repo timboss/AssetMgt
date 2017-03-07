@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
 from .models import Asset, CalibrationRecord
-from .forms import EditAsset, Calibrate, AssetFilter
+from .forms import EditAsset, Calibrate, AssetFilter, HighlightedSearchFormAssets
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
@@ -28,7 +28,7 @@ def asset_list(request):
     asset_count = Asset.objects.count()
     active_asset_count = Asset.objects.filter(asset_status=1).count()
     all_assets = Asset.objects.order_by("asset_id")
-    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    paginator = Paginator(all_assets, 10)
     page = request.GET.get('page')
     try:
         assets = paginator.page(page)
@@ -42,20 +42,32 @@ def asset_list(request):
         "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count,
         })
 
+
 def asset_list_filter(request):
     if request.GET:
-        filter = AssetFilter(request.GET, queryset=Asset.objects.all())
+        filter_all = AssetFilter(request.GET, queryset=Asset.objects.all())
+        paginator = Paginator(filter_all, 10)
+        page = request.GET.get('page')
+        try:
+            filter = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            filter = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            filter = paginator.page(paginator.num_pages)
     else:
         #this is a bit hacky, but should work forever...
         filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=9999))
     return render(request, "assetregister/asset_list_filtered.html", {"filter": filter, 
         })
 
+
 def active_asset_list(request):
     asset_count = Asset.objects.count()
     active_asset_count = Asset.objects.filter(asset_status=1).count()
     all_assets = Asset.objects.filter(asset_status=1).order_by("asset_id")
-    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    paginator = Paginator(all_assets, 10)
     page = request.GET.get('page')
     try:
         assets = paginator.page(page)
@@ -74,7 +86,7 @@ def active_asset_list(request):
 def calibration_list(request):
     calibration_count = CalibrationRecord.objects.count()
     all_calibrations = CalibrationRecord.objects.order_by("-pk")
-    paginator = Paginator(all_calibrations, 10) # Show 25 contacts per page
+    paginator = Paginator(all_calibrations, 10)
     page = request.GET.get('page')
     try:
         calibrations = paginator.page(page)
@@ -96,7 +108,7 @@ def calibrated_asset_list(request):
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
                                                          asset_status=1).count()
     all_assets = Asset.objects.filter(requires_calibration=True).order_by("asset_status", "calibration_date_next")
-    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    paginator = Paginator(all_assets, 10)
     page = request.GET.get('page')
     try:
         assets = paginator.page(page)
@@ -119,7 +131,7 @@ def calibrated_asset_list_active(request):
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
                                                          asset_status=1).count()
     all_assets = Asset.objects.filter(requires_calibration=True, asset_status=1).order_by("calibration_date_next")
-    paginator = Paginator(all_assets, 10) # Show 25 contacts per page
+    paginator = Paginator(all_assets, 10)
     page = request.GET.get('page')
     try:
         assets = paginator.page(page)
@@ -368,3 +380,19 @@ def safety_export_all(request):
 def export_all_assets(request):
     export = Asset.objects.all()
     return render_to_csv_response(export, filename="All_Assets__" + str(timezone.now().date()) + ".csv")
+
+
+@login_required
+def export_all_calibratons(request):
+    export = CalibrationRecord.objects.order_by("-calibration_date").values("calibration_record_id", "asset", "asset__asset_description",
+                                                                            "asset__asset_manufacturer", "calibration_description",
+                                                                            "calibration_date", "calibration_date_next", "calibrated_by_internal__username",
+                                                                            "calibrated_by_external", "calibration_outcome", "calibration_notes", 
+                                                                            "calibration_certificate", "calibration_entered_by__username", "calibration_entered_on")
+    return render_to_csv_response(export, filename="All_Calibration_Records_" + str(timezone.now().date()) + ".csv")
+
+
+class NewSearchView(SearchView):
+    template_name = 'search/search.html'
+    queryset = SearchQuerySet().exclude(asset_id=999999999999999999999999)
+    form_class = HighlightedSearchFormAssets
