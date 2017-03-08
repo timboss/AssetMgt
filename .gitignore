@@ -10,3 +10,4 @@ settings-production.py
 org.eclipse.core.resources.prefs
 .project
 .pydevproject
+logo*
