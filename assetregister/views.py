@@ -294,7 +294,7 @@ def new_calibration_asset(request, urlpk):
 def calibrated_asset_export_active(request):
     calibration_export = Asset.objects.filter(requires_calibration=True,
                                               asset_status=1).order_by("calibration_date_next").values(
-                                                "asset_id", "requires_calibration", "asset_description",
+                                                "asset_id", "amrc_equipment_id", "requires_calibration", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status__status_name", "calibration_date_prev", "calibration_date_next",
                                                 "calibration_instructions", "person_responsible",
@@ -306,7 +306,7 @@ def calibrated_asset_export_active(request):
 @login_required
 def calibrated_asset_export_all(request):
     calibration_export = Asset.objects.filter(requires_calibration=True).order_by("calibration_date_next").values(
-                                                "asset_id", "requires_calibration", "asset_description",
+                                                "asset_id", "amrc_equipment_id", "requires_calibration", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status__status_name", "calibration_date_prev", "calibration_date_next",
                                                 "calibration_instructions", "person_responsible",
@@ -319,7 +319,7 @@ def calibrated_asset_export_all(request):
 def calibration_asset_export_nextmonth(request):
     plusonemonth = timezone.now() + timedelta(days=30)
     calibration_export = Asset.objects.filter(requires_calibration=True,
-                                              calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values("asset_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status__status_name", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building__building_name", "asset_location_room")
+                                              calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values("asset_id", "amrc_equipment_id", "requires_calibration", "asset_description", "asset_manufacturer", "asset_model", "asset_serial_number", "asset_status__status_name", "calibration_date_prev", "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email", "asset_location_building__building_name", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_" +
                                   str(plusonemonth.date()) + ".csv")
 
@@ -350,6 +350,7 @@ def maintenance_export_all(request):
                                                 "asset_status__status_name", "person_responsible", "person_responsible_email",
                                                 "maintenance_instructions", "maintenance_records",
                                                 "parent_assets", "asset_location_building__building_name",
+                                                "asset_location_building__EFM_building_code",
                                                 "asset_location_room", "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Maintenance_" + str(timezone.now().date()) + ".csv")
 
@@ -359,7 +360,8 @@ def environmental_export_all(request):
                                                 "asset_id", "requires_environmental_checks", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status__status_name", "person_responsible", "person_responsible_email",
-                                                "parent_assets", "asset_location_building____building_name",
+                                                "parent_assets", "asset_location_building__building_name",
+                                                "asset_location_building__EFM_building_code",
                                                 "asset_location_room", "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Environmental_Checks_" + str(timezone.now().date()) + ".csv")
 
@@ -371,6 +373,7 @@ def insurance_export_all(request):
                                                 "asset_status__status_name", "asset_value", "purchase_order_ref",
                                                 "funded_by", "acquired_on", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building__building_name",
+                                                "asset_location_building__EFM_building_code",
                                                 "asset_location_room", "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Insurance_" + str(timezone.now().date()) + ".csv")
 
@@ -381,9 +384,23 @@ def safety_export_all(request):
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status__status_name", "person_responsible", "person_responsible_email",
                                                 "parent_assets", "asset_location_building__building_name",
+                                                "asset_location_building__EFM_building_code",
                                                 "asset_location_room", "handling_and_storage_instructions")
     return render_to_csv_response(export, filename="All_Assets_Needing_Safety_Checks_" + str(timezone.now().date()) + ".csv")
 
+
+def location_export_all(request):
+    export = Asset.objects.all().order_by("asset_location_building__building_name").values(
+                                                "asset_location_building__building_name",
+                                                "asset_location_building__EFM_building_code",
+                                                "asset_location_room",
+                                                "asset_id", "requires_safety_checks", "requires_insurance", 
+                                                "requires_environmental_checks", "requires_planned_maintenance",
+                                                "asset_description",
+                                                "asset_manufacturer", "asset_model", "asset_serial_number",
+                                                "asset_status__status_name", "person_responsible", "person_responsible_email",
+                                                "parent_assets", "handling_and_storage_instructions")
+    return render_to_csv_response(export, filename="All_Asset_Records_By_Location_" + str(timezone.now().date()) + ".csv")
 
 @login_required
 def export_all_assets(request):

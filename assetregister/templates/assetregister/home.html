@@ -8,11 +8,11 @@
 	
 	<div class="jumbotron">
   		<h1>AMRC Asset Management</h1>
-		<p>To look up an Asset by it's AMRC Asset Number or Equipment I.D. use the boxes below.</p>
+		<p>To look up an Asset by it's AMRC Asset Number or (engraved) Equipment I.D. use the boxes below.</p>
 
 		<form class="form-inline input-group" onsubmit="window.location = '{{ baseurl }}/asset/' + search.value; return false;">
 			<label class="sr-only" for="search1">AMRC Asset Number</label>
-			<input id="search" class="form-control input" placeholder="Asset Number, e.g. 123" type="search" name="search">
+			<input id="search" class="form-control input" placeholder="AMRC Asset Number, e.g. 123" type="search" name="search">
 			<span class="input-group-btn">
 				<input class="btn btn-default" type="submit" value="Go">
 			</span>
@@ -29,8 +29,8 @@
 		</form>
 		<br />
 		<p>
-			If you don't know the Asset Number or Equipment I.D. you can use the search bar in the top right
-			 to search across all AMRC assets, or alternatively <a href="{% url 'asset_list_filter' %}">click here to use advanced filtering.</a>
+			If you don't know the Asset Number or Equipment I.D. you can use the search bar in the top menu
+			 to quickly search across all assets, or alternatively <a href="{% url 'asset_list_filter' %}">use advanced filtering.</a>
 		</p>
 	</div>
 	  
