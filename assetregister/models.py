@@ -48,6 +48,7 @@ class Asset(models.Model):
     funded_by = models.CharField(max_length=255, blank=True)
     acquired_on = models.DateField(null=True, blank=True)
     disposal_date = models.DateField(null=True, blank=True)
+    disposal_method = models.CharField(max_length=255, null=True, blank=True)
     parent_assets = models.ManyToManyField("self", blank=True)
     asset_location_building = models.ForeignKey("Buildings", on_delete=models.SET_NULL, blank=True, null=True, related_name="building")
     asset_location_room = models.CharField(max_length=255, blank=True)
