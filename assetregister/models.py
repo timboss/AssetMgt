@@ -44,6 +44,7 @@ class Asset(models.Model):
     calibration_instructions = models.URLField(max_length=255, null=True, blank=True)
     asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     charge_out_rate = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    charge_code = models.CharField(max_length=64, null=True, blank=True)
     purchase_order_ref = models.CharField(max_length=15, blank=True)
     funded_by = models.CharField(max_length=255, blank=True)
     acquired_on = models.DateField(null=True, blank=True)
@@ -187,7 +188,7 @@ class Asset(models.Model):
 
     def __str__(self):
         if not self.asset_manufacturer:
-            return self.asset_description
+            return "{} - {}".format(self.asset_id, self.asset_description)
         else:
             return "{} - {} - {}".format(self.asset_id, self.asset_manufacturer, self.asset_description)
 
@@ -267,3 +268,17 @@ class EnviroAspects(models.Model):
 
     def __str__(self):
         return self.aspect
+
+
+NOTIFICATION_TYPES = (
+                       ("Calibrated Asset", "Calibrated Asset"),
+                       ("High Value Asset", "High Value Asset"),
+                       ("Asset with Environmental Aspect", "Asset with Environmental Aspect"),
+                     )
+
+class EmailsTo(models.Model):
+    email_address = models.CharField(max_length=255)
+    email_for = models.CharField(max_length=56, choices=NOTIFICATION_TYPES)
+    
+    def __str__(self):
+        return "Notify of {} - {}".format(self.email_for, self.email_address)

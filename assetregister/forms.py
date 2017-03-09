@@ -16,13 +16,12 @@ class EditAsset(forms.ModelForm):
         fields = [
             "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
             "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible",
-            "person_responsible_email", "requires_calibration", "calibration_frequency",
-            "calibration_instructions", "requires_safety_checks", "safety_notes",
+            "person_responsible_email", "requires_calibration", "requires_safety_checks", "safety_notes",
             "emergency_response_information", "requires_environmental_checks", "environmental_aspects",
             "environmental_notes", "requires_planned_maintenance", "maintenance_instructions",
             "maintenance_records", "maintenance_notes", "asset_value", "charge_out_rate",
             "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on", "disposal_date",
-            "parent_assets", "asset_location_building", "asset_location_room",
+            "disposal_method", "parent_assets", "asset_location_building", "asset_location_room",
             "operating_instructions", "handling_and_storage_instructions"
             ]
         widgets = {
@@ -35,8 +34,6 @@ class EditAsset(forms.ModelForm):
             'asset_status': forms.Select(attrs={'class': 'form-control'}),
             'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
             'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'calibration_frequency': forms.TextInput(attrs={'class': 'form-control'}),
-            'calibration_instructions': forms.URLInput(attrs={'class': 'form-control'}),
             'safety_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'environmental_aspects': forms.CheckboxSelectMultiple(),
             'environmental_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
@@ -50,6 +47,7 @@ class EditAsset(forms.ModelForm):
             'funded_by': forms.TextInput(attrs={'class': 'form-control'}),
             'acquired_on': DateInput(attrs={'class': 'datepicker form-control'}),
             'disposal_date': DateInput(attrs={'class': 'datepicker form-control'}),
+            'disposal_method': forms.TextInput(attrs={'class': 'form-control'}),
             'parent_assets': forms.SelectMultiple(attrs={'class': 'form-control example-enableFiltering', 'style': 'width: 400px;'}),
             'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
             'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
@@ -60,7 +58,6 @@ class EditAsset(forms.ModelForm):
           "parent_assets": ("Related Assets"),
           "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
           "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
-          "calibration_instructions": ("Calibration Instructions URL"),
           "maintenance_instructions": ("Maintenance Instructions URL"),
           "maintenance_records": ("Maintenance Records URL"),
           "operating_instructions": ("Operating Instructions URL"),
@@ -69,8 +66,43 @@ class EditAsset(forms.ModelForm):
           "charge_out_rate": ("Charge Out Rate £"),
           }
 
+
+class EditAssetCalibrationInfo(forms.ModelForm):
+    class Meta:
+        model = Asset
+        fields = [
+            "asset_description", "asset_manufacturer", "asset_model",
+            "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible",
+            "person_responsible_email", "requires_calibration", "calibration_frequency",
+            "calibration_instructions", "asset_location_building", "asset_location_room",
+            "operating_instructions", "handling_and_storage_instructions"
+            ]
+        widgets = {
+            'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'amrc_equipment_id': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_status': forms.Select(attrs={'class': 'form-control'}),
+            'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
+            'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'calibration_frequency': forms.TextInput(attrs={'class': 'form-control'}),
+            'calibration_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+            'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
+            'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
+            'operating_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+            'handling_and_storage_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+          "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
+          "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
+          "calibration_instructions": ("Calibration Instructions URL"),
+          "operating_instructions": ("Operating Instructions URL"),
+          "handling_and_storage_instructions": ("Handling and Storage Instructions URL"),
+          }
+
     def clean (self):
-        cleaned_data = super(EditAsset, self).clean()
+        cleaned_data = super(EditAssetCalibrationInfo, self).clean()
         needs_calibration = cleaned_data.get("requires_calibration")
         calibration_freq = cleaned_data.get("calibration_frequency")
         
@@ -78,6 +110,28 @@ class EditAsset(forms.ModelForm):
             error = "If asset requires calibration then you must enter a calibration frequency!"
             self.add_error("requires_calibration", error)
             self.add_error("calibration_frequency", error)
+
+
+class EditAssetFinanceInfo(forms.ModelForm):
+    class Meta:
+        model = Asset
+        fields = [
+            "asset_model", "asset_serial_number", "asset_value", "requires_insurance",
+            "charge_out_rate", "charge_code", "purchase_order_ref", "funded_by",
+            "acquired_on", "disposal_date", "disposal_method",
+            ]
+        widgets = {
+            'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'asset_value': forms.TextInput(attrs={'class': 'form-control'}),
+            'charge_out_rate': forms.TextInput(attrs={'class': 'form-control'}),
+            'charge_code': forms.TextInput(attrs={'class': 'form-control'}),
+            'purchase_order_ref': forms.TextInput(attrs={'class': 'form-control'}),
+            'funded_by': forms.TextInput(attrs={'class': 'form-control'}),
+            'acquired_on': DateInput(attrs={'class': 'datepicker form-control'}),
+            'disposal_date': DateInput(attrs={'class': 'datepicker form-control'}),
+            'disposal_method': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 
 class Calibrate(forms.ModelForm):

@@ -13,6 +13,7 @@
 
 
 <form class="form-horizontal" method="post" action="{% url 'login' %}">
+	<input type="hidden" name="next" value="{{next}}" />
 	{% csrf_token %}
 	<fieldset>
 		<legend>Please Login</legend>

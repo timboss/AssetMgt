@@ -11,17 +11,19 @@
     
         <div class="asset">
             
-            <h2>
-            	{{ asset.asset_description }}
-            
+            <h2>{{ asset.asset_description }}</h2>
+            	
+            	<p>
 	            {% if user.is_authenticated %}
-	                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit asset"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
+	                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit basic asset info"><span class="glyphicon glyphicon-edit gi-2x"></span></a>
 	            {% endif %}
 	            {% if request.user.is_superuser %}
-	                <a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-1x"></span></a>
+	            	<a class="btn btn-default" href="{% url 'edit_asset_calibration_info' pk=asset.pk %}" title="Edit asset calibration info"><span class="glyphicon glyphicon-compressed gi-2x"></span></a>
+	            	<a class="btn btn-default" href="{% url 'edit_asset_finance_info' pk=asset.pk %}" title="Edit asset finance info"><span class="glyphicon glyphicon-piggy-bank gi-2x"></span></a>
+	            	<a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-2x"></span></a>
 	            {% endif %}
-            </h2>
-            
+            	</p>
+            	
             {% if asset.asset_image_thumbnail%}
                 	<p><a href="/media/{{ asset.asset_image }}" target="_blank"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
             {% endif %}
@@ -82,6 +84,13 @@
 						</tr>
         			{% endif %}
         			
+        			{% if asset.charge_code %}
+						<tr>
+							<td class="col-md-3">Charge Code:</td>
+							<td>{{ asset.charge_code }}</td>
+						</tr>
+        			{% endif %}
+        			
         			{% if asset.purchase_order_ref %}							
         				<tr>
 							<td class="col-md-3">PO Ref:</td>
@@ -107,6 +116,13 @@
 						<tr>
 							<td class="col-md-3">Disposal Date:</td>
 							<td>{{ asset.disposal_date }}</td>
+						</tr>
+        			{% endif %}
+        			
+        			{% if asset.disposal_method %}
+						<tr>
+							<td class="col-md-3">Disposal Method:</td>
+							<td>{{ asset.disposal_method }}</td>
 						</tr>
         			{% endif %}
         			

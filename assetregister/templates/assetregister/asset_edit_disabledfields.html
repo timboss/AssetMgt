@@ -13,30 +13,6 @@
     <div class="well">
 	    <form enctype="multipart/form-data" method="POST" class="form-horizontal asset-form">{% csrf_token %}
 			<fieldset>
-				{% if asset_id %}
-					<div class="form-group">
-						<label class="col-lg-3 control-label">AMRC Asset Number:</label>
-						<div class="col-lg-6">
-							<input class="form-control" id="disabledInput" placeholder="{{ asset_id }}" disabled="" type="text">
-						</div>	
-					</div>
-				{% endif %}
-				{% if description %}
-					<div class="form-group">
-						<label class="col-lg-3 control-label">Asset description:</label>
-						<div class="col-lg-6">
-							<input class="form-control" id="disabledInput" placeholder="{{ description }}" disabled="" type="text">
-						</div>	
-					</div>
-				{% endif %}
-				{% if manufacturer %}
-					<div class="form-group">
-						<label class="col-lg-3 control-label">Asset manufacturer:</label>
-						<div class="col-lg-6">
-							<input class="form-control" id="disabledInput" placeholder="{{ manufacturer }}" disabled="" type="text">
-						</div>	
-					</div>
-				{% endif %}	
 				{% for field in form %}
 					<div class="form-group">
 						{{ field.errors }}
