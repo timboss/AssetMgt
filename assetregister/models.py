@@ -29,7 +29,7 @@ class Asset(models.Model):
     requires_safety_checks = models.BooleanField()
     safety_notes = models.TextField(blank=True)
     requires_environmental_checks = models.BooleanField()
-    environmental_aspects = models.ManyToManyField("EnviroAspects", blank=True)
+    environmental_aspects = models.ManyToManyField("EnvironmentalAspects", blank=True)
     environmental_notes = models.TextField(blank=True)
     emergency_response_information = models.TextField(blank=True)
     requires_planned_maintenance = models.BooleanField()
@@ -178,7 +178,7 @@ class Asset(models.Model):
 
         # Attempt to update Whoosh index when new asset added.
         # Need to move this to an async message queue ASAP, currently takes 10-15 seconds to reindex ~15 assets!
-        update_index.Command().handle(interactive=False, remove=True)
+        update_index.Command().handle(interactive=False, remove=True, age=1)
 
         # Save again to keep all changes
         super(Asset, self).save(*args, **kwargs)
@@ -197,7 +197,6 @@ CALIBRATION_OUTCOME = (
                        ("Pass", "Pass"),
                        ("Fail", "Fail")
                      )
-
 
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)
@@ -263,7 +262,7 @@ class AssetStatus(models.Model):
         return self.status_name
 
 
-class EnviroAspects(models.Model):
+class EnvironmentalAspects(models.Model):
     aspect = models.CharField(max_length=255)
 
     def __str__(self):
@@ -276,9 +275,23 @@ NOTIFICATION_TYPES = (
                        ("Asset with Environmental Aspect", "Asset with Environmental Aspect"),
                      )
 
-class EmailsTo(models.Model):
-    email_address = models.CharField(max_length=255)
-    email_for = models.CharField(max_length=56, choices=NOTIFICATION_TYPES)
+class CalibrationAssetNotificaton(models.Model):
+    email_address = models.CharField(max_length=128)
     
     def __str__(self):
-        return "Notify of {} - {}".format(self.email_for, self.email_address)
+        return "Notify {} of asset requiring calibration".format(self.email_address)
+
+
+class HighValueAssetNotification(models.Model):
+    email_address = models.CharField(max_length=128)
+    if_asset_value_above = models.DecimalField(max_digits=12, decimal_places=2)
+    
+    def __str__(self):
+        return "Notify {} of assets with value exceeding £{}".format(self.email_address, self.if_asset_value_above)
+
+
+class EnvironmentalAspectAssetNoficiation(models.Model):
+    email_address = models.CharField(max_length=128)
+    
+    def __str__(self):
+        return "Notify {} of assets with environmental aspects".format(self.email_address)

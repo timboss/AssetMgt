@@ -4,7 +4,7 @@ from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
-from assetregister.models import Asset, CalibrationRecord, EmailsTo
+from assetregister.models import Asset, CalibrationRecord
 from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
 from django.http import HttpResponseNotFound

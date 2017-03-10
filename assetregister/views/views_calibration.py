@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
-from assetregister.models import Asset, CalibrationRecord, EmailsTo
+from assetregister.models import Asset, CalibrationRecord
 from assetregister.forms import EditAsset, Calibrate, AssetFilter, HighlightedSearchFormAssets, EditAssetCalibrationInfo, EditAssetFinanceInfo
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet

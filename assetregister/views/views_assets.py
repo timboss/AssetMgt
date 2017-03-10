@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
-from assetregister.models import Asset, CalibrationRecord, EmailsTo
+from assetregister.models import Asset, CalibrationRecord, CalibrationAssetNotificaton, HighValueAssetNotification, EnvironmentalAspectAssetNoficiation
 from assetregister.forms import EditAsset, Calibrate, AssetFilter, HighlightedSearchFormAssets, EditAssetCalibrationInfo, EditAssetFinanceInfo
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
@@ -127,9 +127,8 @@ def asset_qr_small(request, pk):
     return render(request, "assetregister/asset_qr_small.html", {"asset": asset, "baseurl":baseurl})
 
 
-CalEmails = EmailsTo.objects.filter(email_for="Calibrated Asset").values_list("email_address", flat=True)
-FinanceEmails = EmailsTo.objects.filter(email_for="High Value Asset").values_list("email_address", flat=True)
-EnviroEmails = EmailsTo.objects.filter(email_for="Asset with Environmental Aspect").values_list("email_address", flat=True)
+CalEmails = CalibrationAssetNotificaton.objects.all().values_list("email_address", flat=True)
+EnviroEmails = EnvironmentalAspectAssetNoficiation.objects.all().values_list("email_address", flat=True)
 
 def calibrated_asset_email(pk):
     logger.info('composing calibrate email')
@@ -139,19 +138,26 @@ def calibrated_asset_email(pk):
                  <br /><br /> "Asset No. {}" <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
                  """.format(asset, settings.BASEURL, asset.asset_id)
+    print("""sending "{}" to {}""".format(mail_body, CalEmails))
     send_mail(email_subject, "", settings.EMAIL_FROM, CalEmails, fail_silently=False, html_message=mail_body)
-    logger.info('Sent Calibration email')
 
 
-def high_value_asset_email(pk):
-    asset = Asset.objects.get(pk=pk)
+def high_value_asset_email(assetpk, value):
+    asset = Asset.objects.get(pk=assetpk)
+    allnotifications = HighValueAssetNotification.objects.all()
     email_subject = "[AMRC AssetMgt] High Value Asset"
-    mail_body = """An asset on the AMRC Asset Management System has just had it's value set to be >£5000.
-                 <br /><br /> "Asset No. {}" <br />
-                 Asset Value = £{} <br /><br />
-                 <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
-                 """.format(asset, asset.asset_value, settings.BASEURL, asset.asset_id)
-    send_mail(email_subject, "", settings.EMAIL_FROM, FinanceEmails, fail_silently=False, html_message=mail_body)
+    for notification in allnotifications:
+        email_on_value = notification.if_asset_value_above
+        if value >= email_on_value:
+            email_to = HighValueAssetNotification.objects.filter(pk=notification.pk).values_list("email_address", flat=True)
+            print(email_to)
+            mail_body = """An asset on the AMRC Asset Management System has just had it's value set to be greater than your trigger value of {}.
+                     <br /><br /> "Asset No. {}" <br />
+                     Asset Value = £{} <br /><br />
+                     <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
+                     """.format(email_on_value, asset, value, settings.BASEURL, assetpk)
+            print("""sending "{}" to {}""".format(mail_body, email_to))
+            send_mail(email_subject, "", settings.EMAIL_FROM, email_to, fail_silently=False, html_message=mail_body)
 
 
 def enviro_aspect_asset_email(pk):
@@ -161,6 +167,7 @@ def enviro_aspect_asset_email(pk):
                  "Asset No. {}" <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
                  """.format(asset, asset.environmental_notes, settings.BASEURL, asset.asset_id)
+    print("""sending "{}" to {}""".format(mail_body, EnviroEmails))
     send_mail(email_subject, "", settings.EMAIL_FROM, EnviroEmails, fail_silently=False, html_message=mail_body)
 
 
@@ -179,8 +186,7 @@ def asset_new(request):
             if asset.environmental_aspects:
                 enviro_aspect_asset_email(asset.asset_id)
             if asset.asset_value:
-                    if asset.asset_value > 4999.99:
-                        high_value_asset_email(asset.asset_id)
+                high_value_asset_email(asset.asset_id, asset.asset_value)
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset()
@@ -205,12 +211,18 @@ def asset_edit(request, pk):
             if cur_calibration_status != asset.requires_calibration and asset.requires_calibration:
                 # Calibration status has just changed and is now true
                 calibrated_asset_email(asset.asset_id)
+            print(cur_enviro_aspects)
+            print(asset.environmental_aspects)
+            
+            #FIX THIS - ENVIRO ASPECTS ALWAYS = NONE!
+            
+            
             if cur_enviro_aspects != asset.environmental_aspects and asset.environmental_aspects:
                 # Enviro aspects have changed and asset has enviro aspects
                 enviro_aspect_asset_email(asset.asset_id)
-            if cur_value != asset.asset_value and asset.asset_value > 4999.99:
-                # Valu has changed and value >= £5k
-                high_value_asset_email(asset.asset_id)
+            if cur_value != asset.asset_value:
+                # Value has changed and value >= £5k
+                high_value_asset_email(asset.asset_id, asset.asset_value)
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset(instance=asset)
