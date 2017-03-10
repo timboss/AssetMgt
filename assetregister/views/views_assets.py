@@ -1,15 +1,24 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
-from assetregister.models import Asset, CalibrationRecord, CalibrationAssetNotificaton, HighValueAssetNotification, EnvironmentalAspectAssetNoficiation
-from assetregister.forms import EditAsset, Calibrate, AssetFilter, HighlightedSearchFormAssets, EditAssetCalibrationInfo, EditAssetFinanceInfo
+from assetregister.models import (Asset,
+                                  CalibrationRecord,
+                                  CalibrationAssetNotificaton,
+                                  HighValueAssetNotification,
+                                  EnvironmentalAspectAssetNoficiation
+                                  )
+from assetregister.forms import (EditAsset,
+                                 Calibrate,
+                                 AssetFilter,
+                                 HighlightedSearchFormAssets,
+                                 EditAssetCalibrationInfo,
+                                 EditAssetFinanceInfo
+                                 )
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
-from django.http import HttpResponseNotFound
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.mail import send_mail
@@ -51,21 +60,21 @@ def asset_list(request):
 def asset_list_filter(request):
     if request.GET:
         filter = AssetFilter(request.GET, queryset=Asset.objects.all())
-        #paginator = Paginator(filter_all, 10)
-        #page = request.GET.get('page')
-        #try:
+        # paginator = Paginator(filter_all, 10)
+        # page = request.GET.get('page')
+        # try:
         #    filter = paginator.page(page)
-        #except PageNotAnInteger:
+        # except PageNotAnInteger:
         #    # If page is not an integer, deliver first page.
         #    filter = paginator.page(1)
-        #except EmptyPage:
+        # except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
         #    filter = paginator.page(paginator.num_pages)
     else:
-        #this is a bit hacky, but should work forever...
+        # this is a bit hacky, but should work forever...
         filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=9999))
-    return render(request, "assetregister/asset_list_filtered.html", {"filter": filter, 
-        })
+    return render(request, "assetregister/asset_list_filtered.html", {"filter": filter,
+                                                                      })
 
 
 def active_asset_list(request):
@@ -118,17 +127,18 @@ def asset_detail_equipid(request, equipid):
 def asset_qr(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     baseurl = settings.BASEURL
-    return render(request, "assetregister/asset_qr.html", {"asset": asset, "baseurl":baseurl})
+    return render(request, "assetregister/asset_qr.html", {"asset": asset, "baseurl": baseurl})
 
 
 def asset_qr_small(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     baseurl = settings.BASEURL
-    return render(request, "assetregister/asset_qr_small.html", {"asset": asset, "baseurl":baseurl})
+    return render(request, "assetregister/asset_qr_small.html", {"asset": asset, "baseurl": baseurl})
 
 
 CalEmails = CalibrationAssetNotificaton.objects.all().values_list("email_address", flat=True)
 EnviroEmails = EnvironmentalAspectAssetNoficiation.objects.all().values_list("email_address", flat=True)
+
 
 def calibrated_asset_email(pk):
     logger.info('composing calibrate email')
@@ -213,10 +223,9 @@ def asset_edit(request, pk):
                 calibrated_asset_email(asset.asset_id)
             print(cur_enviro_aspects)
             print(asset.environmental_aspects)
-            
-            #FIX THIS - ENVIRO ASPECTS ALWAYS = NONE!
-            
-            
+
+            # FIX THIS - ENVIRO ASPECTS ALWAYS = NONE!
+
             if cur_enviro_aspects != asset.environmental_aspects and asset.environmental_aspects:
                 # Enviro aspects have changed and asset has enviro aspects
                 enviro_aspect_asset_email(asset.asset_id)
@@ -250,9 +259,13 @@ def edit_asset_calibration_info(request, pk):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAssetCalibrationInfo(instance=asset)
-    return render(request, "assetregister/asset_edit_disabledfields.html", {"form": form, "type": type,
-                                                            "asset_id": asset_id, "manufacturer": asset_manufacturer,
-                                                            "description": asset_description})
+    return render(
+                  request,
+                  "assetregister/asset_edit_disabledfields.html",
+                  {"form": form, "type": type,
+                   "asset_id": asset_id, "manufacturer": asset_manufacturer,
+                   "description": asset_description
+                   })
 
 
 @login_required
@@ -276,9 +289,15 @@ def edit_asset_finance_info(request, pk):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAssetFinanceInfo(instance=asset)
-    return render(request, "assetregister/asset_edit_disabledfields.html", {"form": form, "type": type,
-                                                             "asset_id": asset_id, "manufacturer": asset_manufacturer,
-                                                             "description": asset_description})
+    return render(
+                  request,
+                  "assetregister/asset_edit_disabledfields.html", {
+                                                                   "form": form,
+                                                                   "type": type,
+                                                                   "asset_id": asset_id,
+                                                                   "manufacturer": asset_manufacturer,
+                                                                   "description": asset_description
+                                                                   })
 
 
 @method_decorator(login_required, name="dispatch")
