@@ -1,15 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.core.urlresolvers import reverse_lazy
 from assetregister.models import Asset, CalibrationRecord
-from haystack.query import SearchQuerySet
 from djqscsv import render_to_csv_response
 from django.http import HttpResponseNotFound
-from django.conf import settings
-from django.core.mail import send_mail
 
 
 @login_required
@@ -126,7 +121,7 @@ def location_export_all(request):
                                                 "asset_location_building__building_name",
                                                 "asset_location_building__EFM_building_code",
                                                 "asset_location_room",
-                                                "asset_id", "requires_safety_checks", "requires_insurance", 
+                                                "asset_id", "requires_safety_checks", "requires_insurance",
                                                 "requires_environmental_checks", "requires_planned_maintenance",
                                                 "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
@@ -147,8 +142,6 @@ def export_all_calibratons(request):
                                                 "calibration_record_id", "asset", "asset__asset_description",
                                                 "asset__asset_manufacturer", "calibration_description",
                                                 "calibration_date", "calibration_date_next", "calibrated_by_internal__username",
-                                                "calibrated_by_external", "calibration_outcome", "calibration_notes", 
+                                                "calibrated_by_external", "calibration_outcome", "calibration_notes",
                                                 "calibration_certificate", "calibration_entered_by__username", "calibration_entered_on")
     return render_to_csv_response(export, filename="All_Calibration_Records_{}.csv".format(str(timezone.now().date())))
-
-    

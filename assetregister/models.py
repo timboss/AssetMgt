@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 default_asset_status = 1
 
+
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
     asset_description = models.CharField(max_length=200)
@@ -198,6 +199,7 @@ CALIBRATION_OUTCOME = (
                        ("Fail", "Fail")
                      )
 
+
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)
     slug = models.CharField(max_length=64, blank=True, null=True, unique=True)
@@ -239,7 +241,7 @@ class CalibrationRecord(models.Model):
                 Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=True)
             else:
                 Asset.objects.filter(pk=self.asset.asset_id).update(passed_calibration=False)
-        
+
         # If new record, generate unique slug
         if not self.slug:
             self.slug = uuid.uuid1()
@@ -275,9 +277,10 @@ NOTIFICATION_TYPES = (
                        ("Asset with Environmental Aspect", "Asset with Environmental Aspect"),
                      )
 
+
 class CalibrationAssetNotificaton(models.Model):
     email_address = models.CharField(max_length=128)
-    
+
     def __str__(self):
         return "Notify {} of asset requiring calibration".format(self.email_address)
 
@@ -285,13 +288,13 @@ class CalibrationAssetNotificaton(models.Model):
 class HighValueAssetNotification(models.Model):
     email_address = models.CharField(max_length=128)
     if_asset_value_above = models.DecimalField(max_digits=12, decimal_places=2)
-    
+
     def __str__(self):
         return "Notify {} of assets with value exceeding £{}".format(self.email_address, self.if_asset_value_above)
 
 
 class EnvironmentalAspectAssetNoficiation(models.Model):
     email_address = models.CharField(max_length=128)
-    
+
     def __str__(self):
         return "Notify {} of assets with environmental aspects".format(self.email_address)

@@ -99,11 +99,11 @@ class EditAssetCalibrationInfo(forms.ModelForm):
           "handling_and_storage_instructions": ("Handling and Storage Instructions URL"),
           }
 
-    def clean (self):
+    def clean(self):
         cleaned_data = super(EditAssetCalibrationInfo, self).clean()
         needs_calibration = cleaned_data.get("requires_calibration")
         calibration_freq = cleaned_data.get("calibration_frequency")
-        
+
         if needs_calibration and not calibration_freq:
             error = "If asset requires calibration then you must enter a calibration frequency!"
             self.add_error("requires_calibration", error)
@@ -158,7 +158,7 @@ class Calibrate(forms.ModelForm):
         cleaned_data = super(Calibrate, self).clean()
         byinternal = cleaned_data.get("calibrated_by_internal")
         byexternal = cleaned_data.get("calibrated_by_external")
-        
+
         if not byinternal and not byexternal:
             error = "You must enter details for either Calibrated By Internal or Calibrated By External!"
             self.add_error("calibrated_by_internal", error)
@@ -167,9 +167,9 @@ class Calibrate(forms.ModelForm):
             error = "You must select either an Internal caibrator OR an External calibrator, not both!"
             self.add_error("calibrated_by_internal", error)
             self.add_error("calibrated_by_external", error)
-            
+
         calibrationdate = cleaned_data.get("calibration_date")
-        
+
         if calibrationdate > timezone.now().date():
             error = "Calibration date cannot be in the future!"
             self.add_error("calibration_date", error)
@@ -203,7 +203,7 @@ class AssetFilter(django_filters.FilterSet):
     asset_location_building__building_name = django_filters.CharFilter(lookup_expr="icontains")
     asset_location_building__EFM_building_code = django_filters.CharFilter(lookup_expr="icontains")
     asset_location_room = django_filters.CharFilter(lookup_expr="icontains")
-    
+
     class Meta:
         model = Asset
         fields = ["requires_calibration", "passed_calibration", "requires_safety_checks", "requires_environmental_checks",
