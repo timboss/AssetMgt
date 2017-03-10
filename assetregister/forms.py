@@ -71,15 +71,13 @@ class EditAssetCalibrationInfo(forms.ModelForm):
     class Meta:
         model = Asset
         fields = [
-            "asset_description", "asset_manufacturer", "asset_model",
+            "asset_model",
             "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible",
             "person_responsible_email", "requires_calibration", "calibration_frequency",
             "calibration_instructions", "asset_location_building", "asset_location_room",
             "operating_instructions", "handling_and_storage_instructions"
             ]
         widgets = {
-            'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
-            'asset_manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
             'asset_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
             'amrc_equipment_id': forms.TextInput(attrs={'class': 'form-control'}),

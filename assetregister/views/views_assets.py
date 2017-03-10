@@ -13,6 +13,11 @@ from django.http import HttpResponseNotFound
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.mail import send_mail
+import logging
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 def examplemodal(request):
@@ -127,21 +132,23 @@ FinanceEmails = EmailsTo.objects.filter(email_for="High Value Asset").values_lis
 EnviroEmails = EmailsTo.objects.filter(email_for="Asset with Environmental Aspect").values_list("email_address", flat=True)
 
 def calibrated_asset_email(pk):
+    logger.info('composing calibrate email')
     asset = Asset.objects.get(pk=pk)
-    email_subject = "[AMRC AssetMgt] New Asset Requires Calibration"
+    email_subject = "[AMRC AssetMgt] Asset Requires Calibration"
     mail_body = """An asset on the AMRC Asset Management System has just been set to "Requires Calibration".
                  <br /><br /> "Asset No. {}" <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
                  """.format(asset, settings.BASEURL, asset.asset_id)
     send_mail(email_subject, "", settings.EMAIL_FROM, CalEmails, fail_silently=False, html_message=mail_body)
+    logger.info('Sent Calibration email')
 
 
 def high_value_asset_email(pk):
     asset = Asset.objects.get(pk=pk)
-    email_subject = "[AMRC AssetMgt] New High Value Asset"
+    email_subject = "[AMRC AssetMgt] High Value Asset"
     mail_body = """An asset on the AMRC Asset Management System has just had it's value set to be >£5000.
                  <br /><br /> "Asset No. {}" <br />
-                 Asset Value = {} <br /><br />
+                 Asset Value = £{} <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
                  """.format(asset, asset.asset_value, settings.BASEURL, asset.asset_id)
     send_mail(email_subject, "", settings.EMAIL_FROM, FinanceEmails, fail_silently=False, html_message=mail_body)
@@ -149,7 +156,7 @@ def high_value_asset_email(pk):
 
 def enviro_aspect_asset_email(pk):
     asset = Asset.objects.get(pk=pk)
-    email_subject = "[AMRC AssetMgt] New Asset With Environmental Aspects"
+    email_subject = "[AMRC AssetMgt] Asset With Environmental Aspects"
     mail_body = """An asset on the AMRC Asset Management System has just been associated with Envrionmental Aspects.<br /><br />
                  "Asset No. {}" <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
@@ -184,6 +191,9 @@ def asset_new(request):
 def asset_edit(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     assets_to_relate = Asset.objects.exclude(pk=pk).order_by("asset_manufacturer", "asset_description")
+    cur_calibration_status = asset.requires_calibration
+    cur_enviro_aspects = asset.environmental_aspects
+    cur_value = asset.asset_value
     if request.method == "POST":
         form = EditAsset(request.POST, request.FILES, instance=asset)
         if form.is_valid():
@@ -192,6 +202,15 @@ def asset_edit(request, pk):
             asset.edited_on = timezone.now()
             asset.save()
             form.save_m2m()
+            if cur_calibration_status != asset.requires_calibration and asset.requires_calibration:
+                # Calibration status has just changed and is now true
+                calibrated_asset_email(asset.asset_id)
+            if cur_enviro_aspects != asset.environmental_aspects and asset.environmental_aspects:
+                # Enviro aspects have changed and asset has enviro aspects
+                enviro_aspect_asset_email(asset.asset_id)
+            if cur_value != asset.asset_value and asset.asset_value > 4999.99:
+                # Valu has changed and value >= £5k
+                high_value_asset_email(asset.asset_id)
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset(instance=asset)
@@ -202,6 +221,10 @@ def asset_edit(request, pk):
 def edit_asset_calibration_info(request, pk):
     type = "Calibration"
     asset = get_object_or_404(Asset, pk=pk)
+    asset_id = asset.asset_id
+    asset_description = asset.asset_description
+    asset_manufacturer = asset.asset_manufacturer
+    cur_calibration_status = asset.requires_calibration
     if request.method == "POST":
         form = EditAssetCalibrationInfo(request.POST, instance=asset)
         if form.is_valid():
@@ -209,10 +232,15 @@ def edit_asset_calibration_info(request, pk):
             asset.edited_by = request.user
             asset.edited_on = timezone.now()
             asset.save()
+            if cur_calibration_status != asset.requires_calibration and asset.requires_calibration:
+                # Calibration status has just changed and is now true
+                calibrated_asset_email(asset.asset_id)
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAssetCalibrationInfo(instance=asset)
-    return render(request, "assetregister/asset_edit.html", {"form": form, "type": type})
+    return render(request, "assetregister/asset_edit_disabledfields.html", {"form": form, "type": type,
+                                                            "asset_id": asset_id, "manufacturer": asset_manufacturer,
+                                                            "description": asset_description})
 
 
 @login_required
@@ -222,6 +250,7 @@ def edit_asset_finance_info(request, pk):
     asset_id = asset.asset_id
     asset_description = asset.asset_description
     asset_manufacturer = asset.asset_manufacturer
+    cur_value = asset.asset_value
     if request.method == "POST":
         form = EditAssetFinanceInfo(request.POST, instance=asset)
         if form.is_valid():
@@ -229,10 +258,13 @@ def edit_asset_finance_info(request, pk):
             asset.edited_by = request.user
             asset.edited_on = timezone.now()
             asset.save()
+            if cur_value != asset.asset_value and asset.asset_value > 4999.99:
+                # Valu has changed and value >= £5k
+                high_value_asset_email(asset.asset_id)
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAssetFinanceInfo(instance=asset)
-    return render(request, "assetregister/asset_edit.html", {"form": form, "type": type,
+    return render(request, "assetregister/asset_edit_disabledfields.html", {"form": form, "type": type,
                                                              "asset_id": asset_id, "manufacturer": asset_manufacturer,
                                                              "description": asset_description})
 

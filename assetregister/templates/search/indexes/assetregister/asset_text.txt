@@ -9,7 +9,7 @@
 {{ object.purchase_order_ref }}
 {{ object.person_responsible }}
 {{ object.person_responsible_email }}
-{{ object.amrc_equipment_ID }}
+{{ object.amrc_equipment_id }}
 {{ object.safety_notes }}
 {{ object.environmental_notes }}
 {{ object.emergency_response_information }}
