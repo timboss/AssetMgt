@@ -222,9 +222,9 @@ class CalibrationRecord(models.Model):
         return "Calibration #{} - {} - {}".format(self.pk, self.asset, self.calibration_description)
 
     def save(self, *args, **kwargs):
-        
+
         super(CalibrationRecord, self).save(*args, **kwargs)
-        
+
         # Check if this is the latest calibration record for any asset, if so update asset.calibration_dates and status
         latest_asset_calibration = CalibrationRecord.objects.filter(asset=self.asset.pk).order_by("-calibration_date", "-calibration_record_id")[0]
 

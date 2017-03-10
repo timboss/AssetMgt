@@ -1,16 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
 from assetregister.models import Asset, CalibrationRecord
-from assetregister.forms import EditAsset, Calibrate, AssetFilter, HighlightedSearchFormAssets, EditAssetCalibrationInfo, EditAssetFinanceInfo
-from haystack.generic_views import SearchView
-from haystack.query import SearchQuerySet
-from django.http import HttpResponseNotFound
-from django.conf import settings
+from assetregister.forms import Calibrate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -129,7 +124,6 @@ def new_calibration_asset(request, urlpk):
     asset_calib_freq = Asset.objects.values_list("calibration_frequency", flat=True).get(asset_id=urlpk)
     if not asset_calib_freq:
         asset_calib_freq = "None Set"
-    disable_asset = True
     if request.method == "POST":
         form = Calibrate(request.POST)
         if form.is_valid():
