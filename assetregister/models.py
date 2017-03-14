@@ -5,10 +5,15 @@ import os
 from haystack.management.commands import update_index
 import logging
 import uuid
+from background_task import background
 
 logger = logging.getLogger(__name__)
 
 default_asset_status = 1
+
+@background()
+def reindex_whoosh():
+    update_index.Command().handle(interactive=False, remove=True, age=1)
 
 
 class Asset(models.Model):
@@ -56,7 +61,16 @@ class Asset(models.Model):
     asset_location_room = models.CharField(max_length=255, blank=True)
     edited_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
     edited_on = models.DateTimeField(default=timezone.now)
-
+    
+    def image_move_rename():
+        pass
+    
+    def image_thumbnail():
+       pass 
+   
+    def image_watermark():
+        pass
+    
     def save(self, *args, **kwargs):
         # Custom save function to generate an asset ID / PK needed to rename files,_
         # move and rename image upload and create thumbnail
@@ -70,12 +84,18 @@ class Asset(models.Model):
 
             # If asset_image.name contains "/temp" then it's newly uploaded so rename, move, thumbnail and watermark
             if "images/temp" in self.asset_image.name:
+                
+                # !!!
+                # image_move_rename()
+                # image_thumbnail()
+                # image_watermark()
+                # !!!
 
                 # If have a newly uploaded image then import the things needed to make watermark & thumbnail
                 from django.core.files.base import ContentFile
                 from django.core.files.storage import default_storage as storage
                 from io import BytesIO
-                from PIL import Image  # , ImageEnhance
+                from PIL import Image
 
                 # Create image filename using pk / asset_ID and original file extension
                 oldfile = self.asset_image.name
@@ -131,7 +151,7 @@ class Asset(models.Model):
 
                 # -- WATERMARK --
                 assetimage = storage.open(self.asset_image.name)
-                logoimage = storage.open("images/watermarklogo3.png")
+                logoimage = storage.open("images/watermarklogo4.png")
                 img = Image.open(assetimage).convert("RGBA")
                 logo = Image.open(logoimage).convert("RGBA")
 
@@ -177,9 +197,8 @@ class Asset(models.Model):
                 self.asset_image_thumbnail.storage.delete(oldthumbname)
                 self.asset_image_thumbnail = None
 
-        # Attempt to update Whoosh index when new asset added.
-        # Need to move this to an async message queue ASAP, currently takes 10-15 seconds to reindex ~15 assets!
-        update_index.Command().handle(interactive=False, remove=True, age=1)
+        # Update Whoosh index (via async task queue) when new asset added.
+        reindex_whoosh()
 
         # Save again to keep all changes
         super(Asset, self).save(*args, **kwargs)
@@ -279,14 +298,14 @@ NOTIFICATION_TYPES = (
 
 
 class CalibrationAssetNotificaton(models.Model):
-    email_address = models.CharField(max_length=128)
+    email_address = models.EmailField()
 
     def __str__(self):
         return "Notify {} of asset requiring calibration".format(self.email_address)
 
 
 class HighValueAssetNotification(models.Model):
-    email_address = models.CharField(max_length=128)
+    email_address = models.EmailField()
     if_asset_value_above = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
@@ -294,7 +313,7 @@ class HighValueAssetNotification(models.Model):
 
 
 class EnvironmentalAspectAssetNoficiation(models.Model):
-    email_address = models.CharField(max_length=128)
+    email_address = models.EmailField()
 
     def __str__(self):
         return "Notify {} of assets with environmental aspects".format(self.email_address)
