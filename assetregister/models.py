@@ -14,7 +14,8 @@ default_asset_status = 1
 @background()
 def reindex_whoosh():
     update_index.Command().handle(interactive=False, remove=True, age=1)
-
+    # age=1 will only add assets edited in last hour.
+    # need separate task to reindex whole db each night (will remove orphans)
 
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
@@ -66,7 +67,7 @@ class Asset(models.Model):
         pass
     
     def image_thumbnail():
-       pass 
+        pass 
    
     def image_watermark():
         pass
@@ -290,18 +291,11 @@ class EnvironmentalAspects(models.Model):
         return self.aspect
 
 
-NOTIFICATION_TYPES = (
-                       ("Calibrated Asset", "Calibrated Asset"),
-                       ("High Value Asset", "High Value Asset"),
-                       ("Asset with Environmental Aspect", "Asset with Environmental Aspect"),
-                     )
-
-
 class CalibrationAssetNotificaton(models.Model):
     email_address = models.EmailField()
 
     def __str__(self):
-        return "Notify {} of asset requiring calibration".format(self.email_address)
+        return "Notify {} of assets requiring calibration".format(self.email_address)
 
 
 class HighValueAssetNotification(models.Model):

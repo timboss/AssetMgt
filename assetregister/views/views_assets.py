@@ -174,11 +174,6 @@ def enviro_aspect_asset_email(pk):
     asset = Asset.objects.get(pk=pk)
     EnviroEmails = EnvironmentalAspectAssetNoficiation.objects.all().values_list("email_address", flat=True)
     aspectlist = ", ".join(ea.aspect for ea in asset.environmental_aspects.all())
-    # for aspect in asset.environmental_aspects.all():
-    #    if aspectlist:
-    #        aspectlist = aspectlist + " {}".format(aspect)
-    #    else:
-    #        aspectlist = aspect
     email_subject = "[AMRC AssetMgt] Asset With Environmental Aspects"
     mail_body = """An asset on the AMRC Asset Management System has just been associated with Envrionmental Aspects.<br /><br />
                  "Asset No. {}" <br /><br />
