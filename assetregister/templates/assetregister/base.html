@@ -172,6 +172,13 @@
 		<div class="content container-fluid">
 			<div class="row">
 				<div class="col-md-8">
+					<div class="alert alert-dismissible alert-danger">
+						<button type="button" class="close" data-dismiss="alert">
+							&times;
+						</button>
+						<strong>System Under Test!</strong>
+						This system is currently undergoing testing and development and hence should not yet be used to store live data! 
+					</div>
 					{% block content %}
 					{% endblock %}
 				</div>
