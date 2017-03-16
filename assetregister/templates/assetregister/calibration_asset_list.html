@@ -26,9 +26,14 @@
                 <p><a href="{% url 'asset_detail' pk=asset.pk %}"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
             {% endif %}
             
-            <p>Asset ID: {{ asset.asset_id }}
+            <p>AMRC Asset Number: {{ asset.asset_id }}</p>
+            
+            {% if asset.amrc_equipment_id %}
+            	<p>Engraved Metrology Equipment I.D: {{ asset.amrc_equipment_id }}</p>
+            {% endif %}
+            
             {% if asset.asset_manufacturer %}
-                Manufacturer: {{ asset.asset_manufacturer }}</p>
+                <p>Manufacturer: {{ asset.asset_manufacturer }}</p>
             {% endif %}
             
             <p>Asset Status: {{ asset.asset_status }}</p>
