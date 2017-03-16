@@ -102,7 +102,7 @@ def new_calibration(request):
 @login_required
 def calibration_edit(request, slug):
     calibration = get_object_or_404(CalibrationRecord, slug=slug)
-    asset_calib_freq = calibration.asset__calibration_frequency
+    asset_calib_freq = calibration.asset.calibration_frequency
     if not asset_calib_freq:
         asset_calib_freq = "None Set"
     if request.method == "POST":
