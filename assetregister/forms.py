@@ -55,9 +55,9 @@ class EditAsset(forms.ModelForm):
             'handling_and_storage_instructions': forms.URLInput(attrs={'class': 'form-control'}),
         }
         labels = {
-          "asset_description": ("Asset Description*"),
-          "person_responsible": ("Person Responsible*"),
-          "person_responsible_email": ("Person Responsible Email*"),
+          "asset_description": ("Asset Description* "),
+          "person_responsible": ("Person Responsible* "),
+          "person_responsible_email": ("Person Responsible Email* "),
           "parent_assets": ("Related Assets"),
           "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
           "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
