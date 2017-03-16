@@ -16,8 +16,6 @@
             	<p>
 	            {% if user.is_authenticated %}
 	                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit basic asset info"><span class="glyphicon glyphicon-edit gi-2x"></span></a>
-	            {% endif %}
-	            {% if request.user.is_superuser %}
 	            	<a class="btn btn-default" href="{% url 'edit_asset_calibration_info' pk=asset.pk %}" title="Edit asset calibration info"><span class="glyphicon glyphicon-compressed gi-2x"></span></a>
 	            	<a class="btn btn-default" href="{% url 'edit_asset_finance_info' pk=asset.pk %}" title="Edit asset finance info"><span class="glyphicon glyphicon-piggy-bank gi-2x"></span></a>
 	            	<a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-2x"></span></a>
