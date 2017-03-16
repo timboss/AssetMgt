@@ -53,17 +53,16 @@
     {% endfor %}
     
     <div class="pagination">
-		{% if assets.paginator.count %}
-		    Showing {{ assets.object_list|length }} of {{ assets.paginator.count }} Results on Page {{ assets.number }} of {{ assets.paginator.num_pages }}
-		    <br />
-		{% endif %}
-		
 		{% if assets.has_previous or assets.has_next %}
 			<ul class="pager">
 				{% if assets.has_previous %}
 					<li class="previous"><a href="?page={{ assets.previous_page_number }}">&laquo; Previous</a></li>
 				{% else %}
 					<li class="previous disabled"><a href="">&laquo; Previous</a></li>
+				{% endif %}
+				
+				{% if assets.paginator.count %}
+		    		 &nbsp; &nbsp; Page {{ assets.number }} of {{ assets.paginator.num_pages }} &nbsp; &nbsp; 
 				{% endif %}
 				
 				{% if assets.has_next %}
@@ -74,5 +73,7 @@
 			</ul>
 		{% endif %}
 	</div>
+
+    <br />
     
 {% endblock %}
