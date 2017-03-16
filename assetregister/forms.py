@@ -14,9 +14,9 @@ class EditAsset(forms.ModelForm):
     class Meta:
         model = Asset
         fields = [
-            "asset_description", "asset_image", "asset_details", "asset_manufacturer", "asset_model",
-            "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible",
-            "person_responsible_email", "requires_calibration", "requires_safety_checks", "safety_notes",
+            "asset_description", "person_responsible", "person_responsible_email", "asset_image",
+            "asset_details", "asset_manufacturer", "asset_model", "asset_serial_number",
+            "amrc_equipment_id", "asset_status", "requires_calibration", "requires_safety_checks", "safety_notes",
             "emergency_response_information", "requires_environmental_checks", "environmental_aspects",
             "environmental_notes", "requires_planned_maintenance", "maintenance_instructions",
             "maintenance_records", "maintenance_notes", "asset_value", "charge_out_rate",
@@ -55,6 +55,9 @@ class EditAsset(forms.ModelForm):
             'handling_and_storage_instructions': forms.URLInput(attrs={'class': 'form-control'}),
         }
         labels = {
+          "asset_description": ("Asset Description*"),
+          "person_responsible": ("Person Responsible*"),
+          "person_responsible_email": ("Person Responsible Email*"),
           "parent_assets": ("Related Assets"),
           "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
           "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
