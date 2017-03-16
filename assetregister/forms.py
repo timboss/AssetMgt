@@ -133,6 +133,10 @@ class EditAssetFinanceInfo(forms.ModelForm):
             'disposal_date': DateInput(attrs={'class': 'datepicker form-control'}),
             'disposal_method': forms.TextInput(attrs={'class': 'form-control'}),
         }
+        labels = {
+            "asset_value": ("Asset Value £"),
+            "charge_out_rate": ("Charge Out Rate £"),
+        }
 
 
 class Calibrate(forms.ModelForm):
