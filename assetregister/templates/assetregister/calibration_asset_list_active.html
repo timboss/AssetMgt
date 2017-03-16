@@ -27,11 +27,12 @@
                 <p><a href="{% url 'asset_detail' pk=asset.pk %}"><img src="/media/{{ asset.asset_image_thumbnail }}"></a></p>
             {% endif %}
             
-            <p>AMRC Asset Number: {{ asset.asset_id }}</p>
+            <p>AMRC Asset Number: {{ asset.asset_id }}
             
             {% if asset.amrc_equipment_id %}
-            	<p>Engraved Metrology Equipment I.D: {{ asset.amrc_equipment_id }}</p>
+            	<br /> Metrology Equipment I.D: {{ asset.amrc_equipment_id }}
             {% endif %}
+            </p>
             
             {% if asset.asset_manufacturer %}
                 <p>Manufacturer: {{ asset.asset_manufacturer }}</p>
