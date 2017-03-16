@@ -31,7 +31,7 @@
 }
 
 .count {
-    margin-bottom: 40px;
+    margin-bottom: 15px;
     font-size: 14;
 }
 
@@ -137,3 +137,7 @@ h1, h2, h3, h4 {
 	color: red;
 }
 
+.pagination-top {
+	display:inline-block;
+	margin: 0px 0px 20px 0px;
+}
