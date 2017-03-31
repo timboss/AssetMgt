@@ -163,8 +163,9 @@ def high_value_asset_email(pk):
             mail_body = """An asset on the AMRC Asset Management System has just had it's value set to be greater than your trigger value of £{}.
                      <br /><br /> "Asset No. {}" <br />
                      Asset Value = £{} <br /><br />
-                     <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
-                     """.format(email_on_value, asset, value, settings.BASEURL, asset.asset_id)
+                     <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System,
+                     or <a href="{}/staff/assetregister/highvalueassetnotification/">click here</a> to edit your notifcation trigger. 
+                     """.format(email_on_value, asset, value, settings.BASEURL, asset.asset_id, settings.BASEURL)
             print("""{} - sending "{}" email to {}""".format(str(timezone.now()), email_subject, email_to))
             send_mail(email_subject, "", settings.EMAIL_FROM, email_to, fail_silently=False, html_message=mail_body)
 
