@@ -7,6 +7,7 @@ import django_filters
 
 
 class DateInput(forms.DateInput):
+    # if this is 'date' it will clash with Chrome's built-in date picker and won't work
     input_type = 'text'
 
 
