@@ -132,7 +132,7 @@ class Asset(models.Model):
                 # ...if so don't thumb or will raise error
                 
                 if image.size[0] <= THUMB_SIZE[0] or image.size[1] <= THUMB_SIZE[1]:
-                    self.asset_image_thumbnail = self.asset_image
+                    self.asset_image_thumbnail.name = self.asset_image.name
                 else:
                     image.thumbnail(THUMB_SIZE, Image.ANTIALIAS)
                     fh.close()
