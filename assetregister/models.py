@@ -127,28 +127,34 @@ class Asset(models.Model):
                 # Open image to thumbnail
                 fh = storage.open(self.asset_image.name)
                 image = Image.open(fh)
-
-                image.thumbnail(THUMB_SIZE, Image.ANTIALIAS)
-                fh.close()
-
-                thumb_name, thumb_extension = os.path.splitext(self.asset_image.name)
-                thumb_extension = thumb_extension.lower()
-                thumb_filename = thumb_name + "_thumb" + thumb_extension
-
-                if thumb_extension in [".jpg", ".jpeg"]:
-                    FTYPE = "JPEG"
-                elif thumb_extension == ".gif":
-                    FTYPE = "GIF"
-                elif thumb_extension == ".png":
-                    FTYPE = "PNG"
+                
+                # Check if image smaller than requested thumb size,
+                # ...if so don't thumb or will raise error
+                
+                if image.size[0] <= THUMB_SIZE[0] or image.size[1] <= THUMB_SIZE[1]:
+                    self.asset_image_thumbnail = self.asset_image
                 else:
-                    raise Exception("Error creating thumnail. Image must be a .jpg, .jpeg, .gif or .png!")
-
-                temp_thumb = BytesIO()
-                image.save(temp_thumb, FTYPE, quality=100)
-                temp_thumb.seek(0)
-                self.asset_image_thumbnail.save(thumb_filename, ContentFile(temp_thumb.read()), save=False)
-                temp_thumb.close()
+                    image.thumbnail(THUMB_SIZE, Image.ANTIALIAS)
+                    fh.close()
+    
+                    thumb_name, thumb_extension = os.path.splitext(self.asset_image.name)
+                    thumb_extension = thumb_extension.lower()
+                    thumb_filename = thumb_name + "_thumb" + thumb_extension
+    
+                    if thumb_extension in [".jpg", ".jpeg"]:
+                        FTYPE = "JPEG"
+                    elif thumb_extension == ".gif":
+                        FTYPE = "GIF"
+                    elif thumb_extension == ".png":
+                        FTYPE = "PNG"
+                    else:
+                        raise Exception("Error creating thumnail. Image must be a .jpg, .jpeg, .gif or .png!")
+    
+                    temp_thumb = BytesIO()
+                    image.save(temp_thumb, FTYPE, quality=100)
+                    temp_thumb.seek(0)
+                    self.asset_image_thumbnail.save(thumb_filename, ContentFile(temp_thumb.read()), save=False)
+                    temp_thumb.close()
 
                 # -- WATERMARK --
                 assetimage = storage.open(self.asset_image.name)
