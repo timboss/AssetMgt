@@ -195,7 +195,11 @@ class Asset(models.Model):
                 # alpha = ImageEnhance.Brightness(alpha).enhance(opacity) # NameError on "opacity"
 
                 watermark.putalpha(alpha)
-                Image.composite(watermark, img, watermark).save("C:/assetmgt/AssetMgt/media/{}".format(self.asset_image.name), "JPEG")
+                
+                if settings.DEBUG:
+                    Image.composite(watermark, img, watermark).save("media/" + self.asset_image.name, "JPEG")
+                else:
+                    Image.composite(watermark, img, watermark).save("C:/assetmgt/AssetMgt/media/{}".format(self.asset_image.name), "JPEG")
 
         else:
             # Have no image now, delete any old thumbnail & update DB

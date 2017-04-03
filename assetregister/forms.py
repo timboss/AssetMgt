@@ -7,7 +7,7 @@ import django_filters
 
 
 class DateInput(forms.DateInput):
-    input_type = 'date'
+    input_type = 'text'
 
 
 class EditAsset(forms.ModelForm):
