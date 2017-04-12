@@ -73,6 +73,7 @@ def calibrated_asset_list_active(request):
         })
 
 
+@login_required
 def calibration_detail(request, slug):
     calibration = get_object_or_404(CalibrationRecord, slug=slug)
     return render(request, "assetregister/calibration_details.html", {"calibration": calibration})

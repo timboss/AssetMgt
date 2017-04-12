@@ -30,15 +30,13 @@ from background_task import background
 logger = logging.getLogger(__name__)
 
 
-def examplemodal(request):
-    return render(request, "assetregister/example2.html")
-
-
+@login_required
 def home(request):
     baseurl = settings.BASEURL
     return render(request, "assetregister/home.html", {"baseurl": baseurl})
 
 
+@login_required
 def asset_list(request):
     asset_count = Asset.objects.count()
     active_asset_count = Asset.objects.filter(asset_status=1).count()
@@ -58,6 +56,7 @@ def asset_list(request):
         })
 
 
+@login_required
 def asset_list_filter(request):
     if request.GET:
         filter = AssetFilter(request.GET, queryset=Asset.objects.all())
@@ -78,6 +77,7 @@ def asset_list_filter(request):
                                                                       })
 
 
+@login_required
 def active_asset_list(request):
     asset_count = Asset.objects.count()
     active_asset_count = Asset.objects.filter(asset_status=1).count()
@@ -97,6 +97,7 @@ def active_asset_list(request):
         })
 
 
+@login_required
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     assetcalibrations_3 = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")[:3]
@@ -119,18 +120,21 @@ def asset_detail(request, pk):
                                                                     "parent_of": parent_of, "curdate": curdate})
 
 
+@login_required
 def asset_detail_equipid(request, equipid):
     asset = get_object_or_404(Asset, amrc_equipment_id=equipid)
     pk = asset.asset_id
     return asset_detail(request, pk)
 
 
+@login_required
 def asset_qr(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     baseurl = settings.BASEURL
     return render(request, "assetregister/asset_qr.html", {"asset": asset, "baseurl": baseurl})
 
 
+@login_required
 def asset_qr_small(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     baseurl = settings.BASEURL
@@ -307,7 +311,8 @@ class asset_confirm_delete(DeleteView):
     success_url = reverse_lazy("asset_list")
 
 
-class NewSearchView(SearchView):
-    template_name = 'search/search.html'
-    queryset = SearchQuerySet().exclude(asset_id=999999999999999999999999)
-    form_class = HighlightedSearchFormAssets
+#@login_required
+#class NewSearchView(SearchView):
+#    template_name = 'search/search.html'
+#    queryset = SearchQuerySet().exclude(asset_id=999999999999999999999999)
+#    form_class = HighlightedSearchFormAssets

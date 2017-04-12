@@ -10,7 +10,7 @@
 
     <div class="count">
         We currently have a total of <b>{{ active_asset_count }}</b> "active" asset records.
-        {% if user.is_authenticated %}
+        {% if user.is_staff %}
         	(<a href="{% url 'asset_new' %}">Add new asset</a>)
         {% endif %}	
     </div>

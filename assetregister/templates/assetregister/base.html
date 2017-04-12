@@ -86,7 +86,7 @@
 								<li>
 									<a href="{% url 'active_asset_list' %}">"Active" Assets</a>
 								</li>
-									{% if user.is_authenticated %} 
+									{% if user.is_staff %}
 										<li class="divider"></li>
 										<li>
 											<a href="{% url 'asset_new' %}">Add New Asset</a>
@@ -94,7 +94,7 @@
 									{% endif %}
 							</ul>
 						</li>
-						{% if user.is_authenticated %} 
+						{% if user.is_staff %} 
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">
@@ -105,11 +105,9 @@
 										<a href="{% url 'calibrated_asset_list_active' %}">"Active" Assets Requiring Calibration</a>
 									</li>
 									<li class="divider"></li>
-									{% if user.is_authenticated %} 
-										<li>
-											<a href="{% url 'new_calibration' %}">Add New Calibration</a>
-										</li>
-									{% endif %}
+									<li>
+										<a href="{% url 'new_calibration' %}">Add New Calibration</a>
+									</li>
 									<li class="divider"></li>
 									<li>
 										<a href="{% url 'calibration_list' %}">All Calibration Records</a>

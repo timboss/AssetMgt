@@ -13,7 +13,7 @@
             
             <h3>{{ calibration.calibration_description }}
             
-            {% if user.is_authenticated %}
+            {% if user.is_staff %}
                 <a class="btn btn-default" href="{% url 'calibration_edit' slug=calibration.slug %}" title="Edit Calibration"><span class="glyphicon glyphicon-edit gi-1x"></span></a>
             {% endif %}
             {% if request.user.is_superuser %}

@@ -9,7 +9,7 @@
 
     <div class="count">
         We currently have a total of <b>{{ calibration_count }}</b> calibration records.
-        {% if user.is_authenticated %}
+        {% if user.is_staff %}
         	(<a href="{% url 'new_calibration' %}">Add new calibration</a>)
         {% endif %}
     </div>

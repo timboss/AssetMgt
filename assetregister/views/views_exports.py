@@ -70,6 +70,7 @@ def calibration_asset_export_custom(request):
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_{}.csv".format(str(newdate)))
 
 
+@login_required
 def maintenance_export_all(request):
     export = Asset.objects.filter(requires_planned_maintenance=True).order_by("asset_id").values(
                                                 "asset_id", "requires_planned_maintenance", "asset_description",
@@ -82,6 +83,7 @@ def maintenance_export_all(request):
     return render_to_csv_response(export, filename="All_Assets_Needing_Maintenance_{}.csv".format(str(timezone.now().date())))
 
 
+@login_required
 def environmental_export_all(request):
     export = Asset.objects.filter(requires_environmental_checks=True).order_by("asset_id").values(
                                                 "asset_id", "requires_environmental_checks", "asset_description",
@@ -93,6 +95,7 @@ def environmental_export_all(request):
     return render_to_csv_response(export, filename="All_Assets_Needing_Environmental_Checks_{}.csv".format(str(timezone.now().date())))
 
 
+@login_required
 def insurance_export_all(request):
     export = Asset.objects.filter(requires_insurance=True).order_by("asset_id").values(
                                                 "asset_id", "requires_insurance", "asset_description",
@@ -105,6 +108,7 @@ def insurance_export_all(request):
     return render_to_csv_response(export, filename="All_Assets_Needing_Insurance_{}.csv".format(str(timezone.now().date())))
 
 
+@login_required
 def safety_export_all(request):
     export = Asset.objects.filter(requires_safety_checks=True).order_by("asset_id").values(
                                                 "asset_id", "requires_safety_checks", "asset_description",
@@ -116,6 +120,7 @@ def safety_export_all(request):
     return render_to_csv_response(export, filename="All_Assets_Needing_Safety_Checks_{}.csv".format(str(timezone.now().date())))
 
 
+@login_required
 def location_export_all(request):
     export = Asset.objects.all().order_by("asset_location_building__building_name").values(
                                                 "asset_location_building__building_name",
