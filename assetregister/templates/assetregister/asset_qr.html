@@ -20,6 +20,10 @@
             </tr>
             <tr>
                 <td colspan="2">
+                	<div align="center">
+                		<small>https://amrcassets.shef.ac.uk/asset/{{ asset.asset_id }}</small>
+                	</div>
+                	<div>&nbsp;</div>
                     <div align="center" id="qr_description">
                     	{% if asset.asset_manufacturer %}
                         	{{asset.asset_manufacturer}} - 
@@ -31,7 +35,7 @@
             <tr>
             	<td colspan="2">
             		<div align="center" class="dontPrint" id="small_qr">
-            			<br /><br /><br />
+            			<br /><br />
             			<script language="JavaScript"> 
 							if (window.print) {document.write('<form><input type=button name=print value="Print this page" onClick="window.print()"></form>');}
 						</script>

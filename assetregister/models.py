@@ -19,6 +19,11 @@ def reindex_whoosh():
 
 default_asset_status = 1
 
+CALIBRATION_TYPE = (
+                       ("Internal", "Internal"),
+                       ("External", "External")
+                     )
+
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
     asset_description = models.CharField(max_length=200)
@@ -52,6 +57,7 @@ class Asset(models.Model):
     calibration_date_next = models.DateField(null=True, blank=True)
     calibration_instructions = models.URLField(max_length=255, null=True, blank=True)
     calibration_status = models.ForeignKey("CalibrationStatus", on_delete=models.SET_NULL, blank=True, null=True, related_name="calibration_status")
+    calibration_type = models.CharField(max_length=10, choices=CALIBRATION_TYPE, default="Internal", blank=True, null=True)
     asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     charge_out_rate = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     charge_code = models.CharField(max_length=64, null=True, blank=True)

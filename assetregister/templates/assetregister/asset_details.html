@@ -233,6 +233,18 @@
      										Calibration Frequency: <b>{{ asset.calibration_frequency }}</b>
      									</p>
      								{% endif %}
+     								
+     								{% if asset.calibration_type %}
+     									<p>
+     										Calibration Type: <b>{{ asset.calibration_type }}</b>
+     									</p>
+     								{% endif %}
+     								
+     								{% if asset.calibration_status %}
+     									<p>
+     										Calibration Status: <b>{{asset.calibration_status}}</b>
+     									</p>
+     								{% endif %}
 
 						    		{% if calibrations %}
 							    		<table class="table table-hover ">
