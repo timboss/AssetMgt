@@ -6,10 +6,12 @@ from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
 from assetregister.models import Asset, CalibrationRecord
 from assetregister.forms import Calibrate
+from assetregister.decorators import group_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 @login_required
+@group_required('AddEditCalibrations')
 def calibration_list(request):
     calibration_count = CalibrationRecord.objects.count()
     all_calibrations = CalibrationRecord.objects.order_by("-pk")
@@ -29,6 +31,7 @@ def calibration_list(request):
 
 
 @login_required
+@group_required('AddEditCalibrations')
 def calibrated_asset_list(request):
     asset_count = Asset.objects.count()
     calibrated_asset_count = Asset.objects.filter(requires_calibration=True).count()
@@ -53,6 +56,7 @@ def calibrated_asset_list(request):
 
 
 @login_required
+@group_required('AddEditCalibrations')
 def calibrated_asset_list_active(request):
     asset_count = Asset.objects.count()
     active_calibrated_asset_count = Asset.objects.filter(requires_calibration=True,
@@ -79,13 +83,14 @@ def calibration_detail(request, slug):
     return render(request, "assetregister/calibration_details.html", {"calibration": calibration})
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(group_required('AddEditCalibrations'), name='dispatch')
 class calibration_confirm_delete(DeleteView):
     model = CalibrationRecord
     success_url = reverse_lazy("calibration_list")
 
 
 @login_required
+@group_required('AddEditCalibrations')
 def new_calibration(request):
     if request.method == "POST":
         form = Calibrate(request.POST)
@@ -101,6 +106,7 @@ def new_calibration(request):
 
 
 @login_required
+@group_required('AddEditCalibrations')
 def calibration_edit(request, slug):
     calibration = get_object_or_404(CalibrationRecord, slug=slug)
     if calibration.asset.calibration_frequency:
@@ -122,6 +128,7 @@ def calibration_edit(request, slug):
 
 
 @login_required
+@group_required('AddEditCalibrations')
 def new_calibration_asset(request, urlpk):
     asset_calib_freq = Asset.objects.values_list("calibration_frequency", flat=True).get(asset_id=urlpk)
     if not asset_calib_freq:

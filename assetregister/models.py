@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import os
 from haystack.management.commands import update_index
 import logging
@@ -9,13 +12,12 @@ from background_task import background
 
 logger = logging.getLogger(__name__)
 
-default_asset_status = 1
-
 @background()
 def reindex_whoosh():
     update_index.Command().handle(interactive=False, remove=True, age=1)
     # age=1 will only add assets edited in last hour.
-    # need separate task to reindex whole db each night (will remove orphans)
+
+default_asset_status = 1
 
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
@@ -24,7 +26,7 @@ class Asset(models.Model):
     asset_image_thumbnail = models.ImageField(upload_to="images", editable=False, null=True)
     asset_details = models.TextField(blank=True)
     asset_manufacturer = models.CharField(max_length=255, blank=True)
-    asset_model = models.CharField(max_length=255, blank=True)
+    asset_model = models.CharField(max_length=255, null=True, blank=True)
     asset_serial_number = models.CharField(max_length=255, null=True, blank=True)
     amrc_equipment_id = models.CharField(max_length=16, null=True, blank=True)
     handling_and_storage_instructions = models.URLField(max_length=255, null=True, blank=True)
@@ -34,26 +36,27 @@ class Asset(models.Model):
     person_responsible_email = models.EmailField()
     requires_insurance = models.BooleanField()
     requires_safety_checks = models.BooleanField()
-    safety_notes = models.TextField(blank=True)
+    safety_notes = models.TextField(null=True, blank=True)
     requires_environmental_checks = models.BooleanField()
     environmental_aspects = models.ManyToManyField("EnvironmentalAspects", blank=True)
-    environmental_notes = models.TextField(blank=True)
-    emergency_response_information = models.TextField(blank=True)
+    environmental_notes = models.TextField(null=True, blank=True)
+    emergency_response_information = models.TextField(null=True, blank=True)
     requires_planned_maintenance = models.BooleanField()
     maintenance_instructions = models.URLField(max_length=255, null=True, blank=True)
     maintenance_records = models.URLField(max_length=255, null=True, blank=True)
-    maintenance_notes = models.TextField(blank=True)
+    maintenance_notes = models.TextField(blank=True, null=True)
     requires_calibration = models.BooleanField()
     calibration_frequency = models.CharField(max_length=64, null=True, blank=True)
     passed_calibration = models.BooleanField(default=False)
     calibration_date_prev = models.DateField(null=True, blank=True)
     calibration_date_next = models.DateField(null=True, blank=True)
     calibration_instructions = models.URLField(max_length=255, null=True, blank=True)
+    calibration_status = models.ForeignKey("CalibrationStatus", on_delete=models.SET_NULL, blank=True, null=True, related_name="calibration_status")
     asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     charge_out_rate = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     charge_code = models.CharField(max_length=64, null=True, blank=True)
-    purchase_order_ref = models.CharField(max_length=15, blank=True)
-    funded_by = models.CharField(max_length=255, blank=True)
+    purchase_order_ref = models.CharField(max_length=15, null=True, blank=True)
+    funded_by = models.CharField(max_length=255, null=True, blank=True)
     acquired_on = models.DateField(null=True, blank=True)
     disposal_date = models.DateField(null=True, blank=True)
     disposal_method = models.CharField(max_length=255, null=True, blank=True)
@@ -292,6 +295,13 @@ class AssetStatus(models.Model):
 
     def __str__(self):
         return self.status_name
+    
+
+class CalibrationStatus(models.Model):
+    status_name = models.CharField(max_length=64)
+    
+    def __str__(self):
+        return self.status_name
 
 
 class EnvironmentalAspects(models.Model):
@@ -321,3 +331,4 @@ class EnvironmentalAspectAssetNoficiation(models.Model):
 
     def __str__(self):
         return "Notify {} of assets with environmental aspects".format(self.email_address)
+

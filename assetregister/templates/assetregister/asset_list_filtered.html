@@ -16,14 +16,253 @@
 	
 	<form action="" method="get" class="form-horizontal asset-form">
 		<fieldset>
-			{% for field in filter.form %}
-				<div class="form-group">
-					<label for="inputEmail" class="col-lg-3 control-label">{{ field.label_tag }}</label>
+			<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_requires_calibration">Requires calibration:</label></label>
 					<div class="col-lg-6">
-						{{ field }}
+						<select id="id_requires_calibration" name="requires_calibration">
+							<option value="1" selected="selected">Unknown</option>
+							<option value="2">Yes</option>
+							<option value="3">No</option>
+						</select>
 					</div>
 				</div>
-			{% endfor %}
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_passed_calibration">Passed calibration:</label></label>
+					<div class="col-lg-6">
+						<select id="id_passed_calibration" name="passed_calibration">
+							<option value="1" selected="selected">Unknown</option>
+							<option value="2">Yes</option>
+							<option value="3">No</option>
+						</select>
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_requires_safety_checks">Requires safety checks:</label></label>
+					<div class="col-lg-6">
+						<select id="id_requires_safety_checks" name="requires_safety_checks">
+							<option value="1" selected="selected">Unknown</option>
+							<option value="2">Yes</option>
+							<option value="3">No</option>
+						</select>
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_requires_environmental_checks">Requires environmental checks:</label></label>
+					<div class="col-lg-6">
+						<select id="id_requires_environmental_checks" name="requires_environmental_checks">
+							<option value="1" selected="selected">Unknown</option>
+							<option value="2">Yes</option>
+							<option value="3">No</option>
+						</select>
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_requires_planned_maintenance">Requires planned maintenance:</label></label>
+					<div class="col-lg-6">
+						<select id="id_requires_planned_maintenance" name="requires_planned_maintenance">
+							<option value="1" selected="selected">Unknown</option>
+							<option value="2">Yes</option>
+							<option value="3">No</option>
+						</select>
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_requires_insurance">Requires insurance:</label></label>
+					<div class="col-lg-6">
+						<select id="id_requires_insurance" name="requires_insurance">
+						<option value="1" selected="selected">Unknown</option>
+						<option value="2">Yes</option>
+						<option value="3">No</option>
+						</select>
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_calibration_date_next__gt">Calibration date next calibration date next is greater than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_calibration_date_next__gt" name="calibration_date_next__gt" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_calibration_date_next__lt">Calibration date next calibration date next is less than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_calibration_date_next__lt" name="calibration_date_next__lt" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_id">Asset id:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_id" name="asset_id" step="any" type="number" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_description">Asset description contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_description" name="asset_description" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_details">Asset details contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_details" name="asset_details" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_manufacturer">Asset manufacturer contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_manufacturer" name="asset_manufacturer" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_model">Asset model contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_model" name="asset_model" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_serial_number">Asset serial number contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_serial_number" name="asset_serial_number" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_amrc_equipment_id">Amrc equipment id contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_amrc_equipment_id" name="amrc_equipment_id" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_person_responsible">Person responsible contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_person_responsible" name="person_responsible" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_person_responsible_email">Person responsible email contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_person_responsible_email" name="person_responsible_email" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_environmental_notes">Environmental notes contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_environmental_notes" name="environmental_notes" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_safety_notes">Safety notes contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_safety_notes" name="safety_notes" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_emergency_response_information">Emergency response information contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_emergency_response_information" name="emergency_response_information" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_maintenance_notes">Maintenance notes contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_maintenance_notes" name="maintenance_notes" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_value__gt">Asset value is greater than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_value__gt" name="asset_value__gt" step="any" type="number" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_value__lt">Asset value is less than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_value__lt" name="asset_value__lt" step="any" type="number" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_purchase_order_ref">Purchase order ref:</label></label>
+					<div class="col-lg-6">
+						<input id="id_purchase_order_ref" name="purchase_order_ref" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_funded_by">Funded by contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_funded_by" name="funded_by" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_acquired_on__gt">Acquired on acquired on is greater than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_acquired_on__gt" name="acquired_on__gt" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_acquired_on__lt">Acquired on acquired on is less than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_acquired_on__lt" name="acquired_on__lt" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_disposal_date__gt">Disposal date disposal date is greater than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_disposal_date__gt" name="disposal_date__gt" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_disposal_date__lt">Disposal date disposal date is less than:</label></label>
+					<div class="col-lg-6">
+						<input id="id_disposal_date__lt" name="disposal_date__lt" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_location_building__building_name">Asset location building building name contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_location_building__building_name" name="asset_location_building__building_name" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_location_building__EFM_building_code">Asset location building efm building code contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_location_building__EFM_building_code" name="asset_location_building__EFM_building_code" type="text" />
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="id_asset_location_room">Asset location room contains:</label></label>
+					<div class="col-lg-6">
+						<input id="id_asset_location_room" name="asset_location_room" type="text" />
+					</div>
+				</div>
 				<div class="form-group">
 					<div class="col-lg-3 col-lg-offset-3">
 						<button type="reset" class="btn btn-default">

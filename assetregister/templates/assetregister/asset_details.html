@@ -1,6 +1,7 @@
 {% extends 'assetregister/base.html' %}
 
     {% block content %}
+    {% load has_group %}
     
     <ul class="breadcrumb">
 		<li><a href="/">Home</a></li>
@@ -14,12 +15,18 @@
             <h2>{{ asset.asset_description }}</h2>
             	
             	<p>
-	            {% if user.is_staff %}
-	                <a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit basic asset info"><span class="glyphicon glyphicon-edit gi-2x"></span></a>
-	            	<a class="btn btn-default" href="{% url 'edit_asset_calibration_info' pk=asset.pk %}" title="Edit asset calibration info"><span class="glyphicon glyphicon-compressed gi-2x"></span></a>
-	            	<a class="btn btn-default" href="{% url 'edit_asset_finance_info' pk=asset.pk %}" title="Edit asset finance info"><span class="glyphicon glyphicon-piggy-bank gi-2x"></span></a>
+	            {% if request.user|has_group:"AddEditAssets" %} 
+			    	<a class="btn btn-default" href="{% url 'asset_edit' pk=asset.pk %}" title="Edit basic asset info"><span class="glyphicon glyphicon-edit gi-2x"></span></a>
+				{% endif %}
+	            {% if request.user|has_group:"AddEditCalibrations" %} 
+			    	<a class="btn btn-default" href="{% url 'edit_asset_calibration_info' pk=asset.pk %}" title="Edit asset calibration info"><span class="glyphicon glyphicon-compressed gi-2x"></span></a>
+				{% endif %}
+	            {% if request.user|has_group:"Finance" %} 
+			    	<a class="btn btn-default" href="{% url 'edit_asset_finance_info' pk=asset.pk %}" title="Edit asset finance info"><span class="glyphicon glyphicon-piggy-bank gi-2x"></span></a>
+				{% endif %}	            	
+	            {% if request.user|has_group:"AddEditAssets" %} 
 	            	<a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-2x"></span></a>
-	            {% endif %}
+            	{% endif %}
             	</p>
             	
             {% if asset.asset_image_thumbnail%}
@@ -189,7 +196,7 @@
 						      <h4 class="panel-title">
 						        <a data-toggle="collapse" href="#collapse-calibration">
 						        	<div id="calibration-expand-container">
-						        		{% if user.is_staff %}
+						        		{% if request.user|has_group:"AddEditCalibrations" %} 
 						        			<div id="calibration-expand-left" align="left">All Calibration Records</div>
 						        		{% else %}
 						        			<div id="calibration-expand-left" align="left">Last 3 Calibration Records</div>
@@ -238,7 +245,7 @@
 												</tr>
 											</thead>
 											<tbody>
-												{% if user.is_staff %}
+												{% if request.user|has_group:"AddEditCalibrations" %} 
 													{% for calibration in allcalibrations %}
 														{% if calibration.calibration_outcome == 'Pass' %}
 															<tr>
@@ -281,14 +288,14 @@
 										<h5>No calibration records yet :(</h5>
 									{% endif %}	
 									
-									{% if user.is_staff %}
+									{% if request.user|has_group:"AddEditCalibrations" %} 
 							            {% if asset.calibration_instructions %}
 							            	<br />
 							                <p><a href="{{ asset.calibration_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Calibration Instructions</a></p>
 							            {% endif %}
 								    {% endif %}
 						    	</div>
-						    	{% if user.is_staff %}
+						    	{% if request.user|has_group:"AddEditCalibrations" %} 
 							      	<div class="panel-footer">
 							      		<a href="{% url 'new_calibration_asset' urlpk=asset.pk %}">Add Calibration Record</a>
 							      	</div>

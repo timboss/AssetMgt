@@ -17,6 +17,7 @@ from assetregister.forms import (EditAsset,
                                  EditAssetCalibrationInfo,
                                  EditAssetFinanceInfo
                                  )
+from assetregister.decorators import group_required
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
 from django.conf import settings
@@ -60,16 +61,6 @@ def asset_list(request):
 def asset_list_filter(request):
     if request.GET:
         filter = AssetFilter(request.GET, queryset=Asset.objects.all())
-        # paginator = Paginator(filter_all, 10)
-        # page = request.GET.get('page')
-        # try:
-        #    filter = paginator.page(page)
-        # except PageNotAnInteger:
-        #    # If page is not an integer, deliver first page.
-        #    filter = paginator.page(1)
-        # except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-        #    filter = paginator.page(paginator.num_pages)
     else:
         # this is a bit hacky, but should work forever...
         filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=9999))
@@ -190,6 +181,7 @@ def enviro_aspect_asset_email(pk):
 
 
 @login_required
+@group_required('AddEditAssets','Finance','AddEditCalibrations', 'SuperUsers')
 def asset_new(request):
     if request.method == "POST":
         form = EditAsset(request.POST, request.FILES)
@@ -212,6 +204,7 @@ def asset_new(request):
 
 
 @login_required
+@group_required('AddEditAssets','Finance','AddEditCalibrations', 'SuperUsers')
 def asset_edit(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     assets_to_relate = Asset.objects.exclude(pk=pk).order_by("asset_manufacturer", "asset_description")
@@ -244,6 +237,7 @@ def asset_edit(request, pk):
 
 
 @login_required
+@group_required('AddEditCalibrations')
 def edit_asset_calibration_info(request, pk):
     type = "Calibration"
     asset = get_object_or_404(Asset, pk=pk)
@@ -274,6 +268,7 @@ def edit_asset_calibration_info(request, pk):
 
 
 @login_required
+@group_required('Finance')
 def edit_asset_finance_info(request, pk):
     type = "Finance"
     asset = get_object_or_404(Asset, pk=pk)
@@ -305,7 +300,7 @@ def edit_asset_finance_info(request, pk):
                                                                    })
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(group_required('AddEditAssets', 'Finance', 'AddEditCalibrations', 'SuperUsers'), name='dispatch')
 class asset_confirm_delete(DeleteView):
     model = Asset
     success_url = reverse_lazy("asset_list")

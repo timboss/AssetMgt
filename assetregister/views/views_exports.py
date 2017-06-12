@@ -3,6 +3,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from assetregister.models import Asset, CalibrationRecord
+from assetregister.decorators import group_required
 from djqscsv import render_to_csv_response
 from django.http import HttpResponseNotFound
 
@@ -33,6 +34,7 @@ def calibrated_asset_export_all(request):
 
 
 @login_required
+@group_required('AddEditCalibrations', 'SuperUsers')
 def calibration_asset_export_nextmonth(request):
     plusonemonth = timezone.now() + timedelta(days=30)
     calibration_export = Asset.objects.filter(
@@ -45,11 +47,13 @@ def calibration_asset_export_nextmonth(request):
 
 
 @login_required
+@group_required('AddEditCalibrations', 'SuperUsers')
 def calibration_asset_export_custom_select(request):
     return render(request, "assetregister/calibration_export.html")
 
 
 @login_required
+@group_required('AddEditCalibrations', 'SuperUsers')
 def calibration_asset_export_custom(request):
     if request.GET.get('days'):
         getdays = int(request.GET.get('days'))
@@ -136,12 +140,14 @@ def location_export_all(request):
 
 
 @login_required
+@group_required('SuperUsers')
 def export_all_assets(request):
     export = Asset.objects.all()
     return render_to_csv_response(export, filename="All_Assets__{}.csv".format(str(timezone.now().date())))
 
 
 @login_required
+@group_required('AddEditCalibrations', 'SuperUsers')
 def export_all_calibratons(request):
     export = CalibrationRecord.objects.order_by("-calibration_date").values(
                                                 "calibration_record_id", "asset", "asset__asset_description",
