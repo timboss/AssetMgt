@@ -311,7 +311,7 @@ def edit_asset_location(request, pk):
         form = EditAssetLocationInfo(request.POST, instance=asset)
         if form.is_valid():
             logger.warning("[{}] - User {} just changed location for asset ID {} ({})".format(
-                timezone.now(), request.user.get_full_name, pk, asset_description))
+                timezone.now(), request.user, pk, asset_description))
             asset = form.save(commit=False)
             asset.edited_by = request.user
             asset.edited_on = timezone.now()
