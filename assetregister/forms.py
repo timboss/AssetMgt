@@ -197,6 +197,7 @@ class AssetFilter(django_filters.FilterSet):
     amrc_equipment_id = django_filters.CharFilter(lookup_expr="icontains")
     person_responsible = django_filters.CharFilter(lookup_expr="icontains")
     person_responsible_email = django_filters.CharFilter(lookup_expr="icontains")
+    amrc_group_responsible = django_filters.CharFilter(lookup_expr="icontains")
     environmental_notes = django_filters.CharFilter(lookup_expr="icontains")
     safety_notes = django_filters.CharFilter(lookup_expr="icontains")
     emergency_response_information = django_filters.CharFilter(lookup_expr="icontains")
