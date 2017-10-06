@@ -24,7 +24,7 @@
 	            {% if request.user|has_group:"Finance" %} 
 			    	<a class="btn btn-default" href="{% url 'edit_asset_finance_info' pk=asset.pk %}" title="Edit asset finance info"><span class="glyphicon glyphicon-piggy-bank gi-2x"></span></a>
 				{% endif %}	            	
-	            {% if request.user|has_group:"AddEditAssets" %} 
+	            {% if request.user|has_group:"SuperUsers" %} 
 	            	<a class="btn btn-default" href="{% url 'asset_confirm_delete' pk=asset.pk %}" title="Delete asset"><span class="glyphicon glyphicon-trash gi-2x"></span></a>
             	{% endif %}
             	</p>
@@ -301,9 +301,9 @@
 									{% endif %}	
 									
 									{% if request.user|has_group:"AddEditCalibrations" %} 
-							            {% if asset.calibration_instructions %}
+							            {% if asset.calibration_procedure %}
 							            	<br />
-							                <p><a href="{{ asset.calibration_instructions }}" target="_blank"><span class="glyphicon glyphicon-file gi-1x"></span> Calibration Instructions</a></p>
+							                <p>Calibration Procedure: {{ asset.calibration_procedure|linebreaks }}</p>
 							            {% endif %}
 								    {% endif %}
 						    	</div>
@@ -495,7 +495,7 @@
 			{% endif %}
             
             <br />
-            <p>Asset Record Last Edited {{ asset.edited_on }} by {{ asset.edited_by }}</p>
+            <p>Asset Record Last Edited {{ asset.edited_on }} by {{ asset.edited_by.get_full_name }}</p>
             <br />
             
             {% if asset.handling_and_storage_instructions %}

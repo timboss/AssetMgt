@@ -15,8 +15,8 @@ class EditAsset(forms.ModelForm):
     class Meta:
         model = Asset
         fields = [
-            "asset_description", "person_responsible", "person_responsible_email", "asset_image",
-            "asset_details", "asset_manufacturer", "asset_model", "asset_serial_number",
+            "asset_description", "person_responsible", "person_responsible_email", "amrc_group_responsible",
+            "asset_image", "asset_details", "asset_manufacturer", "asset_model", "asset_serial_number",
             "amrc_equipment_id", "asset_status", "requires_calibration", "requires_safety_checks", "safety_notes",
             "emergency_response_information", "requires_environmental_checks", "environmental_aspects",
             "environmental_notes", "requires_planned_maintenance", "maintenance_instructions",
@@ -35,6 +35,7 @@ class EditAsset(forms.ModelForm):
             'asset_status': forms.Select(attrs={'class': 'form-control'}),
             'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
             'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'amrc_group_responsible': forms.Select(attrs={'class': 'form-control'}),
             'safety_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'environmental_aspects': forms.CheckboxSelectMultiple(),
             'environmental_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
@@ -77,9 +78,9 @@ class EditAssetCalibrationInfo(forms.ModelForm):
         fields = [
             "asset_model",
             "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible",
-            "person_responsible_email", "requires_calibration", "calibration_frequency",
-            "calibration_instructions", "asset_location_building", "asset_location_room",
-            "operating_instructions", "handling_and_storage_instructions"
+            "person_responsible_email", "amrc_group_responsible", "requires_calibration", 
+            "calibration_frequency", "calibration_procedure", "asset_location_building",
+            "asset_location_room", "operating_instructions", "handling_and_storage_instructions"
             ]
         widgets = {
             'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
@@ -88,8 +89,9 @@ class EditAssetCalibrationInfo(forms.ModelForm):
             'asset_status': forms.Select(attrs={'class': 'form-control'}),
             'person_responsible': forms.TextInput(attrs={'class': 'form-control'}),
             'person_responsible_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'amrc_group_responsible': forms.Select(attrs={'class': 'form-control'}),
             'calibration_frequency': forms.TextInput(attrs={'class': 'form-control'}),
-            'calibration_instructions': forms.URLInput(attrs={'class': 'form-control'}),
+            'calibration_procedure': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
             'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
             'operating_instructions': forms.URLInput(attrs={'class': 'form-control'}),
@@ -98,7 +100,6 @@ class EditAssetCalibrationInfo(forms.ModelForm):
         labels = {
           "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
           "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
-          "calibration_instructions": ("Calibration Instructions URL"),
           "operating_instructions": ("Operating Instructions URL"),
           "handling_and_storage_instructions": ("Handling and Storage Instructions URL"),
           }
@@ -215,7 +216,7 @@ class AssetFilter(django_filters.FilterSet):
     class Meta:
         model = Asset
         fields = ["requires_calibration", "passed_calibration", "requires_safety_checks", "requires_environmental_checks",
-                  "requires_planned_maintenance", "requires_insurance"]
+                  "requires_planned_maintenance", "requires_insurance", "amrc_group_responsible"]
         labels = {
           "amrc_equipment_id": ("AMRC Equipment ID (no spaces) e.g. V112, B05 or M206B"),
           "asset_location_room": ("Asset Location (specific room or group etc.)"),

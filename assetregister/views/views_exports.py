@@ -15,7 +15,7 @@ def calibrated_asset_export_active(request):
                                                 "asset_id", "amrc_equipment_id", "requires_calibration", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status__status_name", "calibration_date_prev", "calibration_date_next",
-                                                "calibration_instructions", "person_responsible",
+                                                "calibration_procedure", "person_responsible",
                                                 "person_responsible_email", "asset_location_building__building_name",
                                                 "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Active_Assets_Needing_Calibration_{}.csv".format(str(timezone.now().date())))
@@ -27,7 +27,7 @@ def calibrated_asset_export_all(request):
                                                 "asset_id", "amrc_equipment_id", "requires_calibration", "asset_description",
                                                 "asset_manufacturer", "asset_model", "asset_serial_number",
                                                 "asset_status__status_name", "calibration_date_prev", "calibration_date_next",
-                                                "calibration_instructions", "person_responsible",
+                                                "calibration_procedure", "person_responsible",
                                                 "person_responsible_email", "asset_location_building__building_name",
                                                 "asset_location_room")
     return render_to_csv_response(calibration_export, filename="All_Assets_Needing_Calibration_{}.csv".format(str(timezone.now().date())))
@@ -41,7 +41,7 @@ def calibration_asset_export_nextmonth(request):
             requires_calibration=True, calibration_date_next__lte=plusonemonth).order_by("calibration_date_next").values(
             "asset_id", "amrc_equipment_id", "requires_calibration", "asset_description", "asset_manufacturer",
             "asset_model", "asset_serial_number", "asset_status__status_name", "calibration_date_prev",
-            "calibration_date_next", "calibration_instructions", "person_responsible", "person_responsible_email",
+            "calibration_date_next", "calibration_procedure", "person_responsible", "person_responsible_email",
             "asset_location_building__building_name", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_{}.csv".format(str(plusonemonth.date())))
 
@@ -68,7 +68,7 @@ def calibration_asset_export_custom(request):
                                 ).values(
                                          "asset_id", "requires_calibration", "asset_description", "asset_manufacturer",
                                          "asset_model", "asset_serial_number", "asset_status__status_name",
-                                         "calibration_date_prev", "calibration_date_next", "calibration_instructions",
+                                         "calibration_date_prev", "calibration_date_next", "calibration_procedure",
                                          "person_responsible", "person_responsible_email",
                                          "asset_location_building__building_name", "asset_location_room")
     return render_to_csv_response(calibration_export, filename="Assets_Due_Calibration_Before_{}.csv".format(str(newdate)))

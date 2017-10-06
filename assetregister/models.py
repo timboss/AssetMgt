@@ -39,7 +39,9 @@ class Asset(models.Model):
     asset_status = models.ForeignKey("AssetStatus", on_delete=models.SET_NULL, null=True, default=default_asset_status, related_name="status")
     person_responsible = models.CharField(max_length=100)
     person_responsible_email = models.EmailField()
+    amrc_group_responsible = models.ForeignKey("AmrcGroup", on_delete=models.SET_NULL, blank=True, null=True, related_name="amrc_group")
     requires_insurance = models.BooleanField()
+    requires_unforseen_damage_insurance = models.BooleanField(default=False)
     requires_safety_checks = models.BooleanField()
     safety_notes = models.TextField(null=True, blank=True)
     requires_environmental_checks = models.BooleanField()
@@ -55,7 +57,7 @@ class Asset(models.Model):
     passed_calibration = models.BooleanField(default=False)
     calibration_date_prev = models.DateField(null=True, blank=True)
     calibration_date_next = models.DateField(null=True, blank=True)
-    calibration_instructions = models.URLField(max_length=255, null=True, blank=True)
+    calibration_procedure = models.TextField(blank=True)
     calibration_status = models.ForeignKey("CalibrationStatus", on_delete=models.SET_NULL, blank=True, null=True, related_name="calibration_status")
     calibration_type = models.CharField(max_length=10, choices=CALIBRATION_TYPE, default="Internal", blank=True, null=True)
     asset_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
@@ -294,6 +296,13 @@ class Buildings(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.building_name, self.EFM_building_code)
+
+
+class AmrcGroup(models.Model):
+    group_name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return "{}".format(self.group_name)
 
 
 class AssetStatus(models.Model):

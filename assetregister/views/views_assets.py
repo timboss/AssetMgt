@@ -171,7 +171,7 @@ def enviro_aspect_asset_email(pk):
     EnviroEmails = EnvironmentalAspectAssetNoficiation.objects.all().values_list("email_address", flat=True)
     aspectlist = ", ".join(ea.aspect for ea in asset.environmental_aspects.all())
     email_subject = "[AMRC AssetMgt] Asset With Environmental Aspects"
-    mail_body = """An asset on the AMRC Asset Management System has just been associated with Envrionmental Aspects.<br /><br />
+    mail_body = """An asset on the AMRC Asset Management System has just been associated with Environmental Aspects.<br /><br />
                  "Asset No. {}" <br /><br />
                  Environmental Aspects: {} <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
@@ -300,7 +300,7 @@ def edit_asset_finance_info(request, pk):
                                                                    })
 
 
-@method_decorator(group_required('AddEditAssets', 'Finance', 'AddEditCalibrations', 'SuperUsers'), name='dispatch')
+@method_decorator(group_required('Finance', 'AddEditCalibrations', 'SuperUsers'), name='dispatch')
 class asset_confirm_delete(DeleteView):
     model = Asset
     success_url = reverse_lazy("asset_list")

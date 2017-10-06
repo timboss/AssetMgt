@@ -3,6 +3,7 @@ from .models import (
                      Asset,
                      CalibrationRecord,
                      Buildings,
+                     AmrcGroup,
                      AssetStatus,
                      EnvironmentalAspects,
                      CalibrationAssetNotificaton,
@@ -13,6 +14,7 @@ from .models import (
 admin.site.register(Asset)
 admin.site.register(CalibrationRecord)
 admin.site.register(Buildings)
+admin.site.register(AmrcGroup)
 admin.site.register(AssetStatus)
 admin.site.register(EnvironmentalAspects)
 admin.site.register(CalibrationAssetNotificaton)

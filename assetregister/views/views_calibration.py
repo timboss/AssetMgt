@@ -113,6 +113,10 @@ def calibration_edit(request, slug):
         asset_calib_freq = calibration.asset.calibration_frequency
     else:
         asset_calib_freq = "None Set"
+    if calibration.asset.calibration_procedure:
+        asset_calib_freq = calibration.asset.calibration_procedure
+    else:
+        asset_calib_procedure = "None Set"
     if request.method == "POST":
         form = Calibrate(request.POST, instance=calibration)
         if form.is_valid():
@@ -124,15 +128,19 @@ def calibration_edit(request, slug):
     else:
         form = Calibrate(instance=calibration)
     return render(request, "assetregister/new_calibration.html", {"form": form,
-                                                                  "asset_calib_freq": asset_calib_freq})
+                                                                  "asset_calib_freq": asset_calib_freq,
+                                                                  "asset_calib_procedure": asset_calib_procedure})
 
 
 @login_required
 @group_required('AddEditCalibrations')
 def new_calibration_asset(request, urlpk):
     asset_calib_freq = Asset.objects.values_list("calibration_frequency", flat=True).get(asset_id=urlpk)
+    asset_calib_procedure = Asset.objects.values_list("calibration_procedure", flat=True).get(asset_id=urlpk)
     if not asset_calib_freq:
         asset_calib_freq = "None Set"
+    if not asset_calib_procedure:
+        asset_calib_procedure = "None Set"
     if request.method == "POST":
         form = Calibrate(request.POST)
         if form.is_valid():
@@ -144,4 +152,5 @@ def new_calibration_asset(request, urlpk):
     else:
         form = Calibrate(initial={"asset": urlpk})
     return render(request, "assetregister/new_calibration.html", {"form": form,
-                                                                  "asset_calib_freq": asset_calib_freq})
+                                                                  "asset_calib_freq": asset_calib_freq,
+                                                                  "asset_calib_procedure": asset_calib_procedure})

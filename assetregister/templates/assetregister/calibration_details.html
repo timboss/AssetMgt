@@ -75,7 +75,7 @@
 					{% if calibration.calibrated_by_internal %}
 						<tr>
 							<td class="col-md-3">Calibrated By (Interal):</td>
-							<td>{{ calibration.calibrated_by_internal  }}</td>
+							<td>{{ calibration.calibrated_by_internal.get_full_name  }}</td>
 						</tr>
         			{% endif %}
         			
@@ -103,7 +103,7 @@
 			</table>
            	
            	<br />
-			<p>Calibration Record Last Edited {{ calibration.calibration_entered_on }} By {{ calibration.calibration_entered_by }}</p>
+			<p>Calibration Record Last Edited {{ calibration.calibration_entered_on }} By {{ calibration.calibration_entered_by.get_full_name }}</p>
 
     	</div>
 
