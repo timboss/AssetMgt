@@ -300,6 +300,7 @@ class Buildings(models.Model):
 
 class AmrcGroup(models.Model):
     group_name = models.CharField(max_length=64)
+    ad_ou_group_mapping = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
         return "{}".format(self.group_name)

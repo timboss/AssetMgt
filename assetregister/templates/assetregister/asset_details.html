@@ -145,6 +145,13 @@
 						</tr>
         			{% endif %}
         			
+        			{% if asset.amrc_group_responsible %}
+						<tr>
+							<td class="col-md-3">AMRC Group Responsible:</td>
+							<td>{{ asset.amrc_group_responsible }}</td>
+						</tr>
+        			{% endif %}
+        			
         			{% if asset.asset_location_building %}
         				<tr>
         					<td class="col-md-3">Location (Building):</td>
