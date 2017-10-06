@@ -212,6 +212,7 @@ def asset_edit(request, pk):
     cur_calibration_status = asset.requires_calibration
     cur_enviro_aspects = str(asset.environmental_aspects.all()) # this has to become a str now or will return the new values!
     cur_value = asset.asset_value
+    cur_status = asset.asset_status
     if request.method == "POST":
         form = EditAsset(request.POST, request.FILES, instance=asset)
         if form.is_valid():
@@ -231,6 +232,12 @@ def asset_edit(request, pk):
             if cur_value != asset.asset_value and asset.asset_value:
                 # Value has changed and asset has value
                 high_value_asset_email(asset.asset_id)
+                
+            if cur_status != asset.asset_status and asset.asset_status:
+                new_status = asset.asset_status
+                logger.warning("[{}] - User {} just changed asset status for asset ID {} ({}) from {} to {}".format(
+                timezone.now(), request.user, pk, asset, cur_status, new_status))
+                
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset(instance=asset)
@@ -246,6 +253,7 @@ def edit_asset_calibration_info(request, pk):
     asset_description = asset.asset_description
     asset_manufacturer = asset.asset_manufacturer
     cur_calibration_status = asset.requires_calibration
+    cur_status = asset.asset_status
     if request.method == "POST":
         form = EditAssetCalibrationInfo(request.POST, instance=asset)
         if form.is_valid():
@@ -256,6 +264,10 @@ def edit_asset_calibration_info(request, pk):
             if cur_calibration_status != asset.requires_calibration and asset.requires_calibration:
                 # Calibration status has just changed and is now true
                 calibrated_asset_email(asset.asset_id)
+            if cur_status != asset.asset_status and asset.asset_status:
+                new_status = asset.asset_status
+                logger.warning("[{}] - User {} just changed asset status for asset ID {} ({}) from {} to {}".format(
+                timezone.now(), request.user, pk, asset, cur_status, new_status))
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAssetCalibrationInfo(instance=asset)
