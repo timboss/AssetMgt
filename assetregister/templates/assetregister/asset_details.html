@@ -154,15 +154,15 @@
         			
         			{% if asset.asset_location_building %}
         				<tr>
-        					<td class="col-md-3">Location (Building):</td>
-        					<td>{{ asset.asset_location_building }}</td>
+        					<td class="col-md-3">Location (Building): </td>
+        					<td>{{ asset.asset_location_building }} <a href="{% url 'edit_asset_location' pk=asset.pk %}" class="btn btn-default btn-xs">Update Asset Location</a></td>
         				</tr>
         			{% endif %}
         			
         			{% if asset.asset_location_room %}
         				<tr>
         					<td class="col-md-3">Location (Room or Group etc.):</td>
-        					<td>{{ asset.asset_location_room }}</td>
+        					<td>{{ asset.asset_location_room }} <a href="{% url 'edit_asset_location' pk=asset.pk %}" class="btn btn-default btn-xs">Update Asset Location</a></td>
         				</tr>
         			{% endif %}
         			

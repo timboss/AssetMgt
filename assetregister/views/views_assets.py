@@ -11,6 +11,7 @@ from assetregister.models import (Asset,
                                   EnvironmentalAspectAssetNoficiation
                                   )
 from assetregister.forms import (EditAsset,
+                                 EditAssetLocationInfo,
                                  Calibrate,
                                  AssetFilter,
                                  HighlightedSearchFormAssets,
@@ -63,7 +64,7 @@ def asset_list_filter(request):
         filter = AssetFilter(request.GET, queryset=Asset.objects.all())
     else:
         # this is a bit hacky, but should work forever...
-        filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=9999))
+        filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=999999))
     return render(request, "assetregister/asset_list_filtered.html", {"filter": filter,
                                                                       })
 
@@ -289,6 +290,35 @@ def edit_asset_finance_info(request, pk):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAssetFinanceInfo(instance=asset)
+    return render(
+                  request,
+                  "assetregister/asset_edit_disabledfields.html", {
+                                                                   "form": form,
+                                                                   "type": type,
+                                                                   "asset_id": asset_id,
+                                                                   "manufacturer": asset_manufacturer,
+                                                                   "description": asset_description
+                                                                   })
+
+
+def edit_asset_location(request, pk):
+    type = "Location"
+    asset = get_object_or_404(Asset, pk=pk)
+    asset_id = asset.asset_id
+    asset_description = asset.asset_description
+    asset_manufacturer = asset.asset_manufacturer
+    if request.method == "POST":
+        form = EditAssetLocationInfo(request.POST, instance=asset)
+        if form.is_valid():
+            logger.warning("[{}] - User {} just changed location for asset ID {} ({})".format(
+                timezone.now(), request.user.get_full_name, pk, asset_description))
+            asset = form.save(commit=False)
+            asset.edited_by = request.user
+            asset.edited_on = timezone.now()
+            asset.save()
+            return redirect("asset_detail", pk=asset.pk)
+    else:
+        form = EditAssetLocationInfo(instance=asset)
     return render(
                   request,
                   "assetregister/asset_edit_disabledfields.html", {

@@ -76,11 +76,11 @@ class EditAssetCalibrationInfo(forms.ModelForm):
     class Meta:
         model = Asset
         fields = [
-            "asset_model",
-            "asset_serial_number", "amrc_equipment_id", "asset_status", "person_responsible",
-            "person_responsible_email", "amrc_group_responsible", "requires_calibration", 
-            "calibration_frequency", "calibration_procedure", "asset_location_building",
-            "asset_location_room", "operating_instructions", "handling_and_storage_instructions"
+            "asset_model", "asset_serial_number", "amrc_equipment_id", "asset_status",
+            "person_responsible", "person_responsible_email", "amrc_group_responsible",
+            "requires_calibration", "calibration_frequency", "calibration_type",
+            "calibration_procedure", "asset_location_building", "asset_location_room",
+            "operating_instructions", "handling_and_storage_instructions"
             ]
         widgets = {
             'asset_model': forms.TextInput(attrs={'class': 'form-control'}),
@@ -141,6 +141,21 @@ class EditAssetFinanceInfo(forms.ModelForm):
         }
 
 
+class EditAssetLocationInfo(forms.ModelForm):
+    class Meta:
+        model = Asset
+        fields = [
+            "asset_location_building", "asset_location_room"
+            ]
+        widgets = {
+            'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
+            'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
+        }
+
+
 class Calibrate(forms.ModelForm):
     class Meta:
         model = CalibrationRecord
@@ -197,7 +212,6 @@ class AssetFilter(django_filters.FilterSet):
     amrc_equipment_id = django_filters.CharFilter(lookup_expr="icontains")
     person_responsible = django_filters.CharFilter(lookup_expr="icontains")
     person_responsible_email = django_filters.CharFilter(lookup_expr="icontains")
-    amrc_group_responsible = django_filters.CharFilter(lookup_expr="icontains")
     environmental_notes = django_filters.CharFilter(lookup_expr="icontains")
     safety_notes = django_filters.CharFilter(lookup_expr="icontains")
     emergency_response_information = django_filters.CharFilter(lookup_expr="icontains")
@@ -217,7 +231,7 @@ class AssetFilter(django_filters.FilterSet):
     class Meta:
         model = Asset
         fields = ["requires_calibration", "passed_calibration", "requires_safety_checks", "requires_environmental_checks",
-                  "requires_planned_maintenance", "requires_insurance", "amrc_group_responsible"]
+                  "requires_planned_maintenance", "requires_insurance", "amrc_group_responsible", "calibration_type"]
         labels = {
           "amrc_equipment_id": ("AMRC Equipment ID (no spaces) e.g. V112, B05 or M206B"),
           "asset_location_room": ("Asset Location (specific room or group etc.)"),

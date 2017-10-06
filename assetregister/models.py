@@ -240,6 +240,11 @@ CALIBRATION_OUTCOME = (
                        ("Fail", "Fail")
                      )
 
+CALIBRATION_TYPE = (
+                       ("Internal", "Internal"),
+                       ("External", "External")
+                     )
+
 
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)

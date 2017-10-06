@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^asset/new/$', views.asset_new, name="asset_new"),
     url(r'^asset/(?P<pk>\d+)/edit/calibration/$', views.edit_asset_calibration_info, name="edit_asset_calibration_info"),
     url(r'^asset/(?P<pk>\d+)/edit/finance/$', views.edit_asset_finance_info, name="edit_asset_finance_info"),
+    url(r'^asset/(?P<pk>\d+)/edit/location/$', views.edit_asset_location, name="edit_asset_location"),
     url(r'^asset/(?P<pk>\d+)/edit/$', views.asset_edit, name="asset_edit"),
     url(r'^asset/(?P<pk>\d+)/remove/$', views.asset_confirm_delete.as_view(), name="asset_confirm_delete"),
     url(r'^asset/(?P<pk>\d+)/qr/small/$', views.asset_qr_small, name="asset_qr_small"),
