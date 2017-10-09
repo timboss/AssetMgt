@@ -1,5 +1,5 @@
 from django import forms
-from .models import Asset, CalibrationRecord
+from .models import Asset, CalibrationRecord, AmrcGroup
 from haystack.forms import HighlightedSearchForm
 from haystack.query import SearchQuerySet
 from django.utils import timezone
@@ -70,6 +70,14 @@ class EditAsset(forms.ModelForm):
           "asset_value": ("Asset Value £"),
           "charge_out_rate": ("Charge Out Rate £"),
           }
+
+
+class ReserveAssets(forms.Form):
+    asset_description = forms.CharField(label="Asset Description* ", widget=forms.TextInput(attrs={'class': 'form-control'}))
+    person_responsible = forms.CharField(label="Person Responsible* ", widget=forms.TextInput(attrs={'class': 'form-control'}))
+    person_responsible_email = forms.EmailField(label="Person Responsible Email* ", widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    amrc_group_responsible = forms.ModelChoiceField(queryset=AmrcGroup.objects.all(), label="AMRC Group Responsible* ", widget=forms.Select(attrs={'class': 'form-control'}))
+    number_of_records_to_reserve = forms.IntegerField(label="Number of Asset Records To Reserve* ", widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
 class EditAssetCalibrationInfo(forms.ModelForm):

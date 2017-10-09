@@ -94,6 +94,12 @@
 												<a href="{% url 'asset_new' %}">Add New Asset</a>
 											</li>
 										{% endif %}
+										{% if request.user|has_group:"SuperUsers" %} 
+											<li class="divider"></li>
+											<li>
+												<a href="{% url 'reserve_assets' %}">Bulk Reserve Assets</a>
+											</li>
+										{% endif %}
 						{% if user.is_authenticated %} 
 								</ul>
 							</li>

@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^asset/$', views.asset_list, name="asset_list"),
     url(r'^asset/active/$', views.active_asset_list, name="active_asset_list"),
     url(r'^asset/new/$', views.asset_new, name="asset_new"),
+    url(r'^asset/bulk_reserve/$', views.reserve_assets, name="reserve_assets"),
     url(r'^asset/(?P<pk>\d+)/edit/calibration/$', views.edit_asset_calibration_info, name="edit_asset_calibration_info"),
     url(r'^asset/(?P<pk>\d+)/edit/finance/$', views.edit_asset_finance_info, name="edit_asset_finance_info"),
     url(r'^asset/(?P<pk>\d+)/edit/location/$', views.edit_asset_location, name="edit_asset_location"),

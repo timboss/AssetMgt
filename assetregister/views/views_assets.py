@@ -16,7 +16,8 @@ from assetregister.forms import (EditAsset,
                                  AssetFilter,
                                  HighlightedSearchFormAssets,
                                  EditAssetCalibrationInfo,
-                                 EditAssetFinanceInfo
+                                 EditAssetFinanceInfo,
+                                 ReserveAssets
                                  )
 from assetregister.decorators import group_required
 from haystack.generic_views import SearchView
@@ -117,6 +118,39 @@ def asset_detail_equipid(request, equipid):
     asset = get_object_or_404(Asset, amrc_equipment_id=equipid)
     pk = asset.asset_id
     return asset_detail(request, pk)
+
+
+@login_required
+@group_required('AddEditAssets', 'SuperUsers', 'AddEditCalibrations')
+def reserve_assets(request):
+    if request.method == "POST":
+        form = ReserveAssets(request.POST)
+        if form.is_valid():
+            bulk_asset_description = form.cleaned_data['asset_description']
+            bulk_person_responsible = form.cleaned_data['person_responsible']
+            bulk_person_responsible_email = form.cleaned_data['person_responsible_email']
+            bulk_group_responsible = form.cleaned_data['amrc_group_responsible']
+            number_of_records_to_reserve = form.cleaned_data['number_of_records_to_reserve']
+            bulk_asset_edited_by = request.user
+            bulk_asset_edited_on = timezone.now()
+            
+            logger.warning("[{}] - User {} just reserved {} assets records with description: {}".format(
+                timezone.now(), bulk_asset_edited_by, number_of_records_to_reserve, bulk_asset_description))
+            
+            for i in range(number_of_records_to_reserve):
+                Asset(asset_status_id="5", asset_description=bulk_asset_description, person_responsible=bulk_person_responsible,
+                      person_responsible_email=bulk_person_responsible_email, amrc_group_responsible=bulk_group_responsible, 
+                      requires_insurance=False, requires_safety_checks=False, requires_environmental_checks=False,
+                      requires_planned_maintenance=False, requires_calibration=False, edited_by=bulk_asset_edited_by).save()
+                      
+            latest_asset = Asset.objects.order_by('-pk')[0]
+            latest_asset_no = latest_asset.pk
+            earliest_asset_no = (latest_asset_no - number_of_records_to_reserve) + 1
+            message = "Reserved AMRC Asset IDs {} to {} (inclusive)".format(earliest_asset_no, latest_asset_no)
+            return render(request, "assetregister/simple_message.html", {"message": message})
+    else:
+        form = ReserveAssets()
+    return render(request, "assetregister/asset_edit.html", {"form": form})
 
 
 @login_required
