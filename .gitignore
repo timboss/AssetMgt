@@ -12,3 +12,4 @@ org.eclipse.core.resources.prefs
 .pydevproject
 logo*
 /static
+/.settings
