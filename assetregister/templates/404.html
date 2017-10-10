@@ -6,5 +6,7 @@
 <h3>Something has gone wrong - we can't seem find that page :(</h3>
 <h3>If you were attempting to view an Asset then the Asset ID may be wrong or that asset may no longer exist. 
 	Please use the <a href="{% url 'asset_list_filter' %}">Advanced Search</a> page to find assets.</h3>
+	
+<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
 
 {% endblock %}
