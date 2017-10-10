@@ -21,9 +21,9 @@ class EditAsset(forms.ModelForm):
             "emergency_response_information", "requires_environmental_checks", "environmental_aspects",
             "environmental_notes", "requires_planned_maintenance", "maintenance_instructions",
             "maintenance_records", "maintenance_notes", "asset_value", "charge_out_rate",
-            "requires_insurance", "purchase_order_ref", "funded_by", "acquired_on", "disposal_date",
-            "disposal_method", "parent_assets", "asset_location_building", "asset_location_room",
-            "operating_instructions", "handling_and_storage_instructions"
+            "requires_insurance", "requires_unforseen_damage_insurance", "purchase_order_ref", "funded_by",
+            "acquired_on", "disposal_date", "disposal_method", "parent_assets", "asset_location_building",
+            "asset_location_room", "operating_instructions", "handling_and_storage_instructions"
             ]
         widgets = {
             'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
@@ -128,6 +128,7 @@ class EditAssetFinanceInfo(forms.ModelForm):
         model = Asset
         fields = [
             "asset_model", "asset_serial_number", "asset_value", "requires_insurance",
+            "requires_unforseen_damage_insurance",
             "charge_out_rate", "charge_code", "purchase_order_ref", "funded_by",
             "acquired_on", "disposal_date", "disposal_method",
             ]

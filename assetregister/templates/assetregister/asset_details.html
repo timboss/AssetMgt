@@ -82,6 +82,20 @@
 						</tr>
         			{% endif %}
         			
+        			{% if asset.requires_insurance %}
+        			<tr>
+							<td class="col-md-3">Requires Insurance:</td>
+							<td><span class="glyphicon glyphicon-ok gi-1x"></span></td>
+						</tr>
+        			{% endif %}
+        			
+        			{% if asset.requires_unforseen_damage_insurance %}
+        			<tr>
+							<td class="col-md-3">Requires Unforseen Damage Insurance:</td>
+							<td><span class="glyphicon glyphicon-ok gi-1x"></span></td>
+						</tr>
+        			{% endif %}
+        			
         			{% if asset.charge_out_rate %}
 						<tr>
 							<td class="col-md-3">Charge Out Rate:</td>
