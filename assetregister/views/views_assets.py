@@ -22,7 +22,8 @@ from assetregister.forms import (EditAsset,
                                  HighlightedSearchFormAssets,
                                  EditAssetCalibrationInfo,
                                  EditAssetFinanceInfo,
-                                 ReserveAssets
+                                 ReserveAssets,
+                                 NewAssetCalibrationInfo
                                  )
 from assetregister.decorators import group_required
 from haystack.generic_views import SearchView
@@ -256,6 +257,29 @@ def asset_new(request):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset()
+    return render(request, "assetregister/asset_edit.html", {"form": form})
+
+
+@login_required
+@group_required('AddEditAssets', 'AddEditCalibrations')
+def calibration_asset_new(request):
+    if request.method == "POST":
+        form = NewAssetCalibrationInfo(request.POST, request.FILES)
+        if form.is_valid():
+            asset = form.save(commit=False)
+            asset.edited_by = request.user
+            asset.edited_on = timezone.now()
+            asset.requires_insurance=False
+            asset.requires_safety_checks=False
+            asset.requires_environmental_checks=False
+            asset.requires_planned_maintenance=False
+            asset.save()
+            form.save_m2m()
+            if asset.requires_calibration:
+                calibrated_asset_email(asset.asset_id)
+            return redirect("asset_detail", pk=asset.pk)
+    else:
+        form = NewAssetCalibrationInfo()
     return render(request, "assetregister/asset_edit.html", {"form": form})
 
 
