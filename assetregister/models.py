@@ -339,6 +339,14 @@ class CalibrationAssetNotificaton(models.Model):
         return "Notify {} of assets requiring calibration".format(self.email_address)
 
 
+class ArchivedAssetNotificaton(models.Model):
+    email_address = models.EmailField()
+
+    def __str__(self):
+        return """Notify {} of assets that are changed to Archived (statusID=5)
+         by someone other than Jack Crease or Paul Campsill""".format(self.email_address)
+
+
 class HighValueAssetNotification(models.Model):
     email_address = models.EmailField()
     if_asset_value_above = models.DecimalField(max_digits=12, decimal_places=2)

@@ -1,14 +1,19 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy
+from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.mail import send_mail
 from assetregister.models import (Asset,
                                   CalibrationRecord,
                                   CalibrationAssetNotificaton,
                                   HighValueAssetNotification,
-                                  EnvironmentalAspectAssetNoficiation
+                                  EnvironmentalAspectAssetNoficiation,
+                                  ArchivedAssetNotificaton
                                   )
 from assetregister.forms import (EditAsset,
                                  EditAssetLocationInfo,
@@ -22,9 +27,6 @@ from assetregister.forms import (EditAsset,
 from assetregister.decorators import group_required
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
-from django.conf import settings
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.mail import send_mail
 import logging
 from background_task import background
 
@@ -176,7 +178,7 @@ def calibrated_asset_email(pk):
                  <br /><br /> "Asset No. {}" <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
                  """.format(asset, settings.BASEURL, asset.asset_id)
-    print("""{} - sending "{}" email to {}""".format(str(timezone.now()), email_subject, CalEmails))
+    logger.warning("[{}] - I've sent a '{}' email to {}""".format(str(timezone.now()), email_subject, CalEmails))
     send_mail(email_subject, "", settings.EMAIL_FROM, CalEmails, fail_silently=False, html_message=mail_body)
 
 
@@ -196,7 +198,7 @@ def high_value_asset_email(pk):
                      <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System,
                      or <a href="{}/staff/assetregister/highvalueassetnotification/">click here</a> to edit your notifcation trigger. 
                      """.format(email_on_value, asset, value, settings.BASEURL, asset.asset_id, settings.BASEURL)
-            print("""{} - sending "{}" email to {}""".format(str(timezone.now()), email_subject, email_to))
+            logger.warning("[{}] - I've sent a '{}' email to {}""".format(str(timezone.now()), email_subject, email_to))
             send_mail(email_subject, "", settings.EMAIL_FROM, email_to, fail_silently=False, html_message=mail_body)
 
 
@@ -211,8 +213,27 @@ def enviro_aspect_asset_email(pk):
                  Environmental Aspects: {} <br /><br />
                  <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
                  """.format(asset, aspectlist, settings.BASEURL, asset.asset_id)
-    print("""{} - sending "{}" email to {}""".format(str(timezone.now()), email_subject, EnviroEmails))
+    logger.warning("[{}] - I've sent a '{}' email to {}""".format(str(timezone.now()), email_subject, EnviroEmails))
     send_mail(email_subject, "", settings.EMAIL_FROM, EnviroEmails, fail_silently=False, html_message=mail_body)
+
+
+@background()
+def asset_archived_email(pk, userid):
+    user_making_change = User.objects.get(id=userid)
+    user_email = user_making_change.email
+    print("in email: {}".format(user_email))
+    if user_email != "j.crease@amrc.co.uk" and user_email != "p.campsill@amrc.co.uk":
+        user_name = user_making_change.get_full_name()
+        asset = Asset.objects.get(pk=pk)
+        email_to = ArchivedAssetNotificaton.objects.all().values_list("email_address", flat=True)
+        email_subject = "[AMRC AssetMgt] Asset Status Set To Archived"
+        mail_body = """An asset on the AMRC Asset Management System has just been set to "Archived" by {} ({}).
+                     <br /><br /> "Asset No. {}" <br /><br />
+                     <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System
+                     """.format(user_name, user_email, asset, settings.BASEURL, asset.asset_id)
+        logger.warning("[{}] - I've sent a '{}' email to {}""".format(str(timezone.now()), email_subject, email_to))
+        print("[{}] - I've sent a '{}' email to {}""".format(str(timezone.now()), email_subject, email_to))
+        send_mail(email_subject, "", settings.EMAIL_FROM, email_to, fail_silently=False, html_message=mail_body)
 
 
 @login_required
@@ -268,9 +289,15 @@ def asset_edit(request, pk):
                 high_value_asset_email(asset.asset_id)
                 
             if cur_status != asset.asset_status and asset.asset_status:
+                # Status has changed and asset has status
                 new_status = asset.asset_status
                 logger.warning("[{}] - User {} just changed asset status for asset ID {} ({}) from {} to {}".format(
                 timezone.now(), request.user, pk, asset, cur_status, new_status))
+                
+                if new_status.id == 5:
+                    print("status_change")
+                    # Status has changed to "achived" or equivalant
+                    asset_archived_email(asset.asset_id, request.user.id)
                 
             return redirect("asset_detail", pk=asset.pk)
     else:
@@ -302,6 +329,9 @@ def edit_asset_calibration_info(request, pk):
                 new_status = asset.asset_status
                 logger.warning("[{}] - User {} just changed asset status for asset ID {} ({}) from {} to {}".format(
                 timezone.now(), request.user, pk, asset, cur_status, new_status))
+                if new_status.id == 5:
+                    # Status has changed to "achived" or equivalant
+                    asset_archived_email(asset.asset_id, request.user.id)
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAssetCalibrationInfo(instance=asset)
