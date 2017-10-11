@@ -8,26 +8,35 @@
 </head>
 <body>
     <div class="qr">
-        <table>
-            <tr>
-                <td>
-                	<div align="center">
-                    	<img src="http://chart.googleapis.com/chart?cht=qr&amp;chs=90x90&amp;chl={{ baseurl }}{% url 'asset_detail' pk=asset.pk %}&amp;chld=Q|0" />
-                    	<br /><div id="small_qr">AMRC Asset ID: {{ asset.asset_id }}</div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-            	<td>
-            		<div align="center" class="dontPrint">
-            			<br />
-            			<script language="JavaScript"> 
-							if (window.print) {document.write('<form><input type=button name=print value="Print this page" onClick="window.print()"></form>');}
-						</script>
-            		</div>
-            	</td>
-            </tr>
-        </table>
+        
+		<table>
+			<tbody>
+				<tr>
+					<td rowspan=2><img src="http://chart.googleapis.com/chart?cht=qr&amp;chs=90x90&amp;chl={{ baseurl }}{% url 'asset_detail' pk=asset.pk %}&amp;chld=Q|0" /></td>
+					<td valign="bottom"><div id="small_qr_asset_text" align="center"><b>AMRC ASSET</b></div></td>
+				</tr>
+				<tr>
+					<td valign="top"><div align="center" id="small_qr_number"><b>{{ asset.pk }}</b></div></td>
+				</tr>
+				<tr>
+					<td colspan=2>
+						<div id="small_qr_url" align="center">
+						{{ baseurl }}{% url 'asset_detail' pk=asset.pk %}
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div align="center" class="dontPrint">
+			<br />
+			<script language="JavaScript">
+				if (window.print) {
+					document.write('<form><input type=button name=print value="Print this page" onClick="window.print()"></form>');
+				}
+			</script>
+		</div>
+        
     </div>
 </body>
 </html>
