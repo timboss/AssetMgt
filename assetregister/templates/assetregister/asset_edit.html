@@ -8,9 +8,21 @@
 	  <li class="active">Edit</li>
 	</ul>
 
-    <h2>Asset Details</h2>
+	{% if title %}
+		<h2>{{ title }}</h2>
+	{% else %}
+    	<h2>Asset Details</h2>
+    {% endif %}
+    
     <br />
     <div class="well">
+    	
+    	{% if message %}
+    		{{ message }}
+    	{% endif %}
+    	
+    	<br /><br />
+    	
 	    <form enctype="multipart/form-data" method="POST" class="form-horizontal asset-form">{% csrf_token %}
 			<fieldset>
 				{% for field in form %}
@@ -23,7 +35,7 @@
 					</div>
 				{% endfor %}
 				<div class="form-group">
-					<div class="col-lg-3 control-label"><b>* = Required</b></div>
+					<div class="col-lg-3 control-label">* = Required</div>
 				</div>
 					<div class="form-group">
 						<div class="col-lg-3 col-lg-offset-3">

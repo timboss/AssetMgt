@@ -124,16 +124,20 @@ def asset_detail_equipid(request, equipid):
 
 
 @login_required
-@group_required('AddEditAssets', 'SuperUsers', 'AddEditCalibrations')
+@group_required("AddEditAssets", "SuperUsers", "AddEditCalibrations")
 def reserve_assets(request):
+    form_message = """This form will register the number of assets listed in "Number of Asset Records To Reserve"
+         all containing identical information as listed in the other fields below.  Reserved assets will have a status of
+         "Archived" until changed."""
+    form_title = "Bulk Reserve Assets"
     if request.method == "POST":
         form = ReserveAssets(request.POST)
         if form.is_valid():
-            bulk_asset_description = form.cleaned_data['asset_description']
-            bulk_person_responsible = form.cleaned_data['person_responsible']
-            bulk_person_responsible_email = form.cleaned_data['person_responsible_email']
-            bulk_group_responsible = form.cleaned_data['amrc_group_responsible']
-            number_of_records_to_reserve = form.cleaned_data['number_of_records_to_reserve']
+            bulk_asset_description = form.cleaned_data["asset_description"]
+            bulk_person_responsible = form.cleaned_data["person_responsible"]
+            bulk_person_responsible_email = form.cleaned_data["person_responsible_email"]
+            bulk_group_responsible = form.cleaned_data["amrc_group_responsible"]
+            number_of_records_to_reserve = form.cleaned_data["number_of_records_to_reserve"]
             bulk_asset_edited_by = request.user
             bulk_asset_edited_on = timezone.now()
             
@@ -149,11 +153,11 @@ def reserve_assets(request):
             latest_asset = Asset.objects.order_by('-pk')[0]
             latest_asset_no = latest_asset.pk
             earliest_asset_no = (latest_asset_no - number_of_records_to_reserve) + 1
-            message = "Reserved AMRC Asset IDs {} to {} (inclusive)".format(earliest_asset_no, latest_asset_no)
-            return render(request, "assetregister/simple_message.html", {"message": message})
+            success_message = "Reserved AMRC Asset IDs {} to {} (inclusive)".format(earliest_asset_no, latest_asset_no)
+            return render(request, "assetregister/simple_message.html", {"message": success_message})
     else:
         form = ReserveAssets()
-    return render(request, "assetregister/asset_edit.html", {"form": form})
+    return render(request, "assetregister/asset_edit.html", {"form": form, "message": form_message, "title": form_title})
 
 
 @login_required
