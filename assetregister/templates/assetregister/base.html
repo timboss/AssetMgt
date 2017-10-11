@@ -94,7 +94,7 @@
 												<a href="{% url 'asset_new' %}">Add New Asset</a>
 											</li>
 										{% endif %}
-										{% if request.user|has_group:"SuperUsers" %} 
+										{% if request.user|has_group:"ReserveAssets" %} 
 											<li class="divider"></li>
 											<li>
 												<a href="{% url 'reserve_assets' %}">Bulk Reserve Assets</a>
