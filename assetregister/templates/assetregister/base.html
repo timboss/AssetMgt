@@ -87,7 +87,6 @@
 									<li>
 										<a href="{% url 'active_asset_list' %}">"Active" Assets</a>
 									</li>
-						{% endif %}
 										{% if request.user|has_group:"AddEditAssets" %} 
 											<li class="divider"></li>
 											<li>
@@ -100,52 +99,51 @@
 												<a href="{% url 'reserve_assets' %}">Bulk Reserve Assets</a>
 											</li>
 										{% endif %}
-						{% if user.is_authenticated %} 
 								</ul>
 							</li>
-						{% endif %}
-						{% if request.user|has_group:"AddEditCalibrations" %}
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
-								<ul class="dropdown-menu" role="menu">
-									<li>
-										<a href="{% url 'calibrated_asset_list' %}">All Assets Requiring Calibration</a>
-									</li>
-									<li>
-										<a href="{% url 'calibrated_asset_list_active' %}">"Active" Assets Requiring Calibration</a>
-									</li>
-									<li class="divider"></li>
-									<li>
-										<a href="{% url 'new_calibration' %}">Add New Calibration</a>
-									</li>
-									<li class="divider"></li>
-									<li>
-										<a href="{% url 'calibration_asset_new' %}">Add New Asset For Calibration</a>
-									</li>
-									<li class="divider"></li>
-									<li>
-										<a href="{% url 'calibration_list' %}">All Calibration Records</a>
-									</li>
-									<li class="divider"></li>
-									<li>
-										<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
-									</li>
-									<li>
-										<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Calibration</a>
-									</li>
-									<li>
-										<a href="{% url 'calibration_asset_export_nextmonth' %}">Export All Assets With Calibration Due in Next 30 Days</a>
-									</li>
-									<li>
-										<a href="{% url 'calibration_asset_export_custom_select' %}">Custom Calibration Export...</a>
-									</li>
-									<li>
-										<a href="{% url 'export_calibration_records' %}">Export All Calibration Records</a>
-									</li>
-								</ul>
-							</li>
-						{% endif %}
-						{% if user.is_authenticated %} 
+							
+							{% if request.user|has_group:"AddEditCalibrations" %}
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Calibration <span class="caret"></span></a>
+									<ul class="dropdown-menu" role="menu">
+										<li>
+											<a href="{% url 'calibrated_asset_list' %}">All Assets Requiring Calibration</a>
+										</li>
+										<li>
+											<a href="{% url 'calibrated_asset_list_active' %}">"Active" Assets Requiring Calibration</a>
+										</li>
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'new_calibration' %}">Add New Calibration</a>
+										</li>
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'calibration_asset_new' %}">Add New Asset For Calibration</a>
+										</li>
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'calibration_list' %}">All Calibration Records</a>
+										</li>
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
+										</li>
+										<li>
+											<a href="{% url 'calibrated_asset_export_active' %}">Export "Active" Assets Requiring Calibration</a>
+										</li>
+										<li>
+											<a href="{% url 'calibration_asset_export_nextmonth' %}">Export All Assets With Calibration Due in Next 30 Days</a>
+										</li>
+										<li>
+											<a href="{% url 'calibration_asset_export_custom_select' %}">Custom Calibration Export...</a>
+										</li>
+										<li>
+											<a href="{% url 'export_calibration_records' %}">Export All Calibration Records</a>
+										</li>
+									</ul>
+								</li>
+							{% endif %}
+
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Reports <span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">

@@ -30,10 +30,17 @@ from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
 import logging
 from background_task import background
+from haystack.management.commands import update_index
 
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+
+
+@background()
+def reindex_whoosh():
+    update_index.Command().handle(interactive=False, remove=True, age=1)
+    # age=1 will only add assets edited in last hour.
 
 
 @login_required
@@ -150,6 +157,7 @@ def reserve_assets(request):
                       requires_insurance=False, requires_safety_checks=False, requires_environmental_checks=False,
                       requires_planned_maintenance=False, requires_calibration=False, edited_by=bulk_asset_edited_by).save()
                       
+            reindex_whoosh()
             latest_asset = Asset.objects.order_by('-pk')[0]
             latest_asset_no = latest_asset.pk
             earliest_asset_no = (latest_asset_no - number_of_records_to_reserve) + 1

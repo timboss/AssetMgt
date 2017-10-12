@@ -27,9 +27,9 @@
 			<fieldset>
 				{% for field in form %}
 					<div class="form-group">
-						{{ field.errors }}
 						<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
 						<div class="col-lg-6">
+							{{ field.errors }}
 							{{ field }}
 						</div>
 					</div>
