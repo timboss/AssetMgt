@@ -9,5 +9,4 @@ def has_group(user, group_name):
         return True
     else:
         group =  Group.objects.get(name=group_name) 
-        su_group = Group.objects.get(name="SuperUsers")
         return True if group in user.groups.all() else False 

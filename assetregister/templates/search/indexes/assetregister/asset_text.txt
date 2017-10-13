@@ -3,9 +3,12 @@
 {{ object.asset_manufacturer }}
 {{ object.asset_model }}
 {{ object.asset_serial_number }}
+{{ object.amrc_equipment_id }}
 {{ object.asset_location_building }}
 {{ object.asset_location_room }}
 {{ object.funded_by }}
+{{ object.charge_code }}
+{{ object.disposal_method }}
 {{ object.purchase_order_ref }}
 {{ object.person_responsible }}
 {{ object.person_responsible_email }}

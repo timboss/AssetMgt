@@ -9,7 +9,7 @@
 
     <div class="count">
         We currently have a total of <b>{{ asset_count }}</b> asset records.   
-        {% if user.is_staff %}
+        {% if request.user|has_group:"AddEditAssets" %} 
         	(<a href="{% url 'asset_new' %}">Add new asset</a>)
         {% endif %}	
     </div>

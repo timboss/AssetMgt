@@ -219,8 +219,9 @@ class Asset(models.Model):
                 self.asset_image_thumbnail.storage.delete(oldthumbname)
                 self.asset_image_thumbnail = None
 
-        # Update Whoosh index (via async task queue) when new asset added.
-        reindex_whoosh()
+        # Uncomment this to update the search index (via async task queue) when new asset added or asset edited
+        # This is now done by scheduled task every 15 minutes rather than on every asset edit to prevent excessive load
+        # reindex_whoosh()
 
         # Save again to keep all changes
         super(Asset, self).save(*args, **kwargs)
