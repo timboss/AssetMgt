@@ -17,17 +17,16 @@ from assetregister.models import (Asset,
                                   )
 from assetregister.forms import (EditAsset,
                                  EditAssetLocationInfo,
-                                 Calibrate,
                                  AssetFilter,
-                                 HighlightedSearchFormAssets,
+                                 # HighlightedSearchFormAssets,
                                  EditAssetCalibrationInfo,
                                  EditAssetFinanceInfo,
                                  ReserveAssets,
                                  NewAssetCalibrationInfo
                                  )
 from assetregister.decorators import group_required
-from haystack.generic_views import SearchView
-from haystack.query import SearchQuerySet
+# from haystack.generic_views import SearchView
+# from haystack.query import SearchQuerySet
 import logging
 from background_task import background
 from haystack.management.commands import update_index
@@ -74,8 +73,8 @@ def asset_list_filter(request):
     if request.GET:
         filter = AssetFilter(request.GET, queryset=Asset.objects.all())
     else:
-        # this is a bit hacky, but should work forever...
-        filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status=999999))
+        # This is a bit hacky, but should work basically forever
+        filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status="99999"))
     return render(request, "assetregister/asset_list_filtered.html", {"filter": filter,
                                                                       })
 
@@ -86,7 +85,7 @@ def active_asset_list(request):
     active_asset_count = Asset.objects.filter(asset_status=1).count()
     all_assets = Asset.objects.filter(asset_status=1).order_by("asset_id")
     paginator = Paginator(all_assets, 10)
-    page = request.GET.get('page')
+    page = request.GET.get("page")
     try:
         assets = paginator.page(page)
     except PageNotAnInteger:
@@ -106,7 +105,6 @@ def asset_detail(request, pk):
     assetcalibrations_3 = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")[:3]
     assetcalibrations_all = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")
     parent_of = Asset.objects.filter(parent_assets=pk)
-    enviro_aspect_count = Asset.objects
     curdate = timezone.now().date()
     if assetcalibrations_3.count() > 0:
         last_cal = CalibrationRecord.objects.filter(asset=pk).order_by("-calibration_date", "-calibration_record_id")[0]
@@ -146,17 +144,15 @@ def reserve_assets(request):
             bulk_group_responsible = form.cleaned_data["amrc_group_responsible"]
             number_of_records_to_reserve = form.cleaned_data["number_of_records_to_reserve"]
             bulk_asset_edited_by = request.user
-            bulk_asset_edited_on = timezone.now()
 
             logger.warning("[{}] - User {} just reserved {} assets records with description: {}".format(
                 timezone.now(), bulk_asset_edited_by, number_of_records_to_reserve, bulk_asset_description))
 
             for i in range(number_of_records_to_reserve):
                 Asset(asset_status_id="5", asset_description=bulk_asset_description, person_responsible=bulk_person_responsible,
-                      person_responsible_email=bulk_person_responsible_email, amrc_group_responsible=bulk_group_responsible, 
+                      person_responsible_email=bulk_person_responsible_email, amrc_group_responsible=bulk_group_responsible,
                       requires_insurance=False, requires_safety_checks=False, requires_environmental_checks=False,
                       requires_planned_maintenance=False, requires_calibration=False, edited_by=bulk_asset_edited_by).save()
-
 
             latest_asset = Asset.objects.order_by('-pk')[0]
             latest_asset_no = latest_asset.pk
@@ -209,7 +205,7 @@ def high_value_asset_email(pk):
                      <br /><br /> "Asset No. {}" <br />
                      Asset Value = £{} <br /><br />
                      <a href="{}/asset/{}">Click here</a> to view the asset on the AMRC Asset Management System,
-                     or <a href="{}/staff/assetregister/highvalueassetnotification/">click here</a> to edit your notifcation trigger. 
+                     or <a href="{}/staff/assetregister/highvalueassetnotification/">click here</a> to edit your notifcation trigger.
                      """.format(email_on_value, asset, value, settings.BASEURL, asset.asset_id, settings.BASEURL)
             logger.warning("[{}] - I've sent a '{}' email to {}""".format(str(timezone.now()), email_subject, email_to))
             send_mail(email_subject, "", settings.EMAIL_FROM, email_to, fail_silently=False, html_message=mail_body)
@@ -250,7 +246,7 @@ def asset_archived_email(pk, userid):
 
 
 @login_required
-@group_required('AddEditAssets','Finance','AddEditCalibrations', 'SuperUsers')
+@group_required('AddEditAssets', 'Finance', 'AddEditCalibrations', 'SuperUsers')
 def asset_new(request):
     if request.method == "POST":
         form = EditAsset(request.POST, request.FILES)
@@ -281,10 +277,10 @@ def calibration_asset_new(request):
             asset = form.save(commit=False)
             asset.edited_by = request.user
             asset.edited_on = timezone.now()
-            asset.requires_insurance=False
-            asset.requires_safety_checks=False
-            asset.requires_environmental_checks=False
-            asset.requires_planned_maintenance=False
+            asset.requires_insurance = False
+            asset.requires_safety_checks = False
+            asset.requires_environmental_checks = False
+            asset.requires_planned_maintenance = False
             asset.save()
             form.save_m2m()
             if asset.requires_calibration:
@@ -296,12 +292,12 @@ def calibration_asset_new(request):
 
 
 @login_required
-@group_required('AddEditAssets','Finance','AddEditCalibrations', 'SuperUsers')
+@group_required('AddEditAssets', 'Finance', 'AddEditCalibrations', 'SuperUsers')
 def asset_edit(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     assets_to_relate = Asset.objects.exclude(pk=pk).order_by("asset_manufacturer", "asset_description")
     cur_calibration_status = asset.requires_calibration
-    cur_enviro_aspects = str(asset.environmental_aspects.all()) # this has to become a str now or will return the new values!
+    cur_enviro_aspects = str(asset.environmental_aspects.all())  # this has to become a str now or will return the new values!
     cur_value = asset.asset_value
     cur_status = asset.asset_status
     if request.method == "POST":
@@ -319,22 +315,22 @@ def asset_edit(request, pk):
             if cur_enviro_aspects != str(asset.environmental_aspects.all()) and asset.environmental_aspects.all().count() > 0:
                 # Enviro aspects have changed and asset has > 0 aspects
                 enviro_aspect_asset_email(asset.asset_id)
-                
+
             if cur_value != asset.asset_value and asset.asset_value:
                 # Value has changed and asset has value
                 high_value_asset_email(asset.asset_id)
-                
+
             if cur_status != asset.asset_status and asset.asset_status:
                 # Status has changed and asset has status
                 new_status = asset.asset_status
                 logger.warning("[{}] - User {} just changed asset status for asset ID {} ({}) from {} to {}".format(
-                timezone.now(), request.user, pk, asset, cur_status, new_status))
-                
+                    timezone.now(), request.user, pk, asset, cur_status, new_status))
+
                 if new_status.id == 5:
                     print("status_change")
                     # Status has changed to "achived" or equivalant
                     asset_archived_email(asset.asset_id, request.user.id)
-                
+
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset(instance=asset)
@@ -364,7 +360,7 @@ def edit_asset_calibration_info(request, pk):
             if cur_status != asset.asset_status and asset.asset_status:
                 new_status = asset.asset_status
                 logger.warning("[{}] - User {} just changed asset status for asset ID {} ({}) from {} to {}".format(
-                timezone.now(), request.user, pk, asset, cur_status, new_status))
+                    timezone.now(), request.user, pk, asset, cur_status, new_status))
                 if new_status.id == 5:
                     # Status has changed to "achived" or equivalant
                     asset_archived_email(asset.asset_id, request.user.id)
@@ -448,8 +444,8 @@ class asset_confirm_delete(DeleteView):
     success_url = reverse_lazy("asset_list")
 
 
-#@login_required
-#class NewSearchView(SearchView):
-#    template_name = 'search/search.html'
-#    queryset = SearchQuerySet().exclude(asset_id=999999999999999999999999)
-#    form_class = HighlightedSearchFormAssets
+# @login_required
+# class NewSearchView(SearchView):
+#     template_name = 'search/search.html'
+#     queryset = SearchQuerySet().exclude(asset_id=999999999999999999999999)
+#     form_class = HighlightedSearchFormAssets

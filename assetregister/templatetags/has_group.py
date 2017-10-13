@@ -1,12 +1,13 @@
 from django import template
-from django.contrib.auth.models import Group 
+from django.contrib.auth.models import Group
 
-register = template.Library() 
+register = template.Library()
 
-@register.filter(name='has_group') 
+
+@register.filter(name='has_group')
 def has_group(user, group_name):
     if user.is_superuser:
         return True
     else:
-        group =  Group.objects.get(name=group_name) 
-        return True if group in user.groups.all() else False 
+        group = Group.objects.get(name=group_name)
+        return True if group in user.groups.all() else False

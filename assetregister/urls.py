@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 from . import views
-#from assetregister.views import NewSearchView
+# from assetregister.views import NewSearchView
 from django.conf import settings
 
 urlpatterns = [
@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^insurance/export/all/$', views.insurance_export_all, name="insurance_export_all"),
     url(r'^safety/export/all/$', views.safety_export_all, name="safety_export_all"),
     url(r'^location/export/all/$', views.location_export_all, name="location_export_all"),
-    #url(r'^newsearch/?$', NewSearchView.as_view(), name='new_search_view'),
+    # url(r'^newsearch/?$', NewSearchView.as_view(), name='new_search_view'),
 ]
 
 if settings.DEBUG:

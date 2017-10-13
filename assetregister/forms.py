@@ -1,7 +1,7 @@
 from django import forms
 from .models import Asset, CalibrationRecord, AmrcGroup
 from haystack.forms import HighlightedSearchForm
-from haystack.query import SearchQuerySet
+# from haystack.query import SearchQuerySet
 from django.utils import timezone
 import django_filters
 
@@ -78,7 +78,7 @@ class NewAssetCalibrationInfo(forms.ModelForm):
         fields = [
             "asset_description", "person_responsible", "person_responsible_email", "amrc_group_responsible",
             "asset_image", "asset_details", "asset_manufacturer", "asset_model", "asset_serial_number",
-            "amrc_equipment_id", "asset_status", "requires_calibration", 
+            "amrc_equipment_id", "asset_status", "requires_calibration",
             "parent_assets", "asset_location_building",
             "asset_location_room", "operating_instructions", "handling_and_storage_instructions"
             ]
@@ -225,7 +225,7 @@ class Calibrate(forms.ModelForm):
         labels = {
                   "calibration_certificate": ("Calibration Certificate URL"),
                   }
-    
+
     def clean(self):
         cleaned_data = super(Calibrate, self).clean()
         byinternal = cleaned_data.get("calibrated_by_internal")
@@ -280,6 +280,36 @@ class AssetFilter(django_filters.FilterSet):
         model = Asset
         fields = ["requires_calibration", "passed_calibration", "requires_safety_checks", "requires_environmental_checks",
                   "requires_planned_maintenance", "requires_insurance", "amrc_group_responsible", "calibration_type"]
+        widgets = {
+            "calibration_date_next__gt": DateInput(attrs={'class': 'datepicker form-control'}),
+            "calibration_date_next__lt": DateInput(attrs={'class': 'datepicker form-control'}),
+            "asset_id": forms.TextInput(attrs={'class': 'form-control'}),
+            "amrc_equipment_id": forms.TextInput(attrs={'class': 'form-control'}),
+            "asset_description": forms.TextInput(attrs={'class': 'form-control'}),
+            "asset_details": forms.TextInput(attrs={'class': 'form-control'}),
+            "asset_manufacturer": forms.TextInput(attrs={'class': 'form-control'}),
+            "asset_model": forms.TextInput(attrs={'class': 'form-control'}),
+            "asset_serial_number": forms.TextInput(attrs={'class': 'form-control'}),
+            "person_responsible": forms.TextInput(attrs={'class': 'form-control'}),
+            "person_responsible_email": forms.EmailInput(attrs={'class': 'form-control'}),
+            "environmental_notes": forms.TextInput(attrs={'class': 'form-control'}),
+            "safety_notes": forms.TextInput(attrs={'class': 'form-control'}),
+            "emergency_response_information": forms.TextInput(attrs={'class': 'form-control'}),
+            "maintenance_notes": forms.TextInput(attrs={'class': 'form-control'}),
+            "asset_value__gt": forms.TextInput(attrs={'class': 'form-control'}),
+            "asset_value__lt": forms.TextInput(attrs={'class': 'form-control'}),
+            "purchase_order_ref": forms.TextInput(attrs={'class': 'form-control'}),
+            "funded_by": forms.TextInput(attrs={'class': 'form-control'}),
+            "acquired_on__gt": DateInput(attrs={'class': 'datepicker form-control'}),
+            "acquired_on__lt": DateInput(attrs={'class': 'datepicker form-control'}),
+            "disposal_date__gt": DateInput(attrs={'class': 'datepicker form-control'}),
+            "disposal_date__lt": DateInput(attrs={'class': 'datepicker form-control'}),
+            "asset_location_building__building_name": forms.Select(attrs={'class': 'form-control'}),
+            "asset_location_building__EFM_building_code": forms.Select(attrs={'class': 'form-control'}),
+            "asset_location_room": forms.TextInput(attrs={'class': 'form-control'}),
+            "amrc_group_responsible": forms.Select(attrs={'class': 'form-control'}),
+            "calibration_type": forms.Select(attrs={'class': 'form-control'}),
+            }
         labels = {
           "amrc_equipment_id": ("AMRC Equipment ID (no spaces) e.g. V112, B05 or M206B"),
           "asset_location_room": ("Asset Location (specific room or group etc.)"),

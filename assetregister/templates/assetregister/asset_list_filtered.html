@@ -8,35 +8,37 @@
 	  <li class="active">Advanced Search</li>
 	</ul>
 
-	<h3>Advanced Search</h3>
+	<h2>Advanced Search</h2>
+
+	{% if filter.qs.paginator.count %}
+		<div class="pagination">
+			{% if filter.qs.paginator.count %}
+			    Showing {{ filter.qs.object_list|length }} of {{ filter.qs.paginator.count }} Results on Page {{ filter.qs.number }} of {{ filter.qs.paginator.num_pages }}
+			    <br />
+			{% endif %}
+			
+			{% if filter.qs.has_previous or assets.has_next %}
+				<ul class="pager">
+					{% if filter.qs.has_previous %}
+						<li class="previous"><a href="?page={{ filter.qs.previous_page_number }}">&laquo; Previous</a></li>
+					{% else %}
+						<li class="previous disabled"><a href="">&laquo; Previous</a></li>
+					{% endif %}
+					
+					{% if filter.qs.has_next %}
+						<li class="next"><a href="?page={{ filter.qs.next_page_number }}">Next &raquo;</a></li>
+					{% else %}
+						<li class="next disabled"><a href="">Next &raquo;</a></li>
+					{% endif %}
+				</ul>
+			{% endif %}
+		</div>
+	{% endif %}
 	
-	<h5>All filters on this form are combined
-		<br />e.g. Asset model contains "X" AND Asset serial number contains "Y"</h5>
-	<br />	
-	
-	<form action="" method="get" class="form-horizontal asset-form">
-		<fieldset>
-			{{ filter.form.as_p }}
-				<div class="form-group">
-					<div class="col-lg-3">
-						<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
-						<button type="reset" class="btn btn-default">
-							Cancel
-						</button>
-						<button type="submit" class="btn btn-primary">
-							Submit
-						</button>
-					</div>
-				</div>
-		</fieldset>
-    </form>
-    
-	<br />
-	<br />
-	
-    {% for asset in filter.qs %}
+	{% for asset in filter.qs %}
+		</br>
     	<div class="asset">
-            <a href="{% url 'asset_detail' pk=asset.pk %}"><h3>{{ asset.asset_description }}</h3></a>
+            <a href="{% url 'asset_detail' pk=asset.pk %}"><h4>{{ asset.asset_description }}</h4></a>
             
             <p>AMRC Asset Number: {{ asset.asset_id }} </p>
             
@@ -54,28 +56,55 @@
             <hr>
         </div>
     {% endfor %}
+    
+	{% if filter.qs.paginator.count %}
+		<div class="pagination">
+			{% if filter.qs.paginator.count %}
+			    Showing {{ filter.qs.object_list|length }} of {{ filter.qs.paginator.count }} Results on Page {{ filter.qs.number }} of {{ filter.qs.paginator.num_pages }}
+			    <br />
+			{% endif %}
+			
+			{% if filter.qs.has_previous or assets.has_next %}
+				<ul class="pager">
+					{% if filter.qs.has_previous %}
+						<li class="previous"><a href="?page={{ filter.qs.previous_page_number }}">&laquo; Previous</a></li>
+					{% else %}
+						<li class="previous disabled"><a href="">&laquo; Previous</a></li>
+					{% endif %}
+					
+					{% if filter.qs.has_next %}
+						<li class="next"><a href="?page={{ filter.qs.next_page_number }}">Next &raquo;</a></li>
+					{% else %}
+						<li class="next disabled"><a href="">Next &raquo;</a></li>
+					{% endif %}
+				</ul>
+			{% endif %}
+		</div>
+	{% endif %}
 
-	<div class="pagination">
-		{% if filter.qs.paginator.count %}
-		    Showing {{ filter.qs.object_list|length }} of {{ filter.qs.paginator.count }} Results on Page {{ filter.qs.number }} of {{ filter.qs.paginator.num_pages }}
-		    <br />
-		{% endif %}
+	<br />
+
+	<div class="well">
+		<h5>All filters on this form are combined
+			<br />e.g. Asset model contains "X" AND Asset serial number contains "Y"</h5>
+		<br />	
 		
-		{% if filter.qs.has_previous or assets.has_next %}
-			<ul class="pager">
-				{% if filter.qs.has_previous %}
-					<li class="previous"><a href="?page={{ filter.qs.previous_page_number }}">&laquo; Previous</a></li>
-				{% else %}
-					<li class="previous disabled"><a href="">&laquo; Previous</a></li>
-				{% endif %}
-				
-				{% if filter.qs.has_next %}
-					<li class="next"><a href="?page={{ filter.qs.next_page_number }}">Next &raquo;</a></li>
-				{% else %}
-					<li class="next disabled"><a href="">Next &raquo;</a></li>
-				{% endif %}
-			</ul>
-		{% endif %}
+		<form action="" method="get" class="form-horizontal asset-form">
+			<fieldset>
+				{{ filter.form.as_p }}
+					<div class="form-group">
+						<div class="col-lg-3">
+							<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+							<button type="reset" class="btn btn-default">
+								Cancel
+							</button>
+							<button type="submit" class="btn btn-primary">
+								Submit
+							</button>
+						</div>
+					</div>
+			</fieldset>
+	    </form>
 	</div>
     
 {% endblock %}

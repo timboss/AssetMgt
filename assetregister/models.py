@@ -1,9 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 import os
 from haystack.management.commands import update_index
 import logging
@@ -12,17 +9,21 @@ from background_task import background
 
 logger = logging.getLogger(__name__)
 
+
 @background()
 def reindex_whoosh():
     update_index.Command().handle(interactive=False, remove=True, age=1)
     # age=1 will only add assets edited in last hour.
 
+
 default_asset_status = 1
+
 
 CALIBRATION_TYPE = (
                        ("Internal", "Internal"),
                        ("External", "External")
                      )
+
 
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
@@ -73,16 +74,16 @@ class Asset(models.Model):
     asset_location_room = models.CharField(max_length=255, blank=True)
     edited_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
     edited_on = models.DateTimeField(default=timezone.now)
-    
+
     def image_move_rename():
         pass
-    
+
     def image_thumbnail():
-        pass 
-   
+        pass
+
     def image_watermark():
         pass
-    
+
     def save(self, *args, **kwargs):
         # Custom save function to generate an asset ID / PK needed to rename files,_
         # move and rename image upload and create thumbnail
@@ -96,7 +97,7 @@ class Asset(models.Model):
 
             # If asset_image.name contains "/temp" then it's newly uploaded so rename, move, thumbnail and watermark
             if "images/temp" in self.asset_image.name:
-                
+
                 # !!!
                 # image_move_rename()
                 # image_thumbnail()
@@ -138,20 +139,20 @@ class Asset(models.Model):
                 # Open image to thumbnail
                 fh = storage.open(self.asset_image.name)
                 image = Image.open(fh)
-                
+
                 # Check if image smaller than requested thumb size,
                 # ...if so don't thumb or will raise error
-                
+
                 if image.size[0] <= THUMB_SIZE[0] or image.size[1] <= THUMB_SIZE[1]:
                     self.asset_image_thumbnail.name = self.asset_image.name
                 else:
                     image.thumbnail(THUMB_SIZE, Image.ANTIALIAS)
                     fh.close()
-    
+
                     thumb_name, thumb_extension = os.path.splitext(self.asset_image.name)
                     thumb_extension = thumb_extension.lower()
                     thumb_filename = thumb_name + "_thumb" + thumb_extension
-    
+
                     if thumb_extension in [".jpg", ".jpeg"]:
                         FTYPE = "JPEG"
                     elif thumb_extension == ".gif":
@@ -160,7 +161,7 @@ class Asset(models.Model):
                         FTYPE = "PNG"
                     else:
                         raise Exception("Error creating thumnail. Image must be a .jpg, .jpeg, .gif or .png!")
-    
+
                     temp_thumb = BytesIO()
                     image.save(temp_thumb, FTYPE, quality=100)
                     temp_thumb.seek(0)
@@ -206,7 +207,7 @@ class Asset(models.Model):
                 # alpha = ImageEnhance.Brightness(alpha).enhance(opacity) # NameError on "opacity"
 
                 watermark.putalpha(alpha)
-                
+
                 if settings.DEBUG:
                     Image.composite(watermark, img, watermark).save("media/" + self.asset_image.name, "JPEG")
                 else:
@@ -317,11 +318,11 @@ class AssetStatus(models.Model):
 
     def __str__(self):
         return self.status_name
-    
+
 
 class CalibrationStatus(models.Model):
     status_name = models.CharField(max_length=64)
-    
+
     def __str__(self):
         return self.status_name
 
@@ -361,4 +362,3 @@ class EnvironmentalAspectAssetNoficiation(models.Model):
 
     def __str__(self):
         return "Notify {} of assets with environmental aspects".format(self.email_address)
-
