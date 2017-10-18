@@ -65,10 +65,12 @@ class Asset(models.Model):
     charge_out_rate = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     charge_code = models.CharField(max_length=64, null=True, blank=True)
     purchase_order_ref = models.CharField(max_length=15, null=True, blank=True)
+    grn_id = models.CharField(max_length=12, null=True, blank=True)
     funded_by = models.CharField(max_length=255, null=True, blank=True)
     acquired_on = models.DateField(null=True, blank=True)
     disposal_date = models.DateField(null=True, blank=True)
     disposal_method = models.CharField(max_length=255, null=True, blank=True)
+    dispatch_note_id = models.CharField(max_length=12, null=True, blank=True)
     parent_assets = models.ManyToManyField("self", blank=True)
     asset_location_building = models.ForeignKey("Buildings", on_delete=models.SET_NULL, blank=True, null=True, related_name="building")
     asset_location_room = models.CharField(max_length=255, blank=True)
@@ -220,8 +222,7 @@ class Asset(models.Model):
                 self.asset_image_thumbnail.storage.delete(oldthumbname)
                 self.asset_image_thumbnail = None
 
-        # Uncomment this to update the search index (via async task queue) when new asset added or asset edited
-        # This is now done by scheduled task every 15 minutes rather than on every asset edit to prevent excessive load
+        # Updating Whoosh Index is now done by scheduled task every 15 minutes, rather than on every asset edit
         # reindex_whoosh()
 
         # Save again to keep all changes
@@ -251,7 +252,12 @@ CALIBRATION_TYPE = (
 class CalibrationRecord(models.Model):
     calibration_record_id = models.AutoField(primary_key=True)
     slug = models.CharField(max_length=64, blank=True, null=True, unique=True)
-    asset = models.ForeignKey("assetregister.Asset", on_delete=models.CASCADE, related_name="calibration", limit_choices_to={'requires_calibration': True})
+    asset = models.ForeignKey(
+                              "assetregister.Asset",
+                              on_delete=models.CASCADE,
+                              related_name="calibration",
+                              limit_choices_to={'requires_calibration': True}
+                              )
     calibration_description = models.CharField(max_length=200)
     calibration_date = models.DateField(default=timezone.now)
     calibration_date_next = models.DateField(null=True, blank=True)
@@ -303,6 +309,15 @@ class Buildings(models.Model):
 
     def __str__(self):
         return "{} ({})".format(self.building_name, self.EFM_building_code)
+
+
+class QRLocation(models.Model):
+    location_id = models.AutoField(primary_key=True)
+    building = models.ForeignKey("Buildings", on_delete=models.CASCADE, related_name="qr_building")
+    location_room = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return "({}) {} - {}".format(self.pk, self.building.building_name, self.location_room)
 
 
 class AmrcGroup(models.Model):

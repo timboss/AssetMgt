@@ -12,5 +12,4 @@ filename = *.py
 format = default
 
 # Don't count against Django's generated migration files
-exclude =
-    */migrations/*
+exclude = migrations

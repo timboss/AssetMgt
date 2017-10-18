@@ -71,12 +71,12 @@ h1, h2, h3, h4 {
     font-family: 'Open Sans';
 }
 
-#small_qr_url {
-	font-size: 10px;
-}
-
 #small_qr_number {
 	font-size: 36px;
+}
+
+#small_qr_url {
+	font-size: 10px;
 }
 
 #small_qr_asset_text {
@@ -150,7 +150,7 @@ h1, h2, h3, h4 {
 	margin: 0px 0px 20px 0px;
 }
 
-#small_qr_url {
-	font-size: 10px;
+.inline {
+	display: inline-block;
 }
 

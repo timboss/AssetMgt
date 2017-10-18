@@ -1,5 +1,5 @@
 from django import forms
-from .models import Asset, CalibrationRecord, AmrcGroup
+from .models import Asset, CalibrationRecord, AmrcGroup, Buildings, QRLocation, AssetStatus
 from haystack.forms import HighlightedSearchForm
 # from haystack.query import SearchQuerySet
 from django.utils import timezone
@@ -20,9 +20,9 @@ class EditAsset(forms.ModelForm):
             "amrc_equipment_id", "asset_status", "requires_calibration", "requires_safety_checks", "safety_notes",
             "emergency_response_information", "requires_environmental_checks", "environmental_aspects",
             "environmental_notes", "requires_planned_maintenance", "maintenance_instructions",
-            "maintenance_records", "maintenance_notes", "asset_value", "charge_out_rate",
-            "requires_insurance", "requires_unforseen_damage_insurance", "purchase_order_ref", "funded_by",
-            "acquired_on", "disposal_date", "disposal_method", "parent_assets", "asset_location_building",
+            "maintenance_records", "maintenance_notes", "asset_value", "charge_out_rate", "requires_insurance",
+            "requires_unforseen_damage_insurance", "purchase_order_ref", "grn_id", "funded_by", "acquired_on",
+            "disposal_date", "disposal_method", "dispatch_note_id", "parent_assets", "asset_location_building",
             "asset_location_room", "operating_instructions", "handling_and_storage_instructions"
             ]
         widgets = {
@@ -46,10 +46,12 @@ class EditAsset(forms.ModelForm):
             'asset_value': forms.TextInput(attrs={'class': 'form-control'}),
             'charge_out_rate': forms.TextInput(attrs={'class': 'form-control'}),
             'purchase_order_ref': forms.TextInput(attrs={'class': 'form-control'}),
+            'grn_id': forms.TextInput(attrs={'class': 'form-control'}),
             'funded_by': forms.TextInput(attrs={'class': 'form-control'}),
             'acquired_on': DateInput(attrs={'class': 'datepicker form-control'}),
             'disposal_date': DateInput(attrs={'class': 'datepicker form-control'}),
             'disposal_method': forms.TextInput(attrs={'class': 'form-control'}),
+            'dispatch_note_id': forms.TextInput(attrs={'class': 'form-control'}),
             'parent_assets': forms.SelectMultiple(attrs={'class': 'form-control example-enableFiltering', 'style': 'width: 400px;'}),
             'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
             'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
@@ -60,15 +62,19 @@ class EditAsset(forms.ModelForm):
           "asset_description": ("Asset Description* "),
           "person_responsible": ("Person Responsible* "),
           "person_responsible_email": ("Person Responsible Email* "),
+          "asset_image": ("""Asset Image (All AMRC staff can currently see all asset images,
+           ensure nothing sensitive is visible in the image before uploading!)"""),
           "parent_assets": ("Related Assets"),
           "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
-          "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
+          "asset_location_room": ("Asset Location (e.g. Specific area, room or shelf etc.)"),
           "maintenance_instructions": ("Maintenance Instructions URL"),
           "maintenance_records": ("Maintenance Records URL"),
           "operating_instructions": ("Operating Instructions URL"),
           "handling_and_storage_instructions": ("Handling and Storage Instructions URL"),
           "asset_value": ("Asset Value £"),
           "charge_out_rate": ("Charge Out Rate £"),
+          "grn": ("AMRC Goods Received Note [GRN] ID (e.g. GRN.1234)"),
+          "dispatch_note": ("AMRC Dispatch Note [DN] ID (e.g. DN.1234)")
           }
 
 
@@ -112,11 +118,80 @@ class NewAssetCalibrationInfo(forms.ModelForm):
 
 
 class ReserveAssets(forms.Form):
-    number_of_records_to_reserve = forms.IntegerField(label="Number of Asset Records To Reserve* ", widget=forms.TextInput(attrs={'class': 'form-control'}))
-    asset_description = forms.CharField(label="Asset Description (e.g. 'Reserved for IMG')* ", widget=forms.TextInput(attrs={'class': 'form-control'}))
-    person_responsible = forms.CharField(label="Person Responsible* ", widget=forms.TextInput(attrs={'class': 'form-control'}))
-    person_responsible_email = forms.EmailField(label="Person Responsible Email* ", widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    amrc_group_responsible = forms.ModelChoiceField(queryset=AmrcGroup.objects.all(), label="AMRC Group Responsible* ", widget=forms.Select(attrs={'class': 'form-control'}))
+    number_of_records_to_reserve = forms.IntegerField(
+                                                      label="Number of Asset Records To Reserve* ",
+                                                      widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                      )
+    asset_description = forms.CharField(
+                                        label="Asset Description Placeholder (e.g. 'Reserved for IMG')* ",
+                                        widget=forms.TextInput(attrs={'class': 'form-control'}))
+    person_responsible = forms.CharField(
+                                         label="Person Responsible* ",
+                                         widget=forms.TextInput(attrs={'class': 'form-control'})
+                                         )
+    person_responsible_email = forms.EmailField(
+                                                label="Person Responsible Email* ",
+                                                widget=forms.EmailInput(attrs={'class': 'form-control'})
+                                                )
+    amrc_group_responsible = forms.ModelChoiceField(
+                                                    queryset=AmrcGroup.objects.all(),
+                                                    label="AMRC Group Responsible* ",
+                                                    widget=forms.Select(attrs={'class': 'form-control'})
+                                                    )
+
+
+class ReserveLocations(forms.Form):
+    number_of_records_to_reserve = forms.IntegerField(
+                                                      label="Number of Locations Records to Reserve* ",
+                                                      widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                      )
+    location_building = forms.ModelChoiceField(
+                                               queryset=Buildings.objects.all(),
+                                               label="Building to Reserve Locations in (can be updated later)* ",
+                                               widget=forms.Select(attrs={'class': 'form-control'})
+                                               )
+    location_room = forms.CharField(
+                                    label="Specific Location Placeholder (e.g. 'Reserved for FoF Workshop'), to be updated later* ",
+                                    widget=forms.TextInput(attrs={'class': 'form-control'})
+                                    )
+
+
+class NewQRLocation(forms.ModelForm):
+    class Meta:
+        model = QRLocation
+        fields = [
+                  "location_id", "building", "location_room"
+                  ]
+        widgets = {
+                   "location_id": forms.TextInput(attrs={"class": "form-control"}),
+                   "building": forms.Select(attrs={"class": "form-control"}),
+                   "location_room": forms.TextInput(attrs={"class": "form-control"})
+                   }
+        labels = {
+                  "location_id": ("Location QR ID *"),
+                  "building": ("Building *"),
+                  "location_room": ("Specific Location (e.g. area, room or shelf etc.)"),
+                  }
+
+
+class EditQRLocation(forms.ModelForm):
+    class Meta:
+        model = QRLocation
+        fields = [
+                  "building", "location_room"
+                  ]
+        widgets = {
+                   "building": forms.Select(attrs={"class": "form-control"}),
+                   "location_room": forms.TextInput(attrs={"class": "form-control"})
+                   }
+        labels = {
+                  "building": ("Building *"),
+                  "location_room": ("Specific Location (e.g. area, room or shelf etc.)"),
+                  }
+
+
+class MoveAssetToQRLocation(forms.Form):
+    asset_id = forms.IntegerField(label="AMRC Asset ID To Move Here", widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
 class EditAssetCalibrationInfo(forms.ModelForm):
@@ -247,74 +322,204 @@ class Calibrate(forms.ModelForm):
             self.add_error("calibration_date", error)
 
 
+FILTER_CHOICES = (
+    (True, "Yes"),
+    (False, "No"),
+)
+
+
 class AssetFilter(django_filters.FilterSet):
-    calibration_date_next__gt = django_filters.DateFilter(name="calibration_date_next", lookup_expr="calibration_date_next__gt")
-    calibration_date_next__lt = django_filters.DateFilter(name="calibration_date_next", lookup_expr="calibration_date_next__lt")
-    asset_id = django_filters.NumberFilter(lookup_expr="exact")
-    amrc_equipment_id = django_filters.CharFilter(lookup_expr="icontains")
-    asset_description = django_filters.CharFilter(lookup_expr="icontains")
-    asset_details = django_filters.CharFilter(lookup_expr="icontains")
-    asset_manufacturer = django_filters.CharFilter(lookup_expr="icontains")
-    asset_model = django_filters.CharFilter(lookup_expr="icontains")
-    asset_serial_number = django_filters.CharFilter(lookup_expr="icontains")
-    amrc_equipment_id = django_filters.CharFilter(lookup_expr="icontains")
-    person_responsible = django_filters.CharFilter(lookup_expr="icontains")
-    person_responsible_email = django_filters.CharFilter(lookup_expr="icontains")
-    environmental_notes = django_filters.CharFilter(lookup_expr="icontains")
-    safety_notes = django_filters.CharFilter(lookup_expr="icontains")
-    emergency_response_information = django_filters.CharFilter(lookup_expr="icontains")
-    maintenance_notes = django_filters.CharFilter(lookup_expr="icontains")
-    asset_value__gt = django_filters.NumberFilter(name="asset_value", lookup_expr="gt")
-    asset_value__lt = django_filters.NumberFilter(name="asset_value", lookup_expr="lt")
-    purchase_order_ref = django_filters.CharFilter(lookup_expr="exact")
-    funded_by = django_filters.CharFilter(lookup_expr="icontains")
-    acquired_on__gt = django_filters.DateFilter(name="acquired_on", lookup_expr="acquired_on__gt")
-    acquired_on__lt = django_filters.DateFilter(name="acquired_on", lookup_expr="acquired_on__lt")
-    disposal_date__gt = django_filters.DateFilter(name="disposal_date", lookup_expr="disposal_date__gt")
-    disposal_date__lt = django_filters.DateFilter(name="disposal_date", lookup_expr="disposal_date__lt")
-    asset_location_building__building_name = django_filters.CharFilter(lookup_expr="icontains")
-    asset_location_building__EFM_building_code = django_filters.CharFilter(lookup_expr="icontains")
-    asset_location_room = django_filters.CharFilter(lookup_expr="icontains")
+    asset_id = django_filters.NumberFilter(
+                                           lookup_expr="exact",
+                                           label="AMRC Asset ID is",
+                                           widget=forms.TextInput(attrs={'class': 'form-control'})
+                                           )
+    amrc_equipment_id = django_filters.CharFilter(
+                                                  lookup_expr="exact",
+                                                  label="AMRC engraved metrology equipment ID is",
+                                                  widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                  )
+    asset_description = django_filters.CharFilter(
+                                                  lookup_expr="icontains",
+                                                  label="Asset description contains",
+                                                  widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                  )
+    asset_status = django_filters.ModelChoiceFilter(
+                                                    queryset=AssetStatus.objects.all(),
+                                                    label="Asset Status",
+                                                    widget=forms.Select(attrs={'class': 'form-control'})
+                                                    )
+    asset_details = django_filters.CharFilter(
+                                              lookup_expr="icontains",
+                                              label="Asset details / notes contains",
+                                              widget=forms.TextInput(attrs={'class': 'form-control'})
+                                              )
+    asset_manufacturer = django_filters.CharFilter(
+                                                   lookup_expr="icontains",
+                                                   label="Manufacturer contains",
+                                                   widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                   )
+    asset_model = django_filters.CharFilter(
+                                            lookup_expr="icontains",
+                                            label="Model contains",
+                                            widget=forms.TextInput(attrs={'class': 'form-control'})
+                                            )
+    asset_serial_number = django_filters.CharFilter(
+                                                    lookup_expr="icontains",
+                                                    label="Serial Number contains",
+                                                    widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                    )
+    person_responsible = django_filters.CharFilter(
+                                                   lookup_expr="icontains",
+                                                   label="Person Responsible contains",
+                                                   widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                   )
+    person_responsible_email = django_filters.CharFilter(
+                                                         lookup_expr="icontains",
+                                                         label="Person Responsible's Email contains",
+                                                         widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                         )
+    amrc_group_responsible = django_filters.ModelChoiceFilter(
+                                                              queryset=AmrcGroup.objects.all(),
+                                                              label="AMRC Group Responsible",
+                                                              widget=forms.Select(attrs={'class': 'form-control'})
+                                                              )
+    requires_calibration = django_filters.ChoiceFilter(
+                                                       choices=FILTER_CHOICES,
+                                                       widget=forms.Select(attrs={'class': 'form-control'})
+                                                       )
+    passed_calibration = django_filters.ChoiceFilter(
+                                                     choices=FILTER_CHOICES,
+                                                     label="Passed Last Calibration",
+                                                     widget=forms.Select(attrs={'class': 'form-control'})
+                                                     )
+    calibration_date_prev = django_filters.DateFromToRangeFilter(
+                                                                widget=django_filters.widgets.RangeWidget(attrs={'class': 'datepicker form-control'}),
+                                                                label="""Previous Calibration Date after first date or before second date
+                                                                 or between both dates"""
+                                                                )
+    calibration_date_next = django_filters.DateFromToRangeFilter(
+                                                                widget=django_filters.widgets.RangeWidget(attrs={'class': 'datepicker form-control'}),
+                                                                label="""Next Calibration Date after first date or before second date
+                                                                 or between both dates"""
+                                                                )
+    requires_environmental_checks = django_filters.ChoiceFilter(
+                                                                choices=FILTER_CHOICES,
+                                                                label="Requires Environmental Checks",
+                                                                widget=forms.Select(attrs={'class': 'form-control'})
+                                                                )
+    environmental_notes = django_filters.CharFilter(
+                                                    lookup_expr="icontains",
+                                                    label="Environmental Notes contain",
+                                                    widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                    )
+    requires_safety_checks = django_filters.ChoiceFilter(
+                                                         choices=FILTER_CHOICES,
+                                                         label="Requires Safety Checks",
+                                                         widget=forms.Select(attrs={'class': 'form-control'})
+                                                         )
+    safety_notes = django_filters.CharFilter(
+                                             lookup_expr="icontains",
+                                             label="Safety Notes contain",
+                                             widget=forms.TextInput(attrs={'class': 'form-control'})
+                                             )
+    emergency_response_information = django_filters.CharFilter(
+                                                               lookup_expr="icontains",
+                                                               label="Emergency Response Information contains",
+                                                               widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                               )
+    requires_planned_maintenance = django_filters.ChoiceFilter(
+                                                               choices=FILTER_CHOICES,
+                                                               label="Requires Safety Checks",
+                                                               widget=forms.Select(attrs={'class': 'form-control'})
+                                                               )
+    maintenance_notes = django_filters.CharFilter(
+                                                  lookup_expr="icontains",
+                                                  label="Maintenance Notes contain",
+                                                  widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                  )
+    asset_value__gt = django_filters.NumberFilter(
+                                                  name="asset_value",
+                                                  lookup_expr="gt",
+                                                  label="Asset Value greater than",
+                                                  widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                  )
+    asset_value__lt = django_filters.NumberFilter(
+                                                  name="asset_value",
+                                                  lookup_expr="lt",
+                                                  label="Asset Value less than",
+                                                  widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                  )
+    requires_insurance = django_filters.ChoiceFilter(
+                                                     choices=FILTER_CHOICES,
+                                                     label="Requires Insurance",
+                                                     widget=forms.Select(attrs={'class': 'form-control'})
+                                                     )
+    requires_unforseen_damage_insurance = django_filters.ChoiceFilter(
+                                                                      choices=FILTER_CHOICES,
+                                                                      label="Requires Unforseen Damage Insurance",
+                                                                      widget=forms.Select(attrs={'class': 'form-control'})
+                                                                      )
+    purchase_order_ref = django_filters.CharFilter(
+                                                   lookup_expr="icontains",
+                                                   label="Purchase Order Reference contains",
+                                                   widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                   )
+    grn_id = django_filters.CharFilter(
+                                       lookup_expr="icontains",
+                                       label="AMRC Goods Receipt Note [GRN] ID contains",
+                                       widget=forms.TextInput(attrs={'class': 'form-control'})
+                                       )
+    funded_by = django_filters.CharFilter(
+                                          lookup_expr="icontains",
+                                          label="Funded By contains",
+                                          widget=forms.TextInput(attrs={'class': 'form-control'})
+                                          )
+    acquired_on = django_filters.DateFromToRangeFilter(
+                                            widget=django_filters.widgets.RangeWidget(attrs={'class': 'datepicker form-control'}),
+                                            label="Date Asset Acquired after first date or before second date or between both dates"
+                                            )
+    disposal_date = django_filters.DateFromToRangeFilter(
+                                            widget=django_filters.widgets.RangeWidget(attrs={'class': 'datepicker form-control'}),
+                                            label="Asset Disposal Date after first date or before second date or between both dates"
+                                            )
+    disposal_method = django_filters.CharFilter(
+                                                lookup_expr="icontains",
+                                                label="Disposal Method contains",
+                                                widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                )
+    dispatch_note_id = django_filters.CharFilter(
+                                                 lookup_expr="icontains",
+                                                 label="AMRC Dispatch Note [DN] ID contains",
+                                                 widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                 )
+    asset_location_building__building_name = django_filters.CharFilter(
+                                                                       lookup_expr="icontains",
+                                                                       label="Location - Building Name contains",
+                                                                       widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                                       )
+    asset_location_building__EFM_building_code = django_filters.CharFilter(
+                                                                           lookup_expr="icontains",
+                                                                           label="Location - EFM Building Code contains",
+                                                                           widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                                           )
+    asset_location_room = django_filters.CharFilter(
+                                                    lookup_expr="icontains",
+                                                    label="Location - Specific Room or Location contains",
+                                                    widget=forms.TextInput(attrs={'class': 'form-control'})
+                                                    )
 
     class Meta:
         model = Asset
-        fields = ["requires_calibration", "passed_calibration", "requires_safety_checks", "requires_environmental_checks",
-                  "requires_planned_maintenance", "requires_insurance", "amrc_group_responsible", "calibration_type"]
-        widgets = {
-            "calibration_date_next__gt": DateInput(attrs={'class': 'datepicker form-control'}),
-            "calibration_date_next__lt": DateInput(attrs={'class': 'datepicker form-control'}),
-            "asset_id": forms.TextInput(attrs={'class': 'form-control'}),
-            "amrc_equipment_id": forms.TextInput(attrs={'class': 'form-control'}),
-            "asset_description": forms.TextInput(attrs={'class': 'form-control'}),
-            "asset_details": forms.TextInput(attrs={'class': 'form-control'}),
-            "asset_manufacturer": forms.TextInput(attrs={'class': 'form-control'}),
-            "asset_model": forms.TextInput(attrs={'class': 'form-control'}),
-            "asset_serial_number": forms.TextInput(attrs={'class': 'form-control'}),
-            "person_responsible": forms.TextInput(attrs={'class': 'form-control'}),
-            "person_responsible_email": forms.EmailInput(attrs={'class': 'form-control'}),
-            "environmental_notes": forms.TextInput(attrs={'class': 'form-control'}),
-            "safety_notes": forms.TextInput(attrs={'class': 'form-control'}),
-            "emergency_response_information": forms.TextInput(attrs={'class': 'form-control'}),
-            "maintenance_notes": forms.TextInput(attrs={'class': 'form-control'}),
-            "asset_value__gt": forms.TextInput(attrs={'class': 'form-control'}),
-            "asset_value__lt": forms.TextInput(attrs={'class': 'form-control'}),
-            "purchase_order_ref": forms.TextInput(attrs={'class': 'form-control'}),
-            "funded_by": forms.TextInput(attrs={'class': 'form-control'}),
-            "acquired_on__gt": DateInput(attrs={'class': 'datepicker form-control'}),
-            "acquired_on__lt": DateInput(attrs={'class': 'datepicker form-control'}),
-            "disposal_date__gt": DateInput(attrs={'class': 'datepicker form-control'}),
-            "disposal_date__lt": DateInput(attrs={'class': 'datepicker form-control'}),
-            "asset_location_building__building_name": forms.Select(attrs={'class': 'form-control'}),
-            "asset_location_building__EFM_building_code": forms.Select(attrs={'class': 'form-control'}),
-            "asset_location_room": forms.TextInput(attrs={'class': 'form-control'}),
-            "amrc_group_responsible": forms.Select(attrs={'class': 'form-control'}),
-            "calibration_type": forms.Select(attrs={'class': 'form-control'}),
-            }
-        labels = {
-          "amrc_equipment_id": ("AMRC Equipment ID (no spaces) e.g. V112, B05 or M206B"),
-          "asset_location_room": ("Asset Location (specific room or group etc.)"),
-          "passed_calibration": ("Passed Last Calibration"),
-          }
+        fields = ""
+
+
+# class QRLocationFilter(django_filters.FilterSet):
+#    name = django_filters.CharFilter(lookup_expr='iexact')
+
+#    class Meta:
+#        model = Product
+#        fields = ['price', 'release_date']
 
 
 class HighlightedSearchFormAssets(HighlightedSearchForm):

@@ -1,0 +1,49 @@
+{% extends "assetregister/base.html" %}
+
+{% block content %}
+
+	<ul class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li><a href="#">QR Locations</a></li>
+	  <li class="active">Edit Location</li>
+	</ul>
+
+    <h2>QR Location Details</h2>
+    <br />
+    <div class="well">
+	    <form enctype="multipart/form-data" method="POST" class="form-horizontal asset-form">{% csrf_token %}
+			<fieldset>
+				{% if location_id %}
+					<div class="form-group">
+						<label class="col-lg-3 control-label">AMRC QR Location I.D.:</label>
+						<div class="col-lg-6">
+							<input class="form-control" id="disabledInput" placeholder="{{ location_id }}" disabled="" type="text">
+						</div>	
+					</div>
+				{% endif %}
+
+				{% for field in form %}
+					<div class="form-group">
+						{{ field.errors }}
+						<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ field }}
+						</div>
+					</div>
+				{% endfor %}
+				
+					<div class="form-group">
+						<div class="col-lg-3 col-lg-offset-3">
+							<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+							<button type="reset" class="btn btn-default">
+								Cancel
+							</button>
+							<button type="submit" class="btn btn-primary">
+								Submit
+							</button>
+						</div>
+					</div>
+			</fieldset>
+	    </form>
+    </div>
+{% endblock %}

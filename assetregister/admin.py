@@ -9,7 +9,8 @@ from .models import (
                      CalibrationAssetNotificaton,
                      HighValueAssetNotification,
                      EnvironmentalAspectAssetNoficiation,
-                     ArchivedAssetNotificaton
+                     ArchivedAssetNotificaton,
+                     QRLocation
                      )
 
 admin.site.register(Asset)
@@ -22,3 +23,4 @@ admin.site.register(CalibrationAssetNotificaton)
 admin.site.register(HighValueAssetNotification)
 admin.site.register(EnvironmentalAspectAssetNoficiation)
 admin.site.register(ArchivedAssetNotificaton)
+admin.site.register(QRLocation)

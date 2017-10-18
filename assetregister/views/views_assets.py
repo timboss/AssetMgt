@@ -13,7 +13,8 @@ from assetregister.models import (Asset,
                                   CalibrationAssetNotificaton,
                                   HighValueAssetNotification,
                                   EnvironmentalAspectAssetNoficiation,
-                                  ArchivedAssetNotificaton
+                                  ArchivedAssetNotificaton,
+                                  QRLocation
                                   )
 from assetregister.forms import (EditAsset,
                                  EditAssetLocationInfo,
@@ -22,7 +23,11 @@ from assetregister.forms import (EditAsset,
                                  EditAssetCalibrationInfo,
                                  EditAssetFinanceInfo,
                                  ReserveAssets,
-                                 NewAssetCalibrationInfo
+                                 NewAssetCalibrationInfo,
+                                 NewQRLocation,
+                                 EditQRLocation,
+                                 ReserveLocations,
+                                 MoveAssetToQRLocation
                                  )
 from assetregister.decorators import group_required
 # from haystack.generic_views import SearchView
@@ -30,6 +35,7 @@ from assetregister.decorators import group_required
 import logging
 from background_task import background
 from haystack.management.commands import update_index
+from djqscsv import render_to_csv_response
 
 
 # Get an instance of a logger
@@ -68,15 +74,46 @@ def asset_list(request):
         })
 
 
+# Friday-Tim broke this before he left on Friday, sorry Tuesday-Tim!  Roll back from Git, or fix it!!!
 @login_required
 def asset_list_filter(request):
     if request.GET:
         filter = AssetFilter(request.GET, queryset=Asset.objects.all())
+        makecsv = request.GET.get("makecsv")
+        if makecsv == "2":
+            # User selected CSV output on form
+            output = filter.qs.values("asset_id", "amrc_equipment_id", "asset_status__status_name", "asset_description", "asset_details",
+                                      "asset_manufacturer", "asset_model", "asset_serial_number", "person_responsible",
+                                      "person_responsible_email", "amrc_group_responsible__group_name", "requires_insurance",
+                                      "requires_unforseen_damage_insurance", "asset_value", "charge_out_rate", "charge_code",
+                                      "purchase_order_ref", "grn_id", "funded_by", "acquired_on", "disposal_date", "disposal_method",
+                                      "dispatch_note_id", "requires_safety_checks", "safety_notes", "requires_environmental_checks",
+                                      "environmental_aspects__aspect", "environmental_notes", "emergency_response_information",
+                                      "requires_planned_maintenance", "maintenance_records", "maintenance_notes", "requires_calibration",
+                                      "calibration_frequency", "passed_calibration", "calibration_date_prev", "calibration_date_next",
+                                      "calibration_status__status_name", "calibration_type", "asset_location_building__building_name",
+                                      "asset_location_room", "edited_by__username", "edited_on")
+            return render_to_csv_response(output, filename="Custom_Filtered_Assets_{}.csv".format(str(timezone.now().date())))
+        else:
+            # User selected Website output on form
+            number = len(filter.qs)
+            if not number:
+                number = "0"
+            #    paginator = Paginator(filter.qs, 20)
+            #    page = request.GET.get('page')
+            #    try:
+            #        filter = paginator.page(page)
+            #    except PageNotAnInteger:
+            #        # If page is not an integer, deliver first page.
+            #        filter = paginator.page(1)
+            #    except EmptyPage:
+            #        # If page is out of range (e.g. 9999), deliver last page of results.
+            #        filter = paginator.page(paginator.num_pages)
+            return render(request, "assetregister/asset_list_filtered.html", {"filter": filter, "number": number})
     else:
         # This is a bit hacky, but should work basically forever
         filter = AssetFilter(request.GET, queryset=Asset.objects.filter(asset_status="99999"))
-    return render(request, "assetregister/asset_list_filtered.html", {"filter": filter,
-                                                                      })
+        return render(request, "assetregister/asset_list_filtered.html", {"filter": filter})
 
 
 @login_required
@@ -132,7 +169,7 @@ def asset_detail_equipid(request, equipid):
 @group_required("AddEditAssets", "SuperUsers", "AddEditCalibrations")
 def reserve_assets(request):
     form_message = """This form will register the number of assets listed in "Number of Asset Records To Reserve"
-         all containing identical information as listed in the other fields below.  Reserved assets will have a status of
+         all containing identical information as listed in the fields below.  Reserved assets will have a status of
          "Archived" until changed."""
     form_title = "Bulk Reserve Assets"
     if request.method == "POST":
@@ -246,29 +283,6 @@ def asset_archived_email(pk, userid):
 
 
 @login_required
-@group_required('AddEditAssets', 'Finance', 'AddEditCalibrations', 'SuperUsers')
-def asset_new(request):
-    if request.method == "POST":
-        form = EditAsset(request.POST, request.FILES)
-        if form.is_valid():
-            asset = form.save(commit=False)
-            asset.edited_by = request.user
-            asset.edited_on = timezone.now()
-            asset.save()
-            form.save_m2m()
-            if asset.requires_calibration:
-                calibrated_asset_email(asset.asset_id)
-            if asset.environmental_aspects.all().count() > 0:
-                enviro_aspect_asset_email(asset.asset_id)
-            if asset.asset_value:
-                high_value_asset_email(asset.asset_id)
-            return redirect("asset_detail", pk=asset.pk)
-    else:
-        form = EditAsset()
-    return render(request, "assetregister/asset_edit.html", {"form": form})
-
-
-@login_required
 @group_required('AddEditAssets', 'AddEditCalibrations')
 def calibration_asset_new(request):
     if request.method == "POST":
@@ -288,6 +302,29 @@ def calibration_asset_new(request):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = NewAssetCalibrationInfo()
+    return render(request, "assetregister/asset_edit.html", {"form": form})
+
+
+@login_required
+@group_required('AddEditAssets', 'Finance', 'AddEditCalibrations', 'SuperUsers')
+def asset_new(request):
+    if request.method == "POST":
+        form = EditAsset(request.POST, request.FILES)
+        if form.is_valid():
+            asset = form.save(commit=False)
+            asset.edited_by = request.user
+            asset.edited_on = timezone.now()
+            asset.save()
+            form.save_m2m()
+            if asset.requires_calibration:
+                calibrated_asset_email(asset.asset_id)
+            if asset.environmental_aspects.all().count() > 0:
+                enviro_aspect_asset_email(asset.asset_id)
+            if asset.asset_value:
+                high_value_asset_email(asset.asset_id)
+            return redirect("asset_detail", pk=asset.pk)
+    else:
+        form = EditAsset()
     return render(request, "assetregister/asset_edit.html", {"form": form})
 
 
@@ -409,6 +446,96 @@ def edit_asset_finance_info(request, pk):
                                                                    })
 
 
+@login_required
+def location_qr(request, pk):
+    location = get_object_or_404(QRLocation, pk=pk)
+    baseurl = settings.BASEURL
+    return render(request, "assetregister/location_qr_small.html", {"location": location, "baseurl": baseurl})
+
+
+@login_required
+@group_required('AddEditAssets')
+def new_qr_location(request):
+    if request.method == "POST":
+        form = NewQRLocation(request.POST)
+        if form.is_valid():
+            qrlocation = form.save()
+            success_message = "Added New AMRC Asset QR Location I.D. {}.".format(qrlocation.pk)
+            small_message = '''Redirect to location page - list of assets at location and button to print location qr'''
+            return render(request, "assetregister/simple_message.html", {"message": success_message, "smallmessage": small_message})
+    else:
+        form = NewQRLocation()
+    form_title = "Create an Asset QR Location"
+    return render(request, "assetregister/asset_edit.html", {"form": form, "title": form_title})
+
+
+@login_required
+@group_required("AddEditAssets", "SuperUsers", "AddEditCalibrations")
+def reserve_qr_locations(request):
+    form_message = """This form will register the number of asset locations listed in "Number of Asset QR Locations Records To Reserve"
+         all containing identical information as listed in the fields below."""
+    form_title = "Bulk Reserve QR Locations"
+    if request.method == "POST":
+        form = ReserveLocations(request.POST)
+        if form.is_valid():
+            bulk_location_building = form.cleaned_data["location_building"]
+            bulk_location_room = form.cleaned_data["location_room"]
+            number_of_records_to_reserve = form.cleaned_data["number_of_records_to_reserve"]
+            reserved_by = request.user
+
+            logger.warning("[{}] - User {} just reserved {} QR Location records with building={} and room={}".format(
+                timezone.now(), reserved_by, number_of_records_to_reserve, bulk_location_building, bulk_location_room))
+
+            for i in range(number_of_records_to_reserve):
+                QRLocation(building=bulk_location_building, location_room=bulk_location_room).save()
+
+            latest_location = QRLocation.objects.filter(building=bulk_location_building, location_room=bulk_location_room).order_by('-pk')[0]
+            latest_location_id = latest_location.pk
+            earliest_location_id = (latest_location_id - number_of_records_to_reserve) + 1
+            success_message = "Reserved AMRC Asset QR Location IDs {} to {} (inclusive)".format(earliest_location_id, latest_location_id)
+            return render(request, "assetregister/simple_message.html", {"message": success_message})
+    else:
+        form = ReserveLocations()
+    return render(request, "assetregister/asset_edit.html", {"form": form, "message": form_message, "title": form_title})
+
+
+@login_required
+@group_required('AddEditAssets')
+def edit_qr_location(request, pk):
+    location = get_object_or_404(QRLocation, pk=pk)
+    if request.method == "POST":
+        form = EditQRLocation(request.POST, instance=location)
+        if form.is_valid():
+            qrlocation = form.save()
+            success_message = "Added New AMRC Asset QR Location I.D. {}.".format(qrlocation.pk)
+            small_message = '''Redirect to location page - list of assets at location and button to print location qr'''
+            return render(request, "assetregister/simple_message.html", {"message": success_message, "smallmessage": small_message})
+    else:
+        form = EditQRLocation(instance=location)
+    form_title = "Edit an Asset QR Location"
+    return render(request, "assetregister/edit_location_disabledfields.html", {"form": form, "title": form_title, "location_id": pk})
+
+
+@login_required
+def move_asset_to_qr_location(request, pk):
+    qrlocation = get_object_or_404(QRLocation, pk=pk)
+    if request.method == "POST":
+        form = MoveAssetToQRLocation(request.POST)
+        if form.is_valid():
+            asset_id = form.cleaned_data["asset_id"]
+            asset = get_object_or_404(Asset, pk=asset_id)
+            asset.asset_location_building = qrlocation.building
+            asset.asset_location_room = qrlocation.location_room
+            asset.edited_by = request.user
+            asset.edited_on = timezone.now()
+            asset.save(update_fields=["asset_location_building", "asset_location_room", "edited_by", "edited_on"])
+            return redirect("asset_detail", pk=asset_id)
+    else:
+        form = MoveAssetToQRLocation()
+    return render(request, "assetregister/move_asset_to_qr_location.html", {"form": form, "qrlocation": qrlocation})
+
+
+@login_required
 def edit_asset_location(request, pk):
     type = "Location"
     asset = get_object_or_404(Asset, pk=pk)

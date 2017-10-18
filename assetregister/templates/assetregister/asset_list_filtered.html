@@ -9,6 +9,11 @@
 	</ul>
 
 	<h2>Advanced Search</h2>
+	
+	{% if number %}
+		<b>Returned {{ number }} Assets</b>
+		<br />
+	{% endif %}
 
 	{% if filter.qs.paginator.count %}
 		<div class="pagination">
@@ -91,18 +96,43 @@
 		
 		<form action="" method="get" class="form-horizontal asset-form">
 			<fieldset>
-				{{ filter.form.as_p }}
+				
+				{% for field in filter.form %}
 					<div class="form-group">
-						<div class="col-lg-3">
-							<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
-							<button type="reset" class="btn btn-default">
-								Cancel
-							</button>
-							<button type="submit" class="btn btn-primary">
-								Submit
-							</button>
+						<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ field.errors }}
+							{{ field }}
 						</div>
 					</div>
+				{% endfor %}
+				
+				<br />
+				<br />
+				
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="makecsv">Results To:</label></label>
+					<div class="col-lg-6">
+						<select class="form-control" id="makecsv" name="makecsv">
+							<option value="1" selected="selected">Website</option>
+							<option value="2">Export CSV (Open with MS Excel)</option>
+						</select>
+					</div>
+				</div>
+				
+				<br />
+				
+				<div class="form-group">
+					<div class="col-lg-3 col-lg-offset-3">
+						<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+						<button type="reset" class="btn btn-default">
+							Cancel
+						</button>
+						<button type="submit" class="btn btn-primary">
+							Submit
+						</button>
+					</div>
+				</div>
 			</fieldset>
 	    </form>
 	</div>
