@@ -1,0 +1,181 @@
+{% extends "assetregister/base.html" %}
+
+{% block content %}
+
+	<ul class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li><a href="{% url 'asset_list' %}">Assets</a></li>
+	  <li class="active">{{ breadcrumb }}</li>
+	</ul>
+
+	{% if title %}
+		<h2>{{ title }}</h2>
+	{% else %}
+    	<h2>Asset Details</h2>
+    {% endif %}
+    
+    <br />
+    <div class="well">
+    	
+    	{% if message %}
+    		{{ message }}
+    		<br /><br />
+    	{% endif %}
+    	
+	    <form enctype="multipart/form-data" method="POST" class="form-horizontal asset-form">{% csrf_token %}
+			<fieldset>
+				
+				<div class="form-group">
+					<div class="col-lg-3 control-label">* = Required</div>
+				</div>
+				
+				{% for field in topfields %}
+					<div class="form-group">
+						<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ field.errors }}
+							{{ field }}
+						</div>
+					</div>
+				{% endfor %}
+				
+            	<div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse-safety">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Safety</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse-safety" class="panel-collapse collapse">
+					    	<div class="panel-body">
+								{% for field in safetyfields %}
+									<div class="form-group">
+										<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+										<div class="col-lg-6">
+											{{ field.errors }}
+											{{ field }}
+										</div>
+									</div>
+								{% endfor %}
+                			</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse-enviro">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Environmental</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse-enviro" class="panel-collapse collapse">
+					    	<div class="panel-body">
+								{% for field in envirofields %}
+									<div class="form-group">
+										<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+										<div class="col-lg-6">
+											{{ field.errors }}
+											{{ field }}
+										</div>
+									</div>
+								{% endfor %}
+                			</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="panel-group" col-lg-3>
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse-maintenance">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Maintenance</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse-maintenance" class="panel-collapse collapse">
+					    	<div class="panel-body">
+								{% for field in maintenancefields %}
+									<div class="form-group">
+										<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+										<div class="col-lg-6">
+											{{ field.errors }}
+											{{ field }}
+										</div>
+									</div>
+								{% endfor %}
+                			</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="panel-group">
+					<div class="panel panel-default">
+					    <div class="panel-heading">
+					      <h4 class="panel-title">
+					        <a data-toggle="collapse" href="#collapse-finance">
+					        	<div id="calibration-expand-container">
+					        		<div id="calibration-expand-left" align="left">Finance</div>
+					        		<div id="calibration-expand-right" align="right"><span class=" glyphicon glyphicon-triangle-bottom gi-1x"></span></div>
+					        	</div>
+					        </a>
+					      </h4>
+					    </div>
+					    <div id="collapse-finance" class="panel-collapse collapse">
+					    	<div class="panel-body">
+								{% for field in financefields %}
+									<div class="form-group">
+										<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+										<div class="col-lg-6">
+											{{ field.errors }}
+											{{ field }}
+										</div>
+									</div>
+								{% endfor %}
+                			</div>
+						</div>
+					</div>
+				</div>
+				
+				{% for field in everythingelse %}
+					<div class="form-group">
+						<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ field.errors }}
+							{{ field }}
+						</div>
+					</div>
+				{% endfor %}
+				
+				<div class="form-group">
+					<div class="col-lg-3 control-label">* = Required</div>
+				</div>
+					<div class="form-group">
+						<div class="col-lg-3 col-lg-offset-3">
+							<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+							<button type="reset" class="btn btn-default">
+								Cancel
+							</button>
+							<button type="submit" class="btn btn-primary">
+								Submit
+							</button>
+						</div>
+					</div>
+			</fieldset>
+	    </form>
+    </div>
+{% endblock %}

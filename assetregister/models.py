@@ -74,6 +74,7 @@ class Asset(models.Model):
     parent_assets = models.ManyToManyField("self", blank=True)
     asset_location_building = models.ForeignKey("Buildings", on_delete=models.SET_NULL, blank=True, null=True, related_name="building")
     asset_location_room = models.CharField(max_length=255, blank=True)
+    asset_qr_location = models.ForeignKey("QRLocation", on_delete=models.SET_NULL, blank=True, null=True, related_name="asset_qr_location_id")
     edited_by = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
     edited_on = models.DateTimeField(default=timezone.now)
 
@@ -89,6 +90,7 @@ class Asset(models.Model):
     def save(self, *args, **kwargs):
         # Custom save function to generate an asset ID / PK needed to rename files,_
         # move and rename image upload and create thumbnail
+        # If now have a QRLocationID delete any existing location building and room info
 
         # Call save first, to create a primary key
         super(Asset, self).save(*args, **kwargs)
@@ -100,11 +102,9 @@ class Asset(models.Model):
             # If asset_image.name contains "/temp" then it's newly uploaded so rename, move, thumbnail and watermark
             if "images/temp" in self.asset_image.name:
 
-                # !!!
                 # image_move_rename()
                 # image_thumbnail()
                 # image_watermark()
-                # !!!
 
                 # If have a newly uploaded image then import the things needed to make watermark & thumbnail
                 from django.core.files.base import ContentFile
@@ -225,6 +225,15 @@ class Asset(models.Model):
         # Updating Whoosh Index is now done by scheduled task every 15 minutes, rather than on every asset edit
         # reindex_whoosh()
 
+        # If have a QRLocationID set existing location fields to match
+        # ...this isn't DRY, but allows for better filtering and searching without doing anything too complex
+        if self.asset_qr_location:
+            locationid = self.asset_qr_location
+            location_building = locationid.building
+            location_room = locationid.location_room
+            self.asset_location_building = location_building
+            self.asset_location_room = location_room
+
         # Save again to keep all changes
         super(Asset, self).save(*args, **kwargs)
 
@@ -317,7 +326,7 @@ class QRLocation(models.Model):
     location_room = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return "({}) {} - {}".format(self.pk, self.building.building_name, self.location_room)
+        return "(Location ID {}) {} - {}".format(self.pk, self.building.building_name, self.location_room)
 
 
 class AmrcGroup(models.Model):

@@ -325,7 +325,18 @@ def asset_new(request):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset()
-    return render(request, "assetregister/asset_edit.html", {"form": form})
+        fields = list(form)
+        topfields = fields[:16]
+        safetyfields = fields[16:19]
+        envirofields = fields[19:22]
+        maintenancefields = fields[22:26]
+        financefields = fields[26:35]
+        everythingelse = fields[35:]
+        breadcrumb = "New"
+    return render(request, "assetregister/asset_edit_grouped.html", {"form": form, "topfields": topfields, "breadcrumb": breadcrumb,
+                                                                     "safetyfields": safetyfields, "envirofields": envirofields,
+                                                                     "maintenancefields": maintenancefields, "financefields": financefields,
+                                                                     "everythingelse": everythingelse})
 
 
 @login_required
@@ -371,7 +382,18 @@ def asset_edit(request, pk):
             return redirect("asset_detail", pk=asset.pk)
     else:
         form = EditAsset(instance=asset)
-    return render(request, "assetregister/asset_edit.html", {"form": form, "assets_to_relate": assets_to_relate})
+        fields = list(form)
+        topfields = fields[:16]
+        safetyfields = fields[16:19]
+        envirofields = fields[19:22]
+        maintenancefields = fields[22:26]
+        financefields = fields[26:35]
+        everythingelse = fields[35:]
+        breadcrumb = "Edit"
+    return render(request, "assetregister/asset_edit_grouped.html", {"form": form, "assets_to_relate": assets_to_relate, "topfields": topfields,
+                                                                     "safetyfields": safetyfields, "envirofields": envirofields,
+                                                                     "maintenancefields": maintenancefields, "financefields": financefields,
+                                                                     "everythingelse": everythingelse, "breadcrumb": breadcrumb})
 
 
 @login_required
@@ -439,6 +461,40 @@ def edit_asset_finance_info(request, pk):
                   request,
                   "assetregister/asset_edit_disabledfields.html", {
                                                                    "form": form,
+                                                                   "type": type,
+                                                                   "asset_id": asset_id,
+                                                                   "manufacturer": asset_manufacturer,
+                                                                   "description": asset_description
+                                                                   })
+
+
+@login_required
+# add QR location field to this and test it clears other location fields
+def edit_asset_location(request, pk):
+    type = "Location"
+    message = """Setting an Asset QR Location will overwrite any details in the Asset Location Building or Specific
+     Location or Room text fields with details from the Asset QR Location"""
+    asset = get_object_or_404(Asset, pk=pk)
+    asset_id = asset.asset_id
+    asset_description = asset.asset_description
+    asset_manufacturer = asset.asset_manufacturer
+    if request.method == "POST":
+        form = EditAssetLocationInfo(request.POST, instance=asset)
+        if form.is_valid():
+            logger.warning("[{}] - User {} just changed location for asset ID {} ({})".format(
+                timezone.now(), request.user, pk, asset_description))
+            asset = form.save(commit=False)
+            asset.edited_by = request.user
+            asset.edited_on = timezone.now()
+            asset.save()
+            return redirect("asset_detail", pk=asset.pk)
+    else:
+        form = EditAssetLocationInfo(instance=asset)
+    return render(
+                  request,
+                  "assetregister/asset_edit_disabledfields.html", {
+                                                                   "form": form,
+                                                                   "message": message,
                                                                    "type": type,
                                                                    "asset_id": asset_id,
                                                                    "manufacturer": asset_manufacturer,
@@ -524,45 +580,36 @@ def move_asset_to_qr_location(request, pk):
         if form.is_valid():
             asset_id = form.cleaned_data["asset_id"]
             asset = get_object_or_404(Asset, pk=asset_id)
-            asset.asset_location_building = qrlocation.building
-            asset.asset_location_room = qrlocation.location_room
+#            asset.asset_location_building = qrlocation.building
+#            asset.asset_location_room = qrlocation.location_room
             asset.edited_by = request.user
             asset.edited_on = timezone.now()
-            asset.save(update_fields=["asset_location_building", "asset_location_room", "edited_by", "edited_on"])
+            asset.save(update_fields=[#"asset_location_building", "asset_location_room", 
+                                      "edited_by", "edited_on"])
             return redirect("asset_detail", pk=asset_id)
     else:
         form = MoveAssetToQRLocation()
     return render(request, "assetregister/move_asset_to_qr_location.html", {"form": form, "qrlocation": qrlocation})
 
 
-@login_required
-def edit_asset_location(request, pk):
-    type = "Location"
-    asset = get_object_or_404(Asset, pk=pk)
-    asset_id = asset.asset_id
-    asset_description = asset.asset_description
-    asset_manufacturer = asset.asset_manufacturer
-    if request.method == "POST":
-        form = EditAssetLocationInfo(request.POST, instance=asset)
-        if form.is_valid():
-            logger.warning("[{}] - User {} just changed location for asset ID {} ({})".format(
-                timezone.now(), request.user, pk, asset_description))
-            asset = form.save(commit=False)
-            asset.edited_by = request.user
-            asset.edited_on = timezone.now()
-            asset.save()
-            return redirect("asset_detail", pk=asset.pk)
-    else:
-        form = EditAssetLocationInfo(instance=asset)
-    return render(
-                  request,
-                  "assetregister/asset_edit_disabledfields.html", {
-                                                                   "form": form,
-                                                                   "type": type,
-                                                                   "asset_id": asset_id,
-                                                                   "manufacturer": asset_manufacturer,
-                                                                   "description": asset_description
-                                                                   })
+#@login_required
+#def qr_location_list(request):
+#    asset_count = Asset.objects.count()
+#    active_asset_count = Asset.objects.filter(asset_status=1).count()
+#    all_assets = Asset.objects.order_by("asset_id")
+#    paginator = Paginator(all_assets, 10)
+#    page = request.GET.get('page')
+#    try:
+#        assets = paginator.page(page)
+#    except PageNotAnInteger:
+#        # If page is not an integer, deliver first page.
+#        assets = paginator.page(1)
+#    except EmptyPage:
+#        # If page is out of range (e.g. 9999), deliver last page of results.
+#        assets = paginator.page(paginator.num_pages)
+#    return render(request, "assetregister/asset_list.html", {
+#        "assets": assets, "asset_count": asset_count, "active_asset_count": active_asset_count,
+#        })
 
 
 @method_decorator(group_required('SuperUsers'), name='dispatch')

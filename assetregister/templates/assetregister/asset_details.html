@@ -180,6 +180,13 @@
 						</tr>
         			{% endif %}
         			
+        			{% if asset.asset_qr_location %}
+        				<tr>
+        					<td class="col-md-3">AMRC Asset QR Location ID: </td>
+        					<td>{{ asset.asset_qr_location.location_id }} <a href="{% url 'edit_asset_location' pk=asset.pk %}" class="btn btn-default btn-xs">Update Asset Location</a></td>
+        				</tr>
+        			{% endif %}
+        			
         			{% if asset.asset_location_building %}
         				<tr>
         					<td class="col-md-3">Location (Building): </td>
@@ -191,6 +198,13 @@
         				<tr>
         					<td class="col-md-3">Location (specific room, area or shelf etc.):</td>
         					<td>{{ asset.asset_location_room }} <a href="{% url 'edit_asset_location' pk=asset.pk %}" class="btn btn-default btn-xs">Update Asset Location</a></td>
+        				</tr>
+        			{% endif %}
+        			
+        			{% if not asset.asset_qr_location and not asset.asset_location_building and not asset.asset_location_room %}
+        				<tr>
+        					<td class="col-md-3">Location:</td>
+        					<td>None Set <a href="{% url 'edit_asset_location' pk=asset.pk %}" class="btn btn-default btn-xs">Set Asset Location</a></td>
         				</tr>
         			{% endif %}
         			

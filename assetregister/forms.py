@@ -16,14 +16,15 @@ class EditAsset(forms.ModelForm):
         model = Asset
         fields = [
             "asset_description", "person_responsible", "person_responsible_email", "amrc_group_responsible",
-            "asset_image", "asset_details", "asset_manufacturer", "asset_model", "asset_serial_number",
-            "amrc_equipment_id", "asset_status", "requires_calibration", "requires_safety_checks", "safety_notes",
+            "asset_image", "asset_status", "asset_details", "asset_manufacturer", "asset_model", "asset_serial_number",
+            "amrc_equipment_id", "grn_id", "dispatch_note_id", "operating_instructions", "handling_and_storage_instructions", 
+            "requires_calibration", "requires_safety_checks", "safety_notes",
             "emergency_response_information", "requires_environmental_checks", "environmental_aspects",
             "environmental_notes", "requires_planned_maintenance", "maintenance_instructions",
             "maintenance_records", "maintenance_notes", "asset_value", "charge_out_rate", "requires_insurance",
-            "requires_unforseen_damage_insurance", "purchase_order_ref", "grn_id", "funded_by", "acquired_on",
-            "disposal_date", "disposal_method", "dispatch_note_id", "parent_assets", "asset_location_building",
-            "asset_location_room", "operating_instructions", "handling_and_storage_instructions"
+            "requires_unforseen_damage_insurance", "purchase_order_ref", "funded_by", "acquired_on",
+            "disposal_date", "disposal_method", "parent_assets", "asset_qr_location",
+            "asset_location_building", "asset_location_room"
             ]
         widgets = {
             'asset_description': forms.TextInput(attrs={'class': 'form-control'}),
@@ -53,6 +54,7 @@ class EditAsset(forms.ModelForm):
             'disposal_method': forms.TextInput(attrs={'class': 'form-control'}),
             'dispatch_note_id': forms.TextInput(attrs={'class': 'form-control'}),
             'parent_assets': forms.SelectMultiple(attrs={'class': 'form-control example-enableFiltering', 'style': 'width: 400px;'}),
+            'asset_qr_location': forms.Select(attrs={'class': 'form-control example-enableFiltering', 'style': 'width: 400px;'}),
             'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
             'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
             'operating_instructions': forms.URLInput(attrs={'class': 'form-control'}),
@@ -60,12 +62,13 @@ class EditAsset(forms.ModelForm):
         }
         labels = {
           "asset_description": ("Asset Description* "),
+          "assset_details": ("Asset Details or Notes"),
           "person_responsible": ("Person Responsible* "),
           "person_responsible_email": ("Person Responsible Email* "),
           "asset_image": ("""Asset Image (All AMRC staff can currently see all asset images,
            ensure nothing sensitive is visible in the image before uploading!)"""),
           "parent_assets": ("Related Assets"),
-          "amrc_equipment_id": ("Engraved AMRC Metrology Equipment ID (e.g. V112 or M206B)"),
+          "amrc_equipment_id": ("Existing Engraved AMRC Equipment ID (e.g. V112 or M206B)"),
           "asset_location_room": ("Asset Location (e.g. Specific area, room or shelf etc.)"),
           "maintenance_instructions": ("Maintenance Instructions URL"),
           "maintenance_records": ("Maintenance Records URL"),
@@ -74,7 +77,12 @@ class EditAsset(forms.ModelForm):
           "asset_value": ("Asset Value £"),
           "charge_out_rate": ("Charge Out Rate £"),
           "grn": ("AMRC Goods Received Note [GRN] ID (e.g. GRN.1234)"),
-          "dispatch_note": ("AMRC Dispatch Note [DN] ID (e.g. DN.1234)")
+          "dispatch_note": ("AMRC Dispatch Note [DN] ID (e.g. DN.1234)"),
+          "asset_qr_location": ("""AMRC QR Location ID (This will overide anything in the Asset Location Building or Asset Location
+             Specific Room text fields below)"""),
+          "environmental_aspects": ("Environmental Aspects (please tick all that may apply)"),
+          "grn_id": ("AMRC Goods Received Note [GRN] ID"),
+          "dispatch_note_id": ("AMRC Dispatch Note [DN] ID")
           }
 
 
@@ -268,13 +276,15 @@ class EditAssetLocationInfo(forms.ModelForm):
     class Meta:
         model = Asset
         fields = [
-            "asset_location_building", "asset_location_room"
+            "asset_qr_location", "asset_location_building", "asset_location_room"
             ]
         widgets = {
+            'asset_qr_location': forms.Select(attrs={'class': 'form-control example-enableFiltering', 'style': 'width: 400px;'}),
             'asset_location_building': forms.Select(attrs={'class': 'form-control'}),
             'asset_location_room': forms.TextInput(attrs={'class': 'form-control'}),
         }
         labels = {
+            "asset_qr_location": ("AMRC QR Location ID"),
             "asset_location_room": ("Asset Location (e.g. Specific room or group etc.)"),
         }
 
@@ -394,7 +404,7 @@ class AssetFilter(django_filters.FilterSet):
                                                      widget=forms.Select(attrs={'class': 'form-control'})
                                                      )
     calibration_date_prev = django_filters.DateFromToRangeFilter(
-                                                                widget=django_filters.widgets.RangeWidget(attrs={'class': 'datepicker form-control'}),
+                                                                widget=django_filters.widgets.RangeWidget(attrs={'class': 'datepicker form-control col-lg-3'}),
                                                                 label="""Previous Calibration Date after first date or before second date
                                                                  or between both dates"""
                                                                 )

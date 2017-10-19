@@ -11,6 +11,10 @@
     <h2>Asset {{ type }} Details</h2>
     <br />
     <div class="well">
+    	{% if message %}
+    		{{ message }}
+    		<br /><br />
+    	{% endif %}
 	    <form enctype="multipart/form-data" method="POST" class="form-horizontal asset-form">{% csrf_token %}
 			<fieldset>
 				{% if asset_id %}
