@@ -75,12 +75,20 @@ h1, h2, h3, h4 {
 	font-size: 36px;
 }
 
+#small_qr_location_number {
+	font-size: 30px;
+}
+
 #small_qr_url {
 	font-size: 10px;
 }
 
 #small_qr_asset_text {
 	font-size: 18px;
+}
+
+#small_qr_location_text {
+	font-size: 17px;
 }
 
 #qr_description {

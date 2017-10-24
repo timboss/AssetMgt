@@ -2,11 +2,18 @@
 
 {% block content %}
 
-<h1>Error 404!</h1>
-<h3>Something has gone wrong - we can't seem find that page :(</h3>
-<h3>If you were attempting to view an Asset then the Asset ID may be wrong or that asset may no longer exist. 
-	Please use the <a href="{% url 'asset_list_filter' %}">Advanced Search</a> page to find assets.</h3>
-	
-<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+	<h1>
+		Error 404!
+	</h1>
+	<h3>
+		Something has gone wrong - we can't seem find that page :(
+	</h3>
+	<h3>
+		If you were attempting to view an Asset or a QR Location then the Asset or QR Location ID may be wrong, or that record may no longer exist. 
+		Please use the <a href="{% url 'asset_list_filter' %}">Custom Report</a> page to find assets and the <a href="{%url 'qr_location_list' %}">
+		QR Location Filter</a> page to find QR Locations.
+	</h3>
+		
+	<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
 
 {% endblock %}

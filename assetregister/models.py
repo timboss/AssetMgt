@@ -90,7 +90,7 @@ class Asset(models.Model):
     def save(self, *args, **kwargs):
         # Custom save function to generate an asset ID / PK needed to rename files,_
         # move and rename image upload and create thumbnail
-        # If now have a QRLocationID delete any existing location building and room info
+        # If now have a QRLocationID update location building and room info
 
         # Call save first, to create a primary key
         super(Asset, self).save(*args, **kwargs)
@@ -179,7 +179,7 @@ class Asset(models.Model):
                 img_w = img.size[0]
                 img_h = img.size[1]
 
-                # resize logo to be quarter of asset_image width, but same aspect ratio!
+                # resize logo to be quarter of asset_image width, but same aspect ratio
                 logo_aspect_ratio = float(logo.size[0] / logo.size[1])
 
                 # If image width or height <= 400 resize logo to be half, else 1/4th of image's shortest side
@@ -226,7 +226,7 @@ class Asset(models.Model):
         # reindex_whoosh()
 
         # If have a QRLocationID set existing location fields to match
-        # ...this isn't DRY, but allows for better filtering and searching without doing anything too complex
+        # ...this isn't DRY, but allows for better filtering and searching
         if self.asset_qr_location:
             locationid = self.asset_qr_location
             location_building = locationid.building
@@ -265,7 +265,7 @@ class CalibrationRecord(models.Model):
                               "assetregister.Asset",
                               on_delete=models.CASCADE,
                               related_name="calibration",
-                              limit_choices_to={'requires_calibration': True}
+                              limit_choices_to={"requires_calibration": True}
                               )
     calibration_description = models.CharField(max_length=200)
     calibration_date = models.DateField(default=timezone.now)
@@ -323,7 +323,7 @@ class Buildings(models.Model):
 class QRLocation(models.Model):
     location_id = models.AutoField(primary_key=True)
     building = models.ForeignKey("Buildings", on_delete=models.CASCADE, related_name="qr_building")
-    location_room = models.CharField(max_length=255, blank=True, null=True)
+    location_room = models.CharField(max_length=255)
 
     def __str__(self):
         return "(Location ID {}) {} - {}".format(self.pk, self.building.building_name, self.location_room)

@@ -5,7 +5,7 @@
 	<ul class="breadcrumb">
 		<li><a href="/">Home</a></li>
 		<li><a href="{% url 'asset_list' %}">Assets</a></li>
-		<li><a href="{% url 'asset_detail' pk=object.pk %}">Details</a></li>
+		<li><a href="{% url 'asset_detail' pk=object.pk %}">Asset {{ object.pk }}</a></li>
 		<li class="active">Remove</li>
 	</ul>
     

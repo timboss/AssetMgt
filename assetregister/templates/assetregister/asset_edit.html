@@ -3,9 +3,21 @@
 {% block content %}
 
 	<ul class="breadcrumb">
-	  <li><a href="/">Home</a></li>
-	  <li><a href="{% url 'asset_list' %}">Assets</a></li>
-	  <li class="active">Edit</li>
+		<li>
+			<a href="/">Home</a>
+		</li>
+		{% if qrlocation %}
+			<li>
+				<a href="{% url 'qr_location_list' %}">{{ qrlocation }}</a>
+			</li>
+		{% else %}
+			<li>
+				<a href="{% url 'asset_list' %}">Assets</a>
+			</li>
+		{% endif %}
+		<li class="active">
+			Edit
+		</li>
 	</ul>
 
 	{% if title %}

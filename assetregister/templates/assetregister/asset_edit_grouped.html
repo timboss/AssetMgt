@@ -39,6 +39,62 @@
 					</div>
 				{% endfor %}
 				
+				<div class=".visible-xs-block, hidden-xs">
+					<div class="form-group">
+						<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_qr_location.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ form.asset_qr_location.errors }}
+							{{ form.asset_qr_location }}
+						</div>
+					</div>
+				</div>
+					
+				<div class=".visible-lg-block, hidden-lg .visible-md-block, hidden-md .visible-sm-block, hidden-sm">
+					<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_qr_location_manual.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ form.asset_qr_location_manual.errors }}
+							{{ form.asset_qr_location_manual }}
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_location_building.label_tag }}</label>
+					<div class="col-lg-6">
+						{{ form.asset_location_building.errors }}
+						{{ form.asset_location_building }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_location_room.label_tag }}</label>
+					<div class="col-lg-6">
+						{{ form.asset_location_room.errors }}
+						{{ form.asset_location_room }}
+					</div>
+				</div>
+				
+				<div class=".visible-xs-block, hidden-xs">
+					<div class="form-group">
+						<label for="inputEmail" class="col-lg-3 control-label">{{ form.parent_assets.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ form.parent_assets.errors }}
+							{{ form.parent_assets }}
+						</div>
+					</div>
+				</div>
+					
+				<div class=".visible-lg-block, hidden-lg .visible-md-block, hidden-md .visible-sm-block, hidden-sm">
+					<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ form.parent_assets_manual.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ form.parent_assets_manual.errors }}
+							{{ form.parent_assets_manual }}
+						</div>
+					</div>
+				</div>
+				
             	<div class="panel-group">
 					<div class="panel panel-default">
 					    <div class="panel-heading">
@@ -150,17 +206,7 @@
 						</div>
 					</div>
 				</div>
-				
-				{% for field in everythingelse %}
-					<div class="form-group">
-						<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
-						<div class="col-lg-6">
-							{{ field.errors }}
-							{{ field }}
-						</div>
-					</div>
-				{% endfor %}
-				
+
 				<div class="form-group">
 					<div class="col-lg-3 control-label">* = Required</div>
 				</div>

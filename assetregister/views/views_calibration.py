@@ -102,7 +102,7 @@ def new_calibration(request):
             return redirect("asset_detail", pk=calibration.asset.asset_id)
     else:
         form = Calibrate()
-    return render(request, "assetregister/new_calibration.html", {"form": form})
+    return render(request, "assetregister/calibration_new.html", {"form": form})
 
 
 @login_required
@@ -127,7 +127,7 @@ def calibration_edit(request, slug):
             return redirect("asset_detail", pk=calibration.asset.asset_id)
     else:
         form = Calibrate(instance=calibration)
-    return render(request, "assetregister/new_calibration.html", {"form": form,
+    return render(request, "assetregister/calibration_new.html", {"form": form,
                                                                   "asset_calib_freq": asset_calib_freq,
                                                                   "asset_calib_procedure": asset_calib_procedure})
 
@@ -151,6 +151,6 @@ def new_calibration_asset(request, urlpk):
             return redirect("asset_detail", pk=calibration.asset.asset_id)
     else:
         form = Calibrate(initial={"asset": urlpk})
-    return render(request, "assetregister/new_calibration.html", {"form": form,
+    return render(request, "assetregister/calibration_new.html", {"form": form,
                                                                   "asset_calib_freq": asset_calib_freq,
                                                                   "asset_calib_procedure": asset_calib_procedure})

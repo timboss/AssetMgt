@@ -87,20 +87,43 @@
 									<li>
 										<a href="{% url 'active_asset_list' %}">"Active" Assets</a>
 									</li>
-										{% if request.user|has_group:"AddEditAssets" %} 
-											<li class="divider"></li>
-											<li>
-												<a href="{% url 'asset_new' %}">Add New Asset</a>
-											</li>
-										{% endif %}
-										{% if request.user|has_group:"ReserveAssets" %} 
-											<li class="divider"></li>
-											<li>
-												<a href="{% url 'reserve_assets' %}">Bulk Reserve Assets</a>
-											</li>
-										{% endif %}
+									<li>
+										<a href="{% url 'asset_list_filter' %}">Custom Asset Report</a>
+									</li>
+									{% if request.user|has_group:"AddEditAssets" %} 
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'asset_new' %}">Add New Asset</a>
+										</li>
+									{% endif %}
+									{% if request.user|has_group:"ReserveAssets" %} 
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'reserve_assets' %}">Bulk Reserve Assets</a>
+										</li>
+									{% endif %}
 								</ul>
 							</li>
+							
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">QR Locations <span class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
+									<li>
+										<a href="{% url 'qr_location_list' %}">All QR Locations</a>
+									</li>
+									<li class="divider"></li>
+										<li>
+											<a href="{% url 'new_qr_location' %}">New QR Location</a>
+										</li>
+									{% if request.user|has_group:"ReserveAssets" %} 
+										<li class="divider"></li>
+										<li>
+											<a href="{% url 'reserve_qr_locations' %}">Bulk Reserve QR Locations</a>
+										</li>
+									{% endif %}
+								</ul>
+							</li>
+
 
 							{% if request.user|has_group:"AddEditCalibrations" %}
 								<li class="dropdown">
@@ -121,10 +144,12 @@
 											<a href="{% url 'calibration_asset_new' %}">Add New Asset For Calibration</a>
 										</li>
 										<li class="divider"></li>
+										<!--
 										<li>
 											<a href="{% url 'calibration_list' %}">All Calibration Records</a>
 										</li>
 										<li class="divider"></li>
+										-->
 										<li>
 											<a href="{% url 'calibrated_asset_export_all' %}">Export ALL Assets Requiring Calibration</a>
 										</li>
@@ -145,11 +170,8 @@
 							{% endif %}
 
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Reports <span class="caret"></span></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Quick Reports <span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">
-									<li>
-										<a href="{% url 'asset_list_filter' %}">Advanced Asset Filtering</a>
-									</li>
 									<li>
 										<a href="{% url 'maintenance_export_all' %}">Export All Assets Requiring Maintenance</a>
 									</li>
@@ -161,9 +183,6 @@
 									</li>
 									<li>
 										<a href="{% url 'safety_export_all' %}">Export All Assets Requiring Safety Checks</a>
-									</li>
-									<li>
-										<a href="{% url 'location_export_all' %}">Export Assets By Location</a>
 									</li>
 								</ul>
 							</li>
@@ -201,16 +220,6 @@
 		<div class="content container-fluid">
 			<div class="row">
 				<div class="col-md-8">
-					<!--
-					<div class="alert alert-dismissible alert-danger">
-						<button type="button" class="close" data-dismiss="alert">
-							&times;
-						</button>
-						<strong>System Under Development</strong><br />
-						This system is currently undergoing testing and development, all records here are fake and liable to change or be deleted without notice. 
-						Do not enter real asset records or use anything here for real Asset Management while this notice is in place!
-					</div>
-					-->
 					{% block content %}
 					{% endblock %}
 				</div>

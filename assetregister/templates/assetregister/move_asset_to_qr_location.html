@@ -9,6 +9,9 @@
 	  <li class="active">Move Asset</li>
 	</ul>
 
+	<b>There are currently {{ assetcount}} assets at this QR location</b>
+	<p><a href="{% url 'qr_location_view_assets' pk=qrlocation.location_id %}">View Assets At This QR Location</a></p>
+
     <h2>Move Asset To This Location</h2>
     <br />
     <div class="well">

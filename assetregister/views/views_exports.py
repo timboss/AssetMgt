@@ -125,21 +125,6 @@ def safety_export_all(request):
 
 
 @login_required
-def location_export_all(request):
-    export = Asset.objects.all().order_by("asset_location_building__building_name").values(
-                                                "asset_location_building__building_name",
-                                                "asset_location_building__EFM_building_code",
-                                                "asset_location_room",
-                                                "asset_id", "requires_safety_checks", "requires_insurance",
-                                                "requires_environmental_checks", "requires_planned_maintenance",
-                                                "asset_description",
-                                                "asset_manufacturer", "asset_model", "asset_serial_number",
-                                                "asset_status__status_name", "person_responsible", "person_responsible_email",
-                                                "handling_and_storage_instructions")
-    return render_to_csv_response(export, filename="All_Asset_Records_By_Location_{}.csv".format(str(timezone.now().date())))
-
-
-@login_required
 @group_required('SuperUsers')
 def export_all_assets(request):
     export = Asset.objects.all()
@@ -148,7 +133,7 @@ def export_all_assets(request):
 
 @login_required
 @group_required('AddEditCalibrations', 'SuperUsers')
-def export_all_calibratons(request):
+def export_all_calibrations(request):
     export = CalibrationRecord.objects.order_by("-calibration_date").values(
                                                 "calibration_record_id", "asset", "asset__asset_description",
                                                 "asset__asset_manufacturer", "calibration_description",

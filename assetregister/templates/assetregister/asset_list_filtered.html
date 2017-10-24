@@ -8,7 +8,7 @@
 	  <li class="active">Advanced Search</li>
 	</ul>
 
-	<h2>Advanced Search</h2>
+	<h2>Custom Asset Report</h2>
 	
 	{% if number %}
 		<b>Returned {{ number }} Assets</b>
@@ -51,12 +51,16 @@
                 <p>Manufacturer: {{ asset.asset_manufacturer }}</p> 
             {% endif %}
             
+            {% if asset.asset_qr_location %}
+            	QR Location ID: {{ asset.asset_qr_location.location_id }}<br />
+            {% endif %}
+            
             {% if asset.asset_location_building %}
-                Location (Building): {{ asset.asset_location_building }} 
+                Location (Building): {{ asset.asset_location_building }}<br /> 
             {% endif %}
             
             {% if asset.asset_location_room %}
-                <br />Location (Area): {{ asset.asset_location_room }} 
+                Location (Area): {{ asset.asset_location_room }} 
             {% endif %}
             <hr>
         </div>
@@ -114,8 +118,8 @@
 					<label for="inputEmail" class="col-lg-3 control-label"><label for="makecsv">Results To:</label></label>
 					<div class="col-lg-6">
 						<select class="form-control" id="makecsv" name="makecsv">
-							<option value="1" selected="selected">Website</option>
-							<option value="2">Export CSV (Open with MS Excel)</option>
+							<option value="0" selected="selected">Website</option>
+							<option value="1">Export CSV (Open with MS Excel)</option>
 						</select>
 					</div>
 				</div>

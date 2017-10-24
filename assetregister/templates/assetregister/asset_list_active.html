@@ -10,7 +10,7 @@
 </ul>
 
     <div class="count">
-        <b>{{ active_asset_count }}</b> assets are currently marked "active (in-use)" out of a total of {{ asset_count }} asset records.
+        <b>{{ active_asset_count }}</b> assets are currently marked "Active (In-Use)" out of a total of {{ asset_count }} asset records.
         {% if request.user|has_group:"AddEditAssets" %} 
         	(<a href="{% url 'asset_new' %}">Add new asset</a>)
         {% endif %}	

@@ -1,0 +1,137 @@
+{% extends 'assetregister/base.html' %}
+
+{% block content %}
+
+	<ul class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li class="active">QR Locations</li>
+	</ul>
+	
+	<h2>QR Location Filter</h2>
+	
+	<div class="well">
+		<h5>All filters on this form are combined
+			<br />e.g. Location Building contains "X" AND Location Room contains "Y"</h5>
+		<br />	
+		
+		<form action="" method="get" class="form-horizontal asset-form">
+			<fieldset>
+				
+				{% for field in filter.form %}
+					<div class="form-group">
+						<label class="col-lg-3 control-label">{{ field.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ field.errors }}
+							{{ field }}
+						</div>
+					</div>
+				{% endfor %}
+				
+				<br />
+				<br />
+				
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label"><label for="makecsv">Results To:</label></label>
+					<div class="col-lg-6">
+						<select class="form-control" id="makecsv" name="makecsv">
+							<option value="0" selected="selected">Website</option>
+							<option value="1">Export CSV (Open with MS Excel)</option>
+						</select>
+					</div>
+				</div>
+				
+				<br />
+				
+				<div class="form-group">
+					<div class="col-lg-3 col-lg-offset-3">
+						<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+						<button type="reset" class="btn btn-default">
+							Cancel
+						</button>
+						<button type="submit" class="btn btn-primary">
+							Submit
+						</button>
+					</div>
+				</div>
+			</fieldset>
+	    </form>
+	</div>
+
+	{% if number %}
+		<p><b>Returned {{ number }} QR Locations</b></p>
+	{% else %}
+		<p><b>We currently have a total of {{ filter.qs.count }} QR Locations</b></p>
+	{% endif %}
+	<br />
+
+	{% if filter.qs.paginator.count %}
+		<div class="pagination">
+			{% if filter.qs.paginator.count %}
+			    Showing {{ filter.qs.object_list|length }} of {{ filter.qs.paginator.count }} Results on Page {{ filter.qs.number }} of {{ filter.qs.paginator.num_pages }}
+			    <br />
+			{% endif %}
+			
+			{% if filter.qs.has_previous or assets.has_next %}
+				<ul class="pager">
+					{% if filter.qs.has_previous %}
+						<li class="previous"><a href="?page={{ filter.qs.previous_page_number }}">&laquo; Previous</a></li>
+					{% else %}
+						<li class="previous disabled"><a href="">&laquo; Previous</a></li>
+					{% endif %}
+					
+					{% if filter.qs.has_next %}
+						<li class="next"><a href="?page={{ filter.qs.next_page_number }}">Next &raquo;</a></li>
+					{% else %}
+						<li class="next disabled"><a href="">Next &raquo;</a></li>
+					{% endif %}
+				</ul>
+			{% endif %}
+		</div>
+	{% endif %}
+	
+	{% for location in filter.qs %}
+    	<div class="asset">
+            <h4>AMRC Asset QR Location ID: {{ location.location_id }}</h4>
+            Building: <b>{{ location.building.building_name }}</b>
+            <br />
+            Building EFM Code: <b>{{ location.building.EFM_building_code }}</b>
+            <br />
+            Specific Room or Location etc.: <b>{{ location.location_room }}</b>
+            <br /> <br />
+            <a href="{% url 'qr_location_qr' pk=location.location_id %}" target="_blank" onclick="window.open('{% url 'qr_location_qr' pk=location.location_id %}', 'newwindow2', 'width=260, height=190'); return false;">Open Location QR</a> | 
+            <a href="{% url 'edit_qr_location' pk=location.location_id %}">Edit Location Details</a> | 
+            <a href="{% url 'qr_location_view_assets' pk=location.location_id %}">View All Assets At This Location</a> | 
+            <a href="{% url 'move_asset_to_qr_location' pk=location.location_id %}">Move Asset To This location</a>
+            <br /><br />
+            <hr>
+        </div>
+    {% endfor %}
+    
+	{% if filter.qs.paginator.count %}
+		<div class="pagination">
+			{% if filter.qs.paginator.count %}
+			    Showing {{ filter.qs.object_list|length }} of {{ filter.qs.paginator.count }} Results on Page {{ filter.qs.number }} of {{ filter.qs.paginator.num_pages }}
+			    <br />
+			{% endif %}
+			
+			{% if filter.qs.has_previous or assets.has_next %}
+				<ul class="pager">
+					{% if filter.qs.has_previous %}
+						<li class="previous"><a href="?page={{ filter.qs.previous_page_number }}">&laquo; Previous</a></li>
+					{% else %}
+						<li class="previous disabled"><a href="">&laquo; Previous</a></li>
+					{% endif %}
+					
+					{% if filter.qs.has_next %}
+						<li class="next"><a href="?page={{ filter.qs.next_page_number }}">Next &raquo;</a></li>
+					{% else %}
+						<li class="next disabled"><a href="">Next &raquo;</a></li>
+					{% endif %}
+				</ul>
+			{% endif %}
+		</div>
+	{% endif %}
+
+<br />  
+
+{% endblock %}

@@ -1,5 +1,6 @@
 {% extends 'assetregister/base.html' %}
 {% block content %}
+{% load has_group %}
 
 <h2>{{ message }}</h2>
 
@@ -10,5 +11,12 @@
 <br /><br />
 
 <a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+
+{% if request.user|has_group:"SuperUser" %}
+	{% if print_labels %}
+		<br /><br />
+		<a href="{% url 'print_asset_labels' id_from=earliest_asset_no id_to=latest_asset_no %}" class="btn btn-primary"> Print Asset Tags Now </a>
+	{% endif %}
+{% endif %}
 
 {% endblock %}

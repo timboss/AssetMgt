@@ -1,0 +1,105 @@
+{% extends "assetregister/base.html" %}
+
+{% block content %}
+
+	<ul class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li><a href="{% url 'asset_list' %}">Assets</a></li>
+	  <li><a href="{% url 'asset_detail' pk=asset_id %}">Asset ID {{ asset_id }}</a></li>
+	  <li class="active">Edit Location</li>
+	</ul>
+
+    <h2>Asset {{ type }} Details</h2>
+    <br />
+    <div class="well">
+	    <form enctype="multipart/form-data" method="POST" class="form-horizontal asset-form">{% csrf_token %}
+			<fieldset>
+				
+				<div class="form-group">
+					<label class="col-lg-3 control-label">AMRC Asset Number:</label>
+					<div class="col-lg-6">
+						<input class="form-control" id="disabledInput" placeholder="{{ asset.asset_id }}" disabled="" type="text">
+					</div>	
+				</div>
+				
+				<div class="form-group">
+					<label class="col-lg-3 control-label">Asset description:</label>
+					<div class="col-lg-6">
+						<input class="form-control" id="disabledInput" placeholder="{{ asset.asset_description }}" disabled="" type="text">
+					</div>	
+				</div>
+				
+				{% if asset.asset_manufacturer %}
+					<div class="form-group">
+						<label class="col-lg-3 control-label">Asset manufacturer:</label>
+						<div class="col-lg-6">
+							<input class="form-control" id="disabledInput" placeholder="{{ asset.asset_manufacturer }}" disabled="" type="text">
+						</div>	
+					</div>
+				{% endif %}	
+				
+				<br /><br />
+		    	{% if message %}
+		    		{{ message }}
+		    		<br /><br />
+		    	{% endif %}
+		    	
+				<div class=".visible-xs-block, hidden-xs">
+					<div class="form-group">
+						<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_qr_location.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ form.asset_qr_location.errors }}
+							{{ form.asset_qr_location }}
+						</div>
+					</div>
+				</div>
+					
+				<div class=".visible-lg-block, hidden-lg .visible-md-block, hidden-md .visible-sm-block, hidden-sm">
+					<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_qr_location_manual.label_tag }}</label>
+						<div class="col-lg-6">
+							{{ form.asset_qr_location_manual.errors }}
+							{{ form.asset_qr_location_manual }}
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-lg-3 col-lg-offset-3">
+						<br />
+						OR
+						<br /><br />
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_location_building.label_tag }}</label>
+					<div class="col-lg-6">
+						{{ form.asset_location_building.errors }}
+						{{ form.asset_location_building }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="inputEmail" class="col-lg-3 control-label">{{ form.asset_location_room.label_tag }}</label>
+					<div class="col-lg-6">
+						{{ form.asset_location_room.errors }}
+						{{ form.asset_location_room }}
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-lg-3 col-lg-offset-3">
+						<a href="{{request.META.HTTP_REFERER}}" class="btn btn-default">Back</a>
+						<button type="reset" class="btn btn-default">
+							Cancel
+						</button>
+						<button type="submit" class="btn btn-primary">
+							Submit
+						</button>
+					</div>
+				</div>
+			</fieldset>
+	    </form>
+    </div>
+{% endblock %}
