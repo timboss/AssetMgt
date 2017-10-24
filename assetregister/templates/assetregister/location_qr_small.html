@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load has_group %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,6 +36,10 @@
 					document.write('<form><input type=button name=print value="Print this page" onClick="window.print()"></form>');
 				}
 			</script>
+			
+			{% if request.user|has_group:"SuperUsers" %}
+				<form action="{% url 'print_location_labels' id_from=location.pk id_to=location.pk %}"><input type="submit" value="Print Zebra Asset QR Location Label"></form>
+			{% endif %}
 		</div>
         
     </div>
