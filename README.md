@@ -1,6 +1,6 @@
 # AssetMgt [ARCHIVED]
 
-**This project has now been moved to a private (enterprise) repository, it will no longer receive new commits or updates, but is being kept for posterity in case it is ever of use to anyone else.**
+**This project has now been moved to a private (enterprise) repository, this public respository will no longer receive new commits or updates, but is being kept for posterity in case it is ever of use to anyone else.**
 
 
 
